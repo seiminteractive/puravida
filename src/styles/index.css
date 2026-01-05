@@ -1,0 +1,126 @@
+/* Napzer Rounded */
+@font-face {
+  font-family: 'Napzer Rounded';
+  src: url('/fonts/napzer-rounded/NapzerRounded-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Napzer Rounded';
+  src: url('/fonts/napzer-rounded/NapzerRounded-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Standard */
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Thin.otf') format('opentype');
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-ExtraLight.otf') format('opentype');
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Light.otf') format('opentype');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Regular.otf') format('opentype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Medium.otf') format('opentype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-SemiBold.otf') format('opentype');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Bold.otf') format('opentype');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: 'Standard';
+  src: url('/fonts/standerd/Standerd-Black.otf') format('opentype');
+  font-weight: 900;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #app {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  body {
+    background-color: #000;
+    font-family: 'Standard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Napzer Rounded', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Subtle brand-consistent texture overlay (manual suggests subtle materials/texture) */
+  .pv-surface {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .pv-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+    background-image:
+      radial-gradient(circle at 18% 10%, rgba(255, 210, 92, 0.14), transparent 55%),
+      radial-gradient(circle at 86% 78%, rgba(81, 193, 225, 0.10), transparent 55%),
+      radial-gradient(circle at 55% 35%, rgba(182, 113, 160, 0.08), transparent 60%),
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 7px);
+    mix-blend-mode: overlay;
+  }
+
+  .pv-surface > * {
+    position: relative;
+    z-index: 1;
+  }
+}

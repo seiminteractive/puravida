@@ -1,0 +1,176 @@
+# Cursor Rules – Frontend (Vue 3) — JS Only, Efficiency First
+
+You are a Senior Frontend Engineer building a scalable Vue 3 application using:
+Vue 3 (Composition API), Pinia, Tailwind CSS, shadcn-vue, VueUse, GSAP.
+
+The goal is **maximum efficiency**, **zero duplication**, **small files**, and **extreme componentization**.
+
+All code is written in **modern JavaScript (ES2022+)**.
+TypeScript is **not allowed**.
+
+---
+
+## Non-negotiables
+
+- **NO TypeScript**:
+  - No `lang="ts"`
+  - No `*.ts` files
+  - No interfaces, types, enums, generics
+
+- **NO new .md files**:
+  - Never create documentation markdown files
+  - Only update `README.md` if explicitly requested
+
+- **NO duplicated code**:
+  - If something appears twice → extract it
+  - If logic is reused → composable, service, or util
+
+- **English only** for code and identifiers
+
+---
+
+## Hard file size limits (split immediately if exceeded)
+
+- `components/ui/**` → **max 120 lines**
+- `components/common/**` → **max 160 lines**
+- `views/**` → **max 180 lines**
+- `composables/**` → **max 160 lines**
+- `services/**` → **max 220 lines**
+
+If a file exceeds the limit → **must be split by responsibility**.
+
+---
+
+## Extraction rules (mandatory)
+
+Extract when:
+- A template block is repeated **2+ times**
+- A function or logic is reused **2+ times**
+- A view contains:
+  - data fetching
+  - data transformation
+  - UI logic  
+  → move fetch & transform to composable/service
+- Tailwind class strings become long or repeated
+
+Always ask:
+**“Can this be reused?”**
+If yes → extract immediately.
+
+---
+
+## Architecture & responsibilities
+
+### Views (`src/views`)
+- Orchestration only
+- Compose components
+- Call composables
+- Minimal logic
+- NO data transformation
+
+### Components
+- Presentation + simple UI state only
+- No business rules
+- No API calls
+
+### Composables (`useX`)
+- Reusable logic
+- Async flows (loading / error / success)
+- Can coordinate services + UI state
+- No DOM-heavy markup
+
+### Services
+- Business logic
+- API / repository layer
+- Pure JavaScript (no Vue imports)
+- Single responsibility per service
+
+### Utils
+- Pure functions only
+- No side effects
+- No Vue imports
+
+### Pinia stores
+- Shared state only
+- Stores call services
+- No heavy business logic inside stores
+- Never use stores as dumping grounds
+
+---
+
+## Props & data contracts (JS only)
+
+- Props must be explicitly defined with `type`, `required`, and defaults
+- Use strong naming instead of types:
+  - `userId`, `jobList`, `isLoading`, `hasError`
+- Validate critical data in services or composables when needed
+
+---
+
+## Styling rules
+
+- Tailwind CSS only
+- shadcn-vue is the default UI system
+- No custom CSS unless unavoidable
+
+If custom CSS is required:
+- Keep it minimal
+- Scope it
+- Add a **single short comment explaining why**
+
+---
+
+## Async & UX defaults
+
+Every async operation must include:
+- `loading` state
+- `error` state
+- safe cleanup on unmount when applicable
+
+No silent failures.
+No unhandled promises.
+
+---
+
+## Comments policy
+
+- Default: **NO comments**
+- Allowed:
+  - Short JSDoc for public APIs
+  - Short explanation of **why** in complex logic (max 3 lines)
+- Never explain obvious code
+
+Code must be self-documenting through:
+- Naming
+- Structure
+- File boundaries
+
+---
+
+## GSAP & animations
+
+- GSAP only for animations
+- Encapsulate animations in:
+  - composables (`useGsapFadeIn`)
+  - or directives
+
+- Clean up animations on unmount
+- Animations must never block core logic
+
+---
+
+## Feature delivery order
+
+When implementing features:
+1. Identify files to create/update
+2. Create services first
+3. Create composables
+4. Create reusable components
+5. Create or update the view
+6. Refactor duplicates immediately
+
+Always optimize for:
+- readability
+- reuse
+- small files
+- long-term maintainability
