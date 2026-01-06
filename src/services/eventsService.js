@@ -1,3 +1,5 @@
+import marianoMellinoVideo from '/assets/marianoMellinoVideo.mp4'
+
 export const getEvents = () => [
   {
     id: 1,
@@ -5,7 +7,7 @@ export const getEvents = () => [
     dj: 'Mariano Mellino',
     lugar: 'Hotel Termas de Victoria, Entre Rios',
     descripcion: 'Una noche mágica donde la música y el agua se encuentran. Ritual de conexión bajo las estrellas.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
   {
     id: 2,
@@ -13,7 +15,7 @@ export const getEvents = () => [
     dj: 'Mariano Mellino',
     lugar: 'Hotel Termas de Victoria, Entre Rios',
     descripcion: 'Experiencia sensorial en las alturas. Donde la música y el agua se encuentran.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
   {
     id: 3,
@@ -21,7 +23,7 @@ export const getEvents = () => [
     dj: 'Mariano Mellino',
     lugar: 'Hotel Termas de Victoria, Entre Rios',
     descripcion: 'Comunidad consciente reunida en ritual contemporáneo. Vivir conectado, vivir despierto en cada ritmo.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
 ]
 
@@ -32,7 +34,7 @@ export const getPastEvents = () => [
     dj: 'Nicolás Jaar',
     lugar: 'Buenos Aires',
     descripcion: 'Ritual de fin de año. Música experimental y conexión profunda.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
   {
     id: 2,
@@ -40,7 +42,7 @@ export const getPastEvents = () => [
     dj: 'VTSS',
     lugar: 'Córdoba',
     descripcion: 'Noche de electrónica y espiritualidad. Comunidad vibrando juntos.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
   {
     id: 3,
@@ -48,7 +50,7 @@ export const getPastEvents = () => [
     dj: 'Stefano Noferini',
     lugar: 'Mendoza',
     descripcion: 'Experiencia sensorial en las montañas. La música elevando conciencias.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
   {
     id: 4,
@@ -56,6 +58,6 @@ export const getPastEvents = () => [
     dj: 'Matías Aguayo',
     lugar: 'La Plata',
     descripcion: 'Ritual contemporáneo de conexión y danza. Energía infinita.',
-    imagen: '/assets/marianoMellinoVideo.mp4',
+    imagen: marianoMellinoVideo,
   },
 ]
