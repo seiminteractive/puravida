@@ -1,5 +1,5 @@
 <template>
-  <div class="event-card">
+  <div class="event-card" @click="goToEventDetail">
     <!-- Background con imagen/video -->
     <div class="event-background">
       <video
@@ -8,7 +8,6 @@
         muted
         loop
         playsinline
-        preload="metadata"
         class="event-media"
       >
         <source :src="event.imagen" type="video/mp4" />
@@ -33,7 +32,7 @@
         <p class="event-location">{{ event.lugar }}</p>
         <p class="event-description">{{ event.descripcion }}</p>
         <div class="event-actions">
-          <button class="event-btn" @click="goToEventDetail">Revivir</button>
+          <button class="event-btn">Revivir</button>
           <button class="event-btn">Galería</button>
         </div>
       </div>

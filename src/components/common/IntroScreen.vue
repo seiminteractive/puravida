@@ -87,9 +87,6 @@ onMounted(() => {
 })
 
 const triggerIntro = () => {
-  // Disable scroll durante la intro
-  document.body.style.overflow = 'hidden'
-  
   gsap.to('.intro-logo', 0.5, {
     opacity: 0,
     y: -40,
@@ -148,8 +145,6 @@ const triggerIntro = () => {
     delay: 5,
     onComplete: () => {
       showIntro.value = false
-      // Restaurar scroll
-      document.body.style.overflow = ''
     },
   })
 }
@@ -159,14 +154,9 @@ const triggerIntro = () => {
 .intro-wrapper {
   position: fixed;
   width: 100%;
-  height: 100dvh;
   height: 100vh;
   z-index: 50;
   background: white;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .intro-logo {
@@ -186,32 +176,25 @@ const triggerIntro = () => {
 .intro-header {
   position: fixed;
   width: 100%;
-  height: 100dvh;
   height: 100vh;
   background: white;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: -2;
-  top: 0;
-  left: 0;
 }
 
 .intro-container {
   position: fixed;
   width: 100%;
-  height: 100dvh;
   height: 100vh;
   background: #4F4898;
   z-index: -1;
-  top: 0;
-  left: 0;
 }
 
 .intro-text-wrapper {
   position: fixed;
   width: 100%;
-  height: 100dvh;
   height: 100vh;
   left: -50%;
   display: flex;
@@ -221,7 +204,6 @@ const triggerIntro = () => {
   cursor: default;
   z-index: 0;
   padding-top: 2vh;
-  top: 0;
 }
 
 .intro-text-logo {
@@ -246,17 +228,15 @@ const triggerIntro = () => {
 .final-overlay {
   position: fixed;
   width: 100%;
-  height: 100dvh;
   height: 100vh;
   top: 0;
   left: 0;
-  background: #ffffff;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20;
+  z-index: 10;
   opacity: 0;
-  pointer-events: none;
 }
 
 .final-content {

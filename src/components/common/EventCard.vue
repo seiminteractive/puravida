@@ -1,5 +1,5 @@
 <template>
-  <div class="event-card">
+  <div class="event-card" @click="goToEventDetail">
     <!-- Background con imagen/video -->
     <div class="event-background">
       <video
@@ -8,7 +8,6 @@
         muted
         loop
         playsinline
-        preload="metadata"
         class="event-media"
       >
         <source :src="event.imagen" type="video/mp4" />
@@ -34,7 +33,7 @@
         <p class="event-description">{{ event.descripcion }}</p>
         <div class="event-actions">
           <button class="event-btn">Tickets</button>
-          <button class="event-btn" @click="goToEventDetail">Info</button>
+          <button class="event-btn">Info</button>
         </div>
       </div>
     </div>
@@ -63,6 +62,12 @@ const goToEventDetail = () => {
   width: 100%;
   border-radius: 1rem;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: scale(1.02);
 }
 
 .event-background {
