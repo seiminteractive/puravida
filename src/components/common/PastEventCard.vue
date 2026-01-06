@@ -7,6 +7,8 @@
         autoplay
         muted
         loop
+        playsinline
+        preload="metadata"
         class="event-media"
       >
         <source :src="event.imagen" type="video/mp4" />
