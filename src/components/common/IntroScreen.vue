@@ -65,12 +65,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import gsap from 'gsap'
 
 const showIntro = ref(true)
 
+const setViewportHeightVar = () => {
+  const vh = window.innerHeight * 0.01
+  document.documentElement.style.setProperty('--pv-vh', `${vh}px`)
+}
+
+const onViewportResize = () => setViewportHeightVar()
+
 onMounted(() => {
+  setViewportHeightVar()
+  window.addEventListener('resize', onViewportResize, { passive: true })
+  window.addEventListener('orientationchange', onViewportResize, { passive: true })
+
   // Verificar si ya se vio la intro
   const hasSeenIntro = sessionStorage.getItem('hasSeenIntro')
   
@@ -84,6 +95,11 @@ onMounted(() => {
     // Si ya la vio, no mostrar la intro
     showIntro.value = false
   }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onViewportResize)
+  window.removeEventListener('orientationchange', onViewportResize)
 })
 
 const triggerIntro = () => {
@@ -155,6 +171,9 @@ const triggerIntro = () => {
   position: fixed;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  height: calc(var(--pv-vh, 1vh) * 100);
   z-index: 50;
   background: white;
 }
@@ -177,6 +196,9 @@ const triggerIntro = () => {
   position: fixed;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  height: calc(var(--pv-vh, 1vh) * 100);
   background: white;
   display: flex;
   justify-content: center;
@@ -188,6 +210,9 @@ const triggerIntro = () => {
   position: fixed;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  height: calc(var(--pv-vh, 1vh) * 100);
   background: #4F4898;
   z-index: -1;
 }
@@ -196,6 +221,9 @@ const triggerIntro = () => {
   position: fixed;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  height: calc(var(--pv-vh, 1vh) * 100);
   left: -50%;
   display: flex;
   flex-direction: column;
@@ -229,6 +257,9 @@ const triggerIntro = () => {
   position: fixed;
   width: 100%;
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  height: calc(var(--pv-vh, 1vh) * 100);
   top: 0;
   left: 0;
   background: #fff;
