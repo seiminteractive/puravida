@@ -3,35 +3,46 @@
     <!-- Luz de fondo cyan -->
     <div class="light-cyan"></div>
     
-    <!-- Título -->
-    <div class="events-header flex flex-col justify-between items-start mb-8">
-      <div class="title-group">
-        <h2 class="events-title">Próximos Festivales & Eventos</h2>
+    <!-- Contenedor principal -->
+    <div class="events-container">
+      <!-- Título -->
+      <div class="events-header">
+        <div class="title-group">
+          <h2 class="events-title">Próximos Festivales & Eventos</h2>
+        </div>
+        <router-link to="/calendar" class="calendar-btn">
+          <img ref="btnIcon" src="/assets/iconoEventos3.png" alt="Calendario" class="btn-icon" />
+          <span>CALENDARIO</span>
+        </router-link>  
       </div>
-      <router-link to="/calendar" class="calendar-btn">
-        <img ref="btnIcon" src="/assets/iconoEventos3.png" alt="Calendario" class="btn-icon" />
-        <span>CALENDARIO</span>
-      </router-link>  
-    </div>
 
-    <!-- Swiper Carousel -->
-    <Swiper
-      :modules="modules"
-      :slides-per-view="1"
-      :space-between="24"
-      :pagination="{ clickable: true, dynamicBullets: true }"
-      :loop="true"
-      @swiper="onSwiperInit"
-      class="swiper-container"
-    >
-      <SwiperSlide v-for="event in events" :key="event.id" class="swiper-slide">
-        <EventCard :event="event" />
-      </SwiperSlide>
-    </Swiper>
+      <!-- Swiper Carousel -->
+      <Swiper
+        :modules="modules"
+        :slides-per-view="1"
+        :space-between="24"
+        :breakpoints="breakpoints"
+        :pagination="{ clickable: true, dynamicBullets: true }"
+        :loop="true"
+        :centered-slides="false"
+        @swiper="onSwiperInit"
+        @slide-change="onSlideChange"
+        class="swiper-container"
+      >
+        <SwiperSlide v-for="(event, index) in events" :key="event.id" class="swiper-slide">
+          <EventCard 
+            :event="event" 
+            :is-active="activeSlideIndex === index"
+            :is-adjacent="isAdjacentCard(index)"
+          />
+        </SwiperSlide>
+      </Swiper>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
@@ -44,6 +55,30 @@ import { useScrollFadeInElements } from '../../composables/useScrollFadeIn'
 
 const modules = [Navigation, Pagination, Autoplay]
 const events = getEvents()
+const activeSlideIndex = ref(0)
+
+const isAdjacentCard = (index) => {
+  const prev = (activeSlideIndex.value - 1 + events.length) % events.length
+  const next = (activeSlideIndex.value + 1) % events.length
+  return index === prev || index === next
+}
+
+const breakpoints = {
+  320: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  768: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  1024: {
+    slidesPerView: 1.3,
+    spaceBetween: 16,
+    centeredSlides: true,
+  },
+}
+
 
 // Icono rotativo del botón
 const btnIcon = useRotatingIcon(8)
@@ -54,7 +89,17 @@ useScrollFadeInElements('.events-title')
 useScrollFadeInElements('.calendar-btn')
 
 const onSwiperInit = (swiper) => {
-  // Aquí puedes acceder a la instancia de Swiper si necesitas
+  updateActiveIndex(swiper)
+}
+
+const onSlideChange = (swiper) => {
+  updateActiveIndex(swiper)
+}
+
+const updateActiveIndex = (swiper) => {
+  // Con loop: true, swiper.realIndex te da el índice real sin duplicados
+  const index = swiper.realIndex
+  activeSlideIndex.value = index
 }
 </script>
 
@@ -66,6 +111,7 @@ const onSwiperInit = (swiper) => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   position: relative;
   overflow: hidden;
 }
@@ -81,14 +127,42 @@ const onSwiperInit = (swiper) => {
   z-index: 0;
 }
 
+.events-container {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .events-container {
+    max-width: 650px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .events-container {
+    max-width: 950px;
+  }
+}
+
 .events-header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
-  width: 100%;
   position: relative;
   z-index: 1;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .events-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
 }
 
 .title-group {
@@ -105,10 +179,16 @@ const onSwiperInit = (swiper) => {
 
 .events-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .events-title {
+    font-size: 2rem;
+  }
 }
 
 .calendar-btn {
@@ -132,9 +212,16 @@ const onSwiperInit = (swiper) => {
 }
 
 .btn-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .calendar-btn:hover {

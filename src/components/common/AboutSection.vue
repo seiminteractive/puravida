@@ -208,10 +208,11 @@ useScrollFadeInElements('.about-section p')
 }
 
 .about-pillars {
+  max-width: 700px;
+  margin: 4rem auto; /* ← ESTO es lo clave */
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  margin: 4rem 0;
 }
 
 @keyframes rotarIndigo {

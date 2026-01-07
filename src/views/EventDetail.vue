@@ -260,7 +260,7 @@ const openImage = (type) => {
 }
 
 .video-logo {
-  width: 40px;
+  width: 60px;
   height: 40px;
   opacity: 0.8;
 }

@@ -26,12 +26,20 @@
             :modules="modules"
             :slides-per-view="1"
             :space-between="24"
+            :breakpoints="breakpoints"
             :pagination="{ clickable: true, dynamicBullets: true }"
             :loop="true"
+            :centered-slides="false"
+            @swiper="onSwiperInit"
+            @slide-change="onSlideChange"
             class="swiper-container"
           >
-            <SwiperSlide v-for="event in allEvents" :key="event.id" class="swiper-slide">
-              <EventCard :event="event" />
+            <SwiperSlide v-for="(event, index) in allEvents" :key="event.id" class="swiper-slide">
+              <EventCard 
+                :event="event"
+                :is-active="activeSlideIndex === index"
+                :is-adjacent="isAdjacentCard(index)"
+              />
             </SwiperSlide>
           </Swiper>
         </div>
@@ -42,7 +50,8 @@
 
       <!-- Sección de eventos por mes - MINIMALISTA CON PREVIEW VIDEO -->
       <section class="events-by-month-section">
-        <div v-for="month in eventsByMonth" :key="month.monthYear" class="month-group">
+        <div class="events-by-month-wrapper">
+          <div v-for="month in eventsByMonth" :key="month.monthYear" class="month-group">
           <h3 class="month-title">{{ month.monthYear }}</h3>
           
           <div class="events-minimal-list">
@@ -73,13 +82,15 @@
             </div>
           </div>
         </div>
+
+        </div>
       </section>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
@@ -92,9 +103,45 @@ import { useRotatingIcon } from '../composables/useRotatingIcon'
 
 const modules = [Navigation, Pagination, Autoplay]
 const allEvents = computed(() => [...getEvents(), ...getPastEvents()])
+const activeSlideIndex = ref(0)
+
+const isAdjacentCard = (index) => {
+  const prev = (activeSlideIndex.value - 1 + allEvents.value.length) % allEvents.value.length
+  const next = (activeSlideIndex.value + 1) % allEvents.value.length
+  return index === prev || index === next
+}
+
+const breakpoints = {
+  320: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  768: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  1024: {
+    slidesPerView: 1.3,
+    spaceBetween: 16,
+    centeredSlides: true,
+  },
+}
 
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
+
+const onSwiperInit = (swiper) => {
+  updateActiveIndex(swiper)
+}
+
+const onSlideChange = (swiper) => {
+  updateActiveIndex(swiper)
+}
+
+const updateActiveIndex = (swiper) => {
+  const index = swiper.realIndex
+  activeSlideIndex.value = index
+}
 
 // Agrupar eventos por mes/año
 const eventsByMonth = computed(() => {
@@ -235,8 +282,28 @@ const eventsByMonth = computed(() => {
   position: relative;
 }
 
+.events-by-month-wrapper {
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
 .carousel-wrapper {
   width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .carousel-wrapper {
+    max-width: 650px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel-wrapper {
+    max-width: 950px;
+  }
 }
 
 .swiper-container {
@@ -395,6 +462,7 @@ const eventsByMonth = computed(() => {
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

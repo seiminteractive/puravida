@@ -1,11 +1,11 @@
 <template>
-  <nav class="fixed top-0 w-full flex items-center justify-between px-6 py-6 z-40">
+  <nav class="fixed top-0 w-full flex items-center justify-between px-6 md:px-12 py-6 z-40">
     <!-- Logo con espacio seguro -->
     <div class="flex-shrink-0">
       <img
         src="/assets/isotipoBlanco.png"
         alt="Pura Vida"
-        class="w-18 h-16"
+        class="w-14 h-9"
       />
     </div>
 

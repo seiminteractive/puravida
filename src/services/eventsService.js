@@ -25,6 +25,22 @@ export const getEvents = () => [
     descripcion: 'Comunidad consciente reunida en ritual contemporáneo. Vivir conectado, vivir despierto en cada ritmo.',
     imagen: marianoMellinoVideo,
   },
+  {
+    id: 4,
+    fecha: ['07', '02'],
+    dj: 'Mariano Mellino',
+    lugar: 'Hotel Termas de Victoria, Entre Rios',
+    descripcion: 'Comunidad consciente reunida en ritual contemporáneo. Vivir conectado, vivir despierto en cada ritmo.',
+    imagen: marianoMellinoVideo,
+  },
+  {
+    id: 5,
+    fecha: ['07', '02'],
+    dj: 'Mariano Mellino',
+    lugar: 'Hotel Termas de Victoria, Entre Rios',
+    descripcion: 'Comunidad consciente reunida en ritual contemporáneo. Vivir conectado, vivir despierto en cada ritmo.',
+    imagen: marianoMellinoVideo,
+  },
 ]
 
 export const getPastEvents = () => [
@@ -58,6 +74,14 @@ export const getPastEvents = () => [
     dj: 'Matías Aguayo',
     lugar: 'La Plata',
     descripcion: 'Ritual contemporáneo de conexión y danza. Energía infinita.',
+    imagen: marianoMellinoVideo,
+  },
+  {
+    id: 5,
+    fecha: ['15', '12'],
+    dj: 'Nicolás Jaar',
+    lugar: 'Buenos Aires',
+    descripcion: 'Ritual de fin de año. Música experimental y conexión profunda.',
     imagen: marianoMellinoVideo,
   },
 ]

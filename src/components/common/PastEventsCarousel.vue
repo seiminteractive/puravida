@@ -3,45 +3,81 @@
     <!-- Fondo decorativo con iluminación indigo -->
     <div class="bg-decoration"></div>
     
-    <!-- Título -->
-    <div class="events-header flex flex-col justify-between items-start mb-8">
-      <div class="title-group">
-        <h2 class="events-title">Experiencias Pasadas</h2>
+    <!-- Contenedor principal -->
+    <div class="events-container">
+      <!-- Título -->
+      <div class="events-header">
+        <div class="title-group">
+          <h2 class="events-title">Experiencias Pasadas</h2>
+        </div>
+        <button class="calendar-btn">
+          <img ref="archiveIcon" src="/assets/iconoExperiencia1.png" alt="Archivo" class="btn-icon" />
+          <span>ARCHIVO</span>
+        </button>  
       </div>
-      <button class="calendar-btn">
-        <img ref="archiveIcon" src="/assets/iconoExperiencia1.png" alt="Archivo" class="btn-icon" />
-        <span>ARCHIVO</span>
-      </button>  
-    </div>
 
-    <!-- Swiper Carousel -->
-    <Swiper
-      :modules="modules"
-      :slides-per-view="1"
-      :space-between="24"
-      :pagination="{ clickable: true, dynamicBullets: true }"
-      :loop="true"
-      class="swiper-container"
-    >
-      <SwiperSlide v-for="event in pastEvents" :key="event.id" class="swiper-slide">
-        <PastEventCard :event="event" />
-      </SwiperSlide>
-    </Swiper>
+      <!-- Swiper Carousel -->
+      <Swiper
+        :modules="modules"
+        :slides-per-view="1"
+        :space-between="24"
+        :breakpoints="breakpoints"
+        :pagination="{ clickable: true, dynamicBullets: true }"
+        :loop="true"
+        :centered-slides="false"
+        @swiper="onSwiperInit"
+        @slide-change="onSlideChange"
+        class="swiper-container"
+      >
+        <SwiperSlide v-for="(event, index) in pastEvents" :key="event.id" class="swiper-slide">
+          <PastEventCard 
+            :event="event" 
+            :is-active="activeSlideIndex === index"
+            :is-adjacent="isAdjacentCard(index)"
+          />
+        </SwiperSlide>
+      </Swiper>
+    </div>
   </section>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
+import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
+import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import PastEventCard from './PastEventCard.vue'
 import { getPastEvents } from '../../services/eventsService'
 import { useRotatingIcon } from '../../composables/useRotatingIcon'
 import { useScrollFadeInElements } from '../../composables/useScrollFadeIn'
 
-const modules = [Pagination]
+const modules = [Navigation, Pagination, Autoplay]
 const pastEvents = getPastEvents()
+const activeSlideIndex = ref(0)
+
+const isAdjacentCard = (index) => {
+  const prev = (activeSlideIndex.value - 1 + pastEvents.length) % pastEvents.length
+  const next = (activeSlideIndex.value + 1) % pastEvents.length
+  return index === prev || index === next
+}
+
+const breakpoints = {
+  320: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  768: {
+    slidesPerView: 1.2,
+    spaceBetween: 16,
+  },
+  1024: {
+    slidesPerView: 1.3,
+    spaceBetween: 16,
+    centeredSlides: true,
+  },
+}
 
 // Icono rotativo del botón
 const archiveIcon = useRotatingIcon(8)
@@ -50,16 +86,30 @@ const archiveIcon = useRotatingIcon(8)
 useScrollFadeInElements('.event-card')
 useScrollFadeInElements('.events-title')
 useScrollFadeInElements('.calendar-btn')
+
+const onSwiperInit = (swiper) => {
+  updateActiveIndex(swiper)
+}
+
+const onSlideChange = (swiper) => {
+  updateActiveIndex(swiper)
+}
+
+const updateActiveIndex = (swiper) => {
+  const index = swiper.realIndex
+  activeSlideIndex.value = index
+}
 </script>
 
 <style scoped>
 .events-section {
   min-height: 100vh;
-  padding: 0rem 1.5rem;
+  padding: 3rem 1.5rem;
   background: #000;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   position: relative;
   overflow: hidden;
   background: radial-gradient(ellipse at 20% 35%, rgba(79, 72, 152, 0.15) 0%, transparent 50%), #000;
@@ -73,17 +123,45 @@ useScrollFadeInElements('.calendar-btn')
   height: 400px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(79, 72, 152, 0.15) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.events-container {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
   z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .events-container {
+    max-width: 650px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .events-container {
+    max-width: 950px;
+  }
 }
 
 .events-header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
-  width: 100%;
+  gap: 1rem;
   position: relative;
   z-index: 1;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .events-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
 }
 
 .title-group {
@@ -94,10 +172,16 @@ useScrollFadeInElements('.calendar-btn')
 
 .events-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .events-title {
+    font-size: 2rem;
+  }
 }
 
 .calendar-btn {
@@ -121,9 +205,16 @@ useScrollFadeInElements('.calendar-btn')
 }
 
 .btn-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .calendar-btn:hover {
