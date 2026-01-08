@@ -24,7 +24,6 @@
           :centered-slides="true"
           :loop="true"
           :space-between="0"
-          :pagination="{ clickable: true }"
           class="swiper-container"
         >
           <SwiperSlide v-for="(event, index) in pastEvents" :key="event.id" class="past-event-slide">

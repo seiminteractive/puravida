@@ -85,3 +85,10 @@ export const getPastEvents = () => [
     imagen: marianoMellinoVideo,
   },
 ]
+
+export const getDJArtists = () => [
+  { id: 1, name: 'Mariano Mellino', genre: 'Técnica Progresiva', image: '/assets/djPrincipal.png' },
+  { id: 2, name: 'DJ 2 Name', genre: 'Deep House', image: '/assets/dj2.png' },
+  { id: 3, name: 'DJ 3 Name', genre: 'Minimal Tech', image: '/assets/dj3.png' },
+  { id: 4, name: 'DJ 4 Name', genre: 'Acid House', image: '/assets/dj4.png' },
+]

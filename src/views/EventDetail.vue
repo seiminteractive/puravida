@@ -84,7 +84,6 @@
           :centered-slides="true"
           :loop="true"
           :space-between="0"
-          :pagination="{ clickable: true }"
           class="djs-carousel"
           >
             <SwiperSlide v-for="(artist, index) in djArtists" :key="artist.id" class="artist-slide">
@@ -104,49 +103,69 @@
       </section>
 
       <!-- Mesas Section -->
-      <section class="sales-section mesas-section">
-        <div class="mesas-header">
-          <h2 class="mesas-title">MESAS</h2>
-        </div>
-        <img src="/assets/mesas.png" alt="Mesas" class="mesas-image" @click="openImage('mesas')" />
-        <div class="mesas-footer">
-          <p class="mesas-description">Reserva tu espacio exclusivo para disfrutar de la mejor experiencia</p>
-          <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="mesas-btn">
-            <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
-            Contactar
-          </a>
+      <section class="mesas-section">
+        <div class="mesas-container">
+          <!-- Columna izquierda - Contenido -->
+          <div class="mesas-content">
+            <div class="mesas-text-group">
+              <h2 class="mesas-title">Mesas VIP & Backstage</h2>
+              <p class="mesas-subtitle">Viví la experiencia más exclusiva de Pura Vida</p>
+              <p class="mesas-description">Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento</p>
+            </div>
+            <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="mesas-btn">
+              <span>Consultar mesas VIP</span>
+            </a>
+          </div>
+
+          <!-- Columna derecha - Imagen -->
+          <div class="mesas-image-wrapper">
+            <img src="/assets/mesas.png" alt="Mesas" class="mesas-image" @click="openImage('mesas')" />
+          </div>
         </div>
       </section>
 
-      <!-- Hospedaje Section -->
-      <section class="sales-section hospedaje-section">
-        <div class="hospedaje-header">
-          <h2 class="hospedaje-title">HOSPEDAJE</h2>
-        </div>
-        <video autoplay muted loop playsinline class="hospedaje-video" @click="openImage('hospedaje')">
-          <source src="/assets/VIDEO_PLAZAS.mp4" type="video/mp4" />
-        </video>
-        <div class="hospedaje-footer">
-          <p class="hospedaje-description">Alojamiento cómodo y exclusivo para tu estadía</p>
-          <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="hospedaje-btn">
-            <img ref="hospedajeIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
-            Contactar
-          </a>
-        </div>
-      </section>
+      <!-- Experiencia Completa Section -->
+      <section class="experiencia-section">
+        <div class="experiencia-container">
+          <!-- Header -->
+          <div class="experiencia-header">
+            <h2 class="experiencia-title">Experiencia Completa</h2>
+            <p class="experiencia-subtitle">Disfrutá Pura Vida sin preocuparte por nada</p>
+          </div>
 
-      <!-- Traslados Section -->
-      <section class="sales-section traslados-section">
-        <div class="traslados-header">
-          <h2 class="traslados-title">TRASLADOS</h2>
-        </div>
-        <img src="/assets/transporte.png" alt="Traslados" class="traslados-image" @click="openImage('traslados')" />
-        <div class="traslados-footer">
-          <p class="traslados-description">Transporte seguro y cómodo desde CABA</p>
-          <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="traslados-btn">
-            <img ref="trasladosIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
-            Contactar
-          </a>
+          <!-- Grid de bloques -->
+          <div class="experiencia-blocks">
+            <!-- Hospedaje Block -->
+            <div class="experiencia-block">
+              <div class="block-media">
+                <video autoplay muted loop playsinline class="block-video" @click="openImage('hospedaje')">
+                  <source src="/assets/VIDEO_PLAZAS.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="block-content">
+                <h3 class="block-title">Hospedaje</h3>
+                <p class="block-description">Opciones de hospedaje cercanas y seguras para tu descanso</p>
+              </div>
+            </div>
+
+            <!-- Traslado Block -->
+            <div class="experiencia-block">
+              <div class="block-media">
+                <img src="/assets/transporte.png" alt="Traslado" class="block-image" @click="openImage('traslados')" />
+              </div>
+              <div class="block-content">
+                <h3 class="block-title">Traslado</h3>
+                <p class="block-description">Transporte cómodo y coordinado ida y vuelta desde CABA</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="experiencia-cta">
+            <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="experiencia-btn">
+              <span>Consulta por nuestra experiencia</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -161,15 +180,11 @@ import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
+import { getDJArtists } from '../services/eventsService'
 
 const modules = [Pagination]
+const djArtists = getDJArtists()
 
-const djArtists = [
-  { id: 1, name: 'Mariano Mellino', genre: 'Técnica Progresiva', image: '/assets/djPrincipal.png' },
-  { id: 2, name: 'DJ 2 Name', genre: 'Deep House', image: '/assets/dj2.png' },
-  { id: 3, name: 'DJ 3 Name', genre: 'Minimal Tech', image: '/assets/dj3.png' },
-  { id: 4, name: 'DJ 4 Name', genre: 'Acid House', image: '/assets/dj4.png' },
-]
 
 const onDJSwiperInit = () => {
   // Initialized
@@ -181,8 +196,7 @@ const onDJSlideChange = () => {
 
 const eventIcon = useRotatingIcon(8)
 const mesasIcon = useRotatingIcon(8)
-const hospedajeIcon = useRotatingIcon(8)
-const trasladosIcon = useRotatingIcon(8)
+const experienciaIcon = useRotatingIcon(8)
 
 const openImage = (type) => {
   // Por ahora solo log, luego implementaremos modal
@@ -651,46 +665,65 @@ const openImage = (type) => {
 
 /* Mesas Section */
 .mesas-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 1.5rem !important;
+  padding: 4rem 1.5rem;
+  background: #000;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.mesas-header {
-  width: 100%;
-  margin-bottom: 2rem;
-  text-align: center;
+.mesas-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .mesas-container {
+    grid-template-columns: 40% 60%;
+  }
+}
+
+.mesas-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.mesas-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .mesas-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
 }
 
-.mesas-image {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  border-radius: 1rem;
-  cursor: pointer;
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
+@media (max-width: 768px) {
+  .mesas-title {
+    font-size: 1.75rem;
+  }
 }
 
-.mesas-image:hover {
-  transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 210, 92, 0.2);
-}
-
-.mesas-footer {
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
+.mesas-subtitle {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #51C1E1;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .mesas-description {
@@ -698,8 +731,37 @@ const openImage = (type) => {
   font-size: 0.95rem;
   color: #bbb;
   line-height: 1.6;
-  margin: 0 0 2rem 0;
+  margin: 0;
   font-weight: 300;
+}
+
+.mesas-image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .mesas-image-wrapper {
+    transform: translateY(-2rem);
+  }
+}
+
+.mesas-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(81, 193, 225, 0.2);
+}
+
+.mesas-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 25px 60px rgba(81, 193, 225, 0.25);
 }
 
 .mesas-btn {
@@ -707,190 +769,190 @@ const openImage = (type) => {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: transparent;
-  border: .5px solid #fff;
-  border-radius: 2rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
+  border: none;
+  border-radius: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
-  color: #fff;
+  color: #000;
   font-family: 'Standard', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  box-shadow: 0 10px 30px rgba(255, 210, 92, 0.2);
+  width: fit-content;
 }
 
 .mesas-btn:hover {
-  border-color: #FFD25C;
-  color: #FFD25C;
-  transform: scale(1.05);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(255, 210, 92, 0.3);
 }
 
 .btn-rotating-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
-/* Hospedaje Section */
-.hospedaje-section {
+/* Experiencia Completa Section */
+.experiencia-section {
+  padding: 4rem 1.5rem;
+  background: #000;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.experiencia-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 3rem 1.5rem !important;
+  gap: 3rem;
 }
 
-.hospedaje-header {
-  width: 100%;
-  margin-bottom: 2rem;
+.experiencia-header {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.hospedaje-title {
+.experiencia-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
 }
 
-.hospedaje-video {
-  width: 100%;
-  max-width: 400px;
-  height: 600px;
-  aspect-ratio: 16 / 9;
-  border-radius: 1rem;
-  cursor: pointer;
-  margin-bottom: 2rem;
+@media (max-width: 768px) {
+  .experiencia-title {
+    font-size: 1.75rem;
+  }
+}
+
+.experiencia-subtitle {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #51C1E1;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.experiencia-blocks {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .experiencia-blocks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.experiencia-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   transition: all 0.3s ease;
-  object-fit: cover;
 }
 
-.hospedaje-video:hover {
-  transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(81, 193, 225, 0.2);
+.experiencia-block:hover {
+  transform: translateY(-5px);
 }
 
-.hospedaje-footer {
+.block-media {
+  position: relative;
   width: 100%;
   max-width: 400px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  aspect-ratio: 4 / 5;
+}
+
+.block-video,
+.block-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.875rem;
+}
+
+.block-media:hover .block-video,
+.block-media:hover .block-image {
+  transform: scale(1.03);
+}
+
+.block-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   text-align: center;
 }
 
-.hospedaje-description {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  color: #bbb;
-  line-height: 1.6;
-  margin: 0 0 2rem 0;
-  font-weight: 300;
-}
-
-.hospedaje-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: transparent;
-  border: .5px solid #fff;
-  border-radius: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
+.block-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.5rem;
   color: #fff;
-  font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
+  margin: 0;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.hospedaje-btn:hover {
-  border-color: #FFD25C;
-  color: #FFD25C;
-  transform: scale(1.05);
-}
-
-/* Traslados Section */
-.traslados-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 1.5rem !important;
-}
-
-.traslados-header {
-  width: 100%;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.traslados-title {
-  font-family: 'Napzer Rounded', sans-serif;
-  font-size: 2rem;
-  color: #fff;
+.block-description {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.95rem;
+  color: #bbb;
+  line-height: 1.6;
   margin: 0;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 300;
 }
 
-.traslados-image {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  border-radius: 1rem;
+.experiencia-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.experiencia-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
+  border: none;
+  border-radius: 0.75rem;
   cursor: pointer;
-  margin-bottom: 2rem;
   transition: all 0.3s ease;
-}
-
-.traslados-image:hover {
-  transform: scale(1.02);
+  text-decoration: none;
+  color: #000;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   box-shadow: 0 10px 30px rgba(255, 210, 92, 0.2);
 }
 
-.traslados-footer {
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.traslados-description {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  color: #bbb;
-  line-height: 1.6;
-  margin: 0 0 2rem 0;
-  font-weight: 300;
-}
-
-.traslados-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: transparent;
-  border: .5px solid #fff;
-  border-radius: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: #fff;
-  font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.traslados-btn:hover {
-  border-color: #FFD25C;
-  color: #FFD25C;
-  transform: scale(1.05);
+.experiencia-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(255, 210, 92, 0.3);
 }
 
 /* Content Sections */
