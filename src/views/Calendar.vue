@@ -25,21 +25,14 @@
           <Swiper
             :modules="modules"
             :slides-per-view="1"
-            :space-between="24"
-            :breakpoints="breakpoints"
-            :pagination="{ clickable: true, dynamicBullets: true }"
+            :centered-slides="true"
             :loop="true"
-            :centered-slides="false"
-            @swiper="onSwiperInit"
-            @slide-change="onSlideChange"
+            :space-between="0"
+            :pagination="{ clickable: true }"
             class="swiper-container"
           >
-            <SwiperSlide v-for="(event, index) in allEvents" :key="event.id" class="swiper-slide">
-              <EventCard 
-                :event="event"
-                :is-active="activeSlideIndex === index"
-                :is-adjacent="isAdjacentCard(index)"
-              />
+            <SwiperSlide v-for="(event, index) in allEvents" :key="event.id" class="featured-event-slide">
+              <EventCard :event="event" />
             </SwiperSlide>
           </Swiper>
         </div>
@@ -90,58 +83,21 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Pagination, Autoplay } from 'swiper/modules'
+import { Pagination } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import Navbar from '../components/common/Navbar.vue'
 import EventCard from '../components/common/EventCard.vue'
 import { getEvents, getPastEvents } from '../services/eventsService'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
 
-const modules = [Navigation, Pagination, Autoplay]
+const modules = [Pagination]
 const allEvents = computed(() => [...getEvents(), ...getPastEvents()])
-const activeSlideIndex = ref(0)
-
-const isAdjacentCard = (index) => {
-  const prev = (activeSlideIndex.value - 1 + allEvents.value.length) % allEvents.value.length
-  const next = (activeSlideIndex.value + 1) % allEvents.value.length
-  return index === prev || index === next
-}
-
-const breakpoints = {
-  320: {
-    slidesPerView: 1.2,
-    spaceBetween: 16,
-  },
-  768: {
-    slidesPerView: 1.2,
-    spaceBetween: 16,
-  },
-  1024: {
-    slidesPerView: 1.3,
-    spaceBetween: 16,
-    centeredSlides: true,
-  },
-}
 
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
-
-const onSwiperInit = (swiper) => {
-  updateActiveIndex(swiper)
-}
-
-const onSlideChange = (swiper) => {
-  updateActiveIndex(swiper)
-}
-
-const updateActiveIndex = (swiper) => {
-  const index = swiper.realIndex
-  activeSlideIndex.value = index
-}
 
 // Agrupar eventos por mes/año
 const eventsByMonth = computed(() => {
@@ -187,6 +143,7 @@ const eventsByMonth = computed(() => {
   min-height: 100vh;
   background: #000;
   position: relative;
+  overflow-x: hidden;
 }
 
 .bg-light-cyan-1 {
@@ -308,43 +265,58 @@ const eventsByMonth = computed(() => {
 
 .swiper-container {
   width: 100%;
-  padding-bottom: 3rem;
+  overflow: visible;
 }
 
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.featured-event-slide {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.4;
+  transform: scale(0.8);
+  padding: 0 6px;
 }
 
-:deep(.swiper-button-next:hover),
-:deep(.swiper-button-prev:hover) {
-  background: rgba(255, 255, 255, 0.2);
+/* Active slide - main card */
+:deep(.swiper-slide-active.featured-event-slide) {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 10;
 }
 
-:deep(.swiper-button-next::after),
-:deep(.swiper-button-prev::after) {
-  font-size: 18px;
+/* Adjacent slides - prev and next */
+:deep(.swiper-slide-prev.featured-event-slide),
+:deep(.swiper-slide-next.featured-event-slide) {
+  opacity: 0.2;
+  transform: scale(0.88);
+}
+
+:deep(.swiper-wrapper) {
+  align-items: center;
+}
+
+:deep(.swiper-slide) {
+  height: auto;
+  width: 220px;
 }
 
 :deep(.swiper-pagination-bullet) {
-  background: rgba(255, 255, 255, 0.3);
-  opacity: 1;
+  background: rgba(255, 255, 255, 0.3) !important;
+  width: 5px !important;
+  height: 5px !important;
+  margin: 0 2px !important;
+  transition: all 0.3s ease !important;
 }
 
 :deep(.swiper-pagination-bullet-active) {
-  background: #fff;
+  background: #51C1E1 !important;
+  width: 8px !important;
 }
 
 :deep(.swiper-pagination) {
-  bottom: 0;
+  bottom: 0 !important;
+  padding-top: 1rem;
 }
 
 .section-divider {

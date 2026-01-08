@@ -1,11 +1,11 @@
 <template>
-  <nav class="fixed top-0 w-full flex items-center justify-between px-6 md:px-12 py-6 z-40">
+  <nav class="fixed top-0 w-full flex items-center justify-between px-6 md:px-12 py-6 z-[9999]">
     <!-- Logo con espacio seguro -->
     <div class="flex-shrink-0">
       <img
         src="/assets/isotipoBlanco.png"
         alt="Pura Vida"
-        class="w-14 h-9"
+        class="w-14 h-14"
       />
     </div>
 
@@ -22,7 +22,7 @@
 
     <!-- Fullscreen Menu -->
     <transition name="menu-fade">
-      <div v-if="isOpen" class="fixed inset-0 bg-black z-30 flex flex-col items-start justify-center pl-8">
+      <div v-if="isOpen" class="fixed inset-0 bg-black z-1000 flex flex-col items-start justify-center pl-8">
         <!-- Menu Links -->
         <nav class="flex flex-col gap-20">
           <a

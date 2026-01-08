@@ -1,5 +1,5 @@
 <template>
-  <div class="event-card" @click="goToEventDetail" :class="{ 'is-active': isActive, 'is-adjacent': isAdjacent }">
+  <div class="event-card" @click="goToEventDetail">
     <!-- Background con imagen/video -->
     <div class="event-background">
       <video
@@ -50,14 +50,6 @@ defineProps({
     type: Object,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  isAdjacent: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 const goToEventDetail = () => {
@@ -71,16 +63,7 @@ const goToEventDetail = () => {
   border-radius: 1rem;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.5s ease;
-  opacity: 0.15 !important;
-}
-
-.event-card.is-active {
-  opacity: 1 !important;
-}
-
-.event-card.is-adjacent {
-  opacity: 0.4 !important;
+  transition: transform 0.3s ease;
 }
 
 .event-card:hover {

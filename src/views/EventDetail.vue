@@ -64,32 +64,43 @@
     <!-- Content Wrapper -->
     <div class="event-content pv-surface">
       <!-- DJs/Artistas Section -->
-      <section class="artists-section">
+      <section class="py-3 px-3 sm:py-4 sm:px-4 border-t border-white border-opacity-10 flex flex-col items-center">
+        <!-- Header -->
+        <div class="text-center mb-2">
+          <h2 class="font-napzer sm:text-lg text-white font-semibold tracking-wide text-2xl lg:text-4xl mt-6">ARTISTAS</h2>
+          <p class="font-standard text-xs text-cyan-400 mt-0.5 lg:text-1xl">Desliza para conocer</p>
+        </div>
+
         <!-- Get Tickets Button -->
-        <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="event-tickets-btn">
-          Obtener Entradas
+        <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="inline-block mb-2 px-3 sm:px-4 py-1 bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-semibold uppercase tracking-wider rounded-full transition-all">
+          Entradas
         </a>
 
-        <Swiper
+        <!-- Carousel -->
+        <div class="w-full max-w-sm sm:max-w-md lg:max-w-lg py-6">
+          <Swiper
           :modules="modules"
           :slides-per-view="1"
-          :space-between="24"
-          :pagination="{ clickable: true, dynamicBullets: true }"
-          class="djs-swiper"
-        >
-          <SwiperSlide class="dj-slide">
-            <img src="/assets/djPrincipal.png" alt="DJ Principal" class="dj-image" />
-          </SwiperSlide>
-          <SwiperSlide class="dj-slide">
-            <img src="/assets/dj2.png" alt="DJ 2" class="dj-image" />
-          </SwiperSlide>
-          <SwiperSlide class="dj-slide">
-            <img src="/assets/dj3.png" alt="DJ 3" class="dj-image" />
-          </SwiperSlide>
-          <SwiperSlide class="dj-slide">
-            <img src="/assets/dj4.png" alt="DJ 4" class="dj-image" />
-          </SwiperSlide>
-        </Swiper>
+          :centered-slides="true"
+          :loop="true"
+          :space-between="0"
+          :pagination="{ clickable: true }"
+          class="djs-carousel"
+          >
+            <SwiperSlide v-for="(artist, index) in djArtists" :key="artist.id" class="artist-slide">
+              <div class="artist-card">
+                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-md bg-cyan-400 bg-opacity-10">
+                  <img :src="artist.image" :alt="artist.name" class="artist-image w-full h-full object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                  <div class="absolute bottom-0 left-0 right-0 p-2">
+                    <h3 class="font-napzer text-xs sm:text-sm text-white font-semibold leading-tight">{{ artist.name }}</h3>
+                    <p class="font-standard text-xs text-cyan-400 mt-0.5 leading-none">{{ artist.genre }}</p>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
       </section>
 
       <!-- Mesas Section -->
@@ -144,6 +155,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
@@ -151,6 +163,22 @@ import 'swiper/css/pagination'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
 
 const modules = [Pagination]
+
+const djArtists = [
+  { id: 1, name: 'Mariano Mellino', genre: 'Técnica Progresiva', image: '/assets/djPrincipal.png' },
+  { id: 2, name: 'DJ 2 Name', genre: 'Deep House', image: '/assets/dj2.png' },
+  { id: 3, name: 'DJ 3 Name', genre: 'Minimal Tech', image: '/assets/dj3.png' },
+  { id: 4, name: 'DJ 4 Name', genre: 'Acid House', image: '/assets/dj4.png' },
+]
+
+const onDJSwiperInit = () => {
+  // Initialized
+}
+
+const onDJSlideChange = () => {
+  // Slide changed
+}
+
 const eventIcon = useRotatingIcon(8)
 const mesasIcon = useRotatingIcon(8)
 const hospedajeIcon = useRotatingIcon(8)
@@ -169,6 +197,7 @@ const openImage = (type) => {
   color: #fff;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* Background Lights */
@@ -261,7 +290,7 @@ const openImage = (type) => {
 
 .video-logo {
   width: 60px;
-  height: 40px;
+  height: 60px;
   opacity: 0.8;
 }
 
@@ -542,38 +571,82 @@ const openImage = (type) => {
   box-shadow: 0 8px 20px rgba(255, 210, 92, 0.3);
 }
 
-/* Artists Section */
-.artists-section {
-  padding-top: 3rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.djs-swiper {
+.djs-carousel {
   width: 100%;
-  padding: 2rem 0 4rem 0;
-}
-
-.dj-slide {
+  padding-bottom: 1rem;
+  overflow: visible;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-.dj-image {
-  width: 310px;
-  height: 560px;
-  border-radius: 1rem;
-  object-fit: cover;
-  box-shadow: 0 20px 60px rgba(81, 193, 225, 0.15);
-  transition: all 0.3s ease;
+.artist-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.4;
+  transform: scale(0.8);
+  padding: 0 6px;
 }
 
-.dj-slide:hover .dj-image {
-  box-shadow: 0 30px 80px rgba(81, 193, 225, 0.25);
-  transform: scale(1.02);
+/* Active slide - main card */
+:deep(.swiper-slide-active.artist-slide) {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 10;
+}
+
+/* Adjacent slides - prev and next */
+:deep(.swiper-slide-prev.artist-slide),
+:deep(.swiper-slide-next.artist-slide) {
+  opacity: 0.65;
+  transform: scale(0.88);
+}
+
+:deep(.swiper-wrapper) {
+  align-items: center;
+}
+
+:deep(.swiper-slide) {
+  height: auto;
+  width: 220px;
+}
+
+/* All other slides */
+:deep(.swiper-slide-active ~ .artist-slide),
+:deep(.artist-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next)) {
+  opacity: 0.3;
+  transform: scale(0.88);
+}
+
+.artist-card {
+  width: 100%;
+  cursor: pointer;
+}
+
+.artist-image {
+  transition: transform 0.3s ease;
+}
+
+:deep(.swiper-slide-active) .artist-image {
+  transform: scale(1.03);
+}
+
+:deep(.swiper-pagination-bullet) {
+  background: rgba(255, 255, 255, 0.3) !important;
+  width: 5px !important;
+  height: 5px !important;
+  margin: 0 2px !important;
+  transition: all 0.3s ease !important;
+}
+
+:deep(.swiper-pagination-bullet-active) {
+  background: #51C1E1 !important;
+  width: 8px !important;
+}
+
+:deep(.swiper-pagination) {
+  bottom: 0 !important;
 }
 
 /* Mesas Section */
