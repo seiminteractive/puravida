@@ -113,6 +113,7 @@
               <p class="mesas-description">Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento</p>
             </div>
             <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="mesas-btn">
+              <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consultar mesas VIP</span>
             </a>
           </div>
@@ -163,6 +164,7 @@
           <!-- CTA -->
           <div class="experiencia-cta">
             <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="experiencia-btn">
+              <img ref="experienciaIcon" src="/assets/iconoExperiencia2.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consulta por nuestra experiencia</span>
             </a>
           </div>
@@ -766,13 +768,13 @@ const openImage = (type) => {
 
 .mesas-btn {
   display: inline-flex;
+  background: transparent;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
-  border: none;
-  border-radius: 0.75rem;
+  padding: 1rem 1rem;
+  border: .5px solid #fff;
+  border-radius: 2rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -782,13 +784,9 @@ const openImage = (type) => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 10px 30px rgba(255, 210, 92, 0.2);
   width: fit-content;
-}
+  color: #fff;
 
-.mesas-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(255, 210, 92, 0.3);
 }
 
 .btn-rotating-icon {
@@ -930,30 +928,25 @@ const openImage = (type) => {
 }
 
 .experiencia-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
-  border: none;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: #000;
+  padding: 1rem 1rem;
+  background: transparent;
+  border: .5px solid #fff;
+  color: #fff;
   font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 10px 30px rgba(255, 210, 92, 0.2);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+  text-decoration: none;
 }
 
-.experiencia-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(255, 210, 92, 0.3);
-}
 
 /* Content Sections */
 .event-content {
