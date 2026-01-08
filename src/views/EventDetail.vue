@@ -164,7 +164,7 @@
           <!-- CTA -->
           <div class="experiencia-cta">
             <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="experiencia-btn">
-              <img ref="experienciaIcon" src="/assets/iconoExperiencia2.png" alt="Contactar" class="btn-rotating-icon" />
+              <img ref="experienciaIcon" src="/assets/iconoComunidad3.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consulta por nuestra experiencia</span>
             </a>
           </div>
@@ -790,8 +790,8 @@ const openImage = (type) => {
 }
 
 .btn-rotating-icon {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
 }
 
 /* Experiencia Completa Section */
