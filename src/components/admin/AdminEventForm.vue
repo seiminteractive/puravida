@@ -106,35 +106,81 @@
       <!-- Transporte -->
       <fieldset class="form-section">
         <div class="section-header">
-          <legend class="form-legend">Transporte</legend>
+          <legend class="form-legend">Servicios de Transporte</legend>
           <label class="form-checkbox">
-            <input v-model="formData.transport.enabled" type="checkbox" />
-            <span>Activar sección de transporte</span>
+            <input v-model="formData.transportsEnabled" type="checkbox" />
+            <span>Activar servicios de transporte</span>
           </label>
         </div>
 
-        <div v-if="formData.transport.enabled" class="section-content">
-          <div class="form-group">
-            <label class="form-label">Imagen/Flyer</label>
-            <input 
-              type="file" 
-              accept="image/*" 
-              class="form-input"
-              @change="(e) => handleImageUpload(e, 'transport')"
-            />
-            <div v-if="formData.transport.image" class="image-preview">
-              <img :src="formData.transport.image" alt="Transport preview" />
-              <button type="button" @click="formData.transport.image = null" class="btn-remove-image">✕</button>
+        <div v-if="formData.transportsEnabled" class="section-content">
+          <p class="form-hint">Agregar servicios de transporte disponibles</p>
+          <div class="transports-list">
+          <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
+            <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
+              <div class="transport-header">
+                <h4 class="transport-title">{{ transport.name || `Transporte ${index + 1}` }}</h4>
+                <button type="button" @click="removeTransport(index)" class="btn-remove">✕</button>
+              </div>
+
+              <div class="transport-content">
+                <div class="form-group">
+                  <label class="form-label">Nombre del Servicio</label>
+                  <input 
+                    v-model="transport.name" 
+                    type="text" 
+                    class="form-input"
+                    placeholder="Ej: Transporte desde CABA"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Imagen/Flyer</label>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    class="form-input"
+                    @change="(e) => handleTransportImageUpload(e, index)"
+                  />
+                  <div v-if="transport.image" class="image-preview">
+                    <img :src="transport.image" :alt="`Transport ${index + 1}`" />
+                    <button type="button" @click="transport.image = null" class="btn-remove-image">✕</button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Descripción</label>
+                  <textarea 
+                    v-model="transport.description" 
+                    class="form-textarea"
+                    placeholder="Descripción del servicio de transporte..."
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Contactos</label>
+                  <div class="contacts-list">
+                    <div v-for="(contact, contactIndex) in transport.contacts" :key="contactIndex" class="contact-item">
+                      <input 
+                        v-model="transport.contacts[contactIndex]" 
+                        type="text" 
+                        class="form-input"
+                        placeholder="Ej: +54 9 11 2345 6789"
+                      />
+                      <button type="button" @click="removeTransportContact(index, contactIndex)" class="btn-remove">✕</button>
+                    </div>
+                  </div>
+                  <button type="button" @click="addTransportContact(index)" class="admin-btn admin-btn-secondary admin-btn-small">
+                    + Agregar Contacto
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Descripción</label>
-            <textarea 
-              v-model="formData.transport.description" 
-              class="form-textarea"
-              placeholder="Descripción del servicio de transporte..."
-            ></textarea>
+          <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary">
+            + Agregar Servicio de Transporte
+          </button>
           </div>
         </div>
       </fieldset>
@@ -177,22 +223,34 @@
 
       <!-- Links de Tickets -->
       <fieldset class="form-section">
-        <legend class="form-legend">Links de Compra de Tickets</legend>
+        <legend class="form-legend">
+          Links de Compra de Tickets
+          <span style="color: #ff6b6b; margin-left: 0.5rem;">*</span>
+        </legend>
+        <p class="form-hint">Agregar al menos 1 link de compra (obligatorio)</p>
         <div class="form-group">
-          <label class="form-label">Links</label>
+          <label class="form-label">Ticketeras</label>
           <div class="links-list">
-            <div v-for="(link, index) in formData.ticketLinks" :key="index" class="link-item">
-              <input 
-                v-model="formData.ticketLinks[index]" 
-                type="url" 
-                class="form-input"
-                placeholder="Ej: https://www.ticketmaster.com/..."
-              />
+            <div v-for="(link, index) in formData.ticketLinks" :key="index" class="link-item-group">
+              <div class="link-inputs">
+                <input 
+                  v-model="formData.ticketLinks[index].name" 
+                  type="text" 
+                  class="form-input"
+                  placeholder="Ej: Ticketmaster"
+                />
+                <input 
+                  v-model="formData.ticketLinks[index].url" 
+                  type="url" 
+                  class="form-input"
+                  placeholder="Ej: https://www.ticketmaster.com/..."
+                />
+              </div>
               <button type="button" @click="removeLink(index)" class="btn-remove">✕</button>
             </div>
           </div>
           <button type="button" @click="addLink" class="admin-btn admin-btn-secondary admin-btn-small">
-            + Agregar Link
+            + Agregar Ticketera
           </button>
         </div>
       </fieldset>
@@ -228,12 +286,8 @@ const getDefaultFormData = () => ({
   lugar: '',
   descripcion: '',
   artists: [],
-  transport: {
-    enabled: false,
-    image: null,
-    description: '',
-    contacts: [],
-  },
+  transportsEnabled: false,
+  transports: [],
   lodging: {
     enabled: false,
     image: null,
@@ -251,12 +305,29 @@ const resetForm = () => {
 watch(() => props.event, (newEvent) => {
   if (newEvent && newEvent.dj) {
     const fecha = Array.isArray(newEvent.fecha) ? newEvent.fecha : ['', '']
-    const transportContacts = newEvent.transport?.contacts 
-      ? (Array.isArray(newEvent.transport.contacts) ? newEvent.transport.contacts : [newEvent.transport.contacts])
-      : []
-    const ticketLinks = newEvent.ticketLinks 
-      ? (Array.isArray(newEvent.ticketLinks) ? newEvent.ticketLinks : [newEvent.ticketLinks])
-      : []
+    
+    // Procesar transports
+    const transportsEnabled = newEvent.transportsEnabled || (newEvent.transports && newEvent.transports.length > 0)
+    let transports = newEvent.transports || []
+    if (transports.length > 0) {
+      transports = transports.map(t => ({
+        name: t.name || '',
+        image: t.image || null,
+        description: t.description || '',
+        contacts: Array.isArray(t.contacts) ? t.contacts : [],
+      }))
+    }
+    
+    // Procesar ticketLinks - convertir de array de strings a array de objetos si es necesario
+    let ticketLinks = newEvent.ticketLinks || []
+    if (ticketLinks.length > 0 && typeof ticketLinks[0] === 'string') {
+      ticketLinks = ticketLinks.map(url => ({ name: '', url }))
+    } else if (ticketLinks.length > 0 && typeof ticketLinks[0] === 'object') {
+      ticketLinks = ticketLinks.map(link => ({ 
+        name: link.name || '', 
+        url: link.url || '' 
+      }))
+    }
     
     formData.value = {
       dj: newEvent.dj || '',
@@ -264,12 +335,8 @@ watch(() => props.event, (newEvent) => {
       lugar: newEvent.lugar || '',
       descripcion: newEvent.descripcion || '',
       artists: newEvent.artists || [],
-      transport: {
-        enabled: newEvent.transport?.enabled || false,
-        image: newEvent.transport?.image || null,
-        description: newEvent.transport?.description || '',
-        contacts: transportContacts,
-      },
+      transportsEnabled: transportsEnabled,
+      transports: transports,
       lodging: {
         enabled: newEvent.lodging?.enabled || false,
         image: newEvent.lodging?.image || null,
@@ -287,13 +354,55 @@ const handleImageUpload = (e, section) => {
   if (file) {
     const reader = new FileReader()
     reader.onload = (event) => {
-      if (section === 'transport') {
-        formData.value.transport.image = event.target?.result
-      } else if (section === 'lodging') {
+      if (section === 'lodging') {
         formData.value.lodging.image = event.target?.result
       }
     }
     reader.readAsDataURL(file)
+  }
+}
+
+const handleTransportImageUpload = (e, index) => {
+  const file = e.target.files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      if (formData.value.transports && formData.value.transports[index]) {
+        formData.value.transports[index].image = event.target?.result
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+const addTransport = () => {
+  if (!Array.isArray(formData.value.transports)) {
+    formData.value.transports = []
+  }
+  formData.value.transports.push({ 
+    name: '', 
+    image: null, 
+    description: '', 
+    contacts: [] 
+  })
+}
+
+const removeTransport = (index) => {
+  formData.value.transports.splice(index, 1)
+}
+
+const addTransportContact = (transportIndex) => {
+  if (formData.value.transports && formData.value.transports[transportIndex]) {
+    if (!Array.isArray(formData.value.transports[transportIndex].contacts)) {
+      formData.value.transports[transportIndex].contacts = []
+    }
+    formData.value.transports[transportIndex].contacts.push('')
+  }
+}
+
+const removeTransportContact = (transportIndex, contactIndex) => {
+  if (formData.value.transports && formData.value.transports[transportIndex]) {
+    formData.value.transports[transportIndex].contacts.splice(contactIndex, 1)
   }
 }
 
@@ -340,7 +449,7 @@ const addLink = () => {
   if (!Array.isArray(formData.value.ticketLinks)) {
     formData.value.ticketLinks = []
   }
-  formData.value.ticketLinks.push('')
+  formData.value.ticketLinks.push({ name: '', url: '' })
 }
 
 const removeLink = (index) => {
@@ -360,9 +469,36 @@ const submitForm = () => {
     return
   }
 
-  // Filtrar contactos vacíos y links vacíos
-  const transportContacts = formData.value.transport.contacts.filter(c => c.trim())
-  const ticketLinks = formData.value.ticketLinks.filter(l => l.trim())
+  // Validar que haya al menos 1 artista
+  if (!formData.value.artists || formData.value.artists.length === 0) {
+    alert('Debes agregar al menos 1 artista')
+    return
+  }
+
+  // Validar que cada artista tenga nombre e imagen
+  const artistsValid = formData.value.artists.every(a => a.name && a.image)
+  if (!artistsValid) {
+    alert('Cada artista debe tener nombre e imagen/video')
+    return
+  }
+
+  // Validar que haya al menos 1 link de ticket válido
+  const validTicketLinks = formData.value.ticketLinks.filter(l => l.url && l.url.trim())
+  if (validTicketLinks.length === 0) {
+    alert('Debes agregar al menos 1 link de compra de tickets')
+    return
+  }
+
+  // Procesar transports - solo si está activado
+  let transports = []
+  if (formData.value.transportsEnabled) {
+    transports = (formData.value.transports || []).map(t => ({
+      name: t.name,
+      image: t.image,
+      description: t.description,
+      contacts: t.contacts.filter(c => c.trim()),
+    }))
+  }
 
   // Enviar datos validados
   emit('save', {
@@ -370,19 +506,15 @@ const submitForm = () => {
     fecha: [formData.value.fecha[0], formData.value.fecha[1]],
     lugar: formData.value.lugar,
     descripcion: formData.value.descripcion,
-    artists: formData.value.artists || [],
-    transport: {
-      enabled: formData.value.transport.enabled,
-      image: formData.value.transport.image,
-      description: formData.value.transport.description,
-      contacts: transportContacts,
-    },
+    artists: formData.value.artists,
+    transportsEnabled: formData.value.transportsEnabled,
+    transports: transports,
     lodging: {
       enabled: formData.value.lodging.enabled,
       image: formData.value.lodging.image,
       description: formData.value.lodging.description,
     },
-    ticketLinks: ticketLinks,
+    ticketLinks: validTicketLinks,
   })
 }
 </script>
@@ -521,6 +653,49 @@ const submitForm = () => {
   min-height: 100px;
 }
 
+/* Lista de Transportes */
+.transports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.transports-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.transport-item {
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(81, 193, 225, 0.1);
+  border-radius: 0.75rem;
+}
+
+.transport-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(81, 193, 225, 0.1);
+}
+
+.transport-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.1rem;
+  color: #51C1E1;
+  margin: 0;
+  font-weight: 600;
+}
+
+.transport-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 /* Galería de Artistas */
 .gallery-list {
   display: flex;
@@ -602,6 +777,25 @@ const submitForm = () => {
   grid-template-columns: 1fr auto;
   gap: 0.75rem;
   align-items: center;
+}
+
+.link-item-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.link-inputs {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .link-inputs {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Imagen Preview */
