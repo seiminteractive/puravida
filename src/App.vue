@@ -12,6 +12,8 @@
         <source src="/assets/fondoMobile.mp4" type="video/mp4" />
       </video>
 
+      <div class="fixed inset-0 bg-black/70 -z-10"></div>
+
       <!-- Contenido sobre el video -->
       <div class="relative z-10 w-full">
         <router-view />

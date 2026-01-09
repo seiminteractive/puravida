@@ -68,7 +68,7 @@
         <!-- Header -->
         <div class="text-center mb-2">
           <h2 class="font-napzer sm:text-lg text-white font-semibold tracking-wide text-2xl lg:text-4xl mt-6">ARTISTAS</h2>
-          <p class="font-standard text-xs text-cyan-400 mt-0.5 lg:text-1xl">Desliza para conocer</p>
+          <p class="font-standard text-xs text-cyan-400 mt-0.5 lg:text-1xl">Deslizá para conocer</p>
         </div>
 
         <!-- Get Tickets Button -->
@@ -129,7 +129,7 @@
       <section class="experiencia-section">
         <div class="experiencia-container">
           <!-- Header -->
-          <div class="experiencia-header">
+          <div class="experiencia-header text-left sm:text-center">
             <h2 class="experiencia-title">Experiencia Completa</h2>
             <p class="experiencia-subtitle">Disfrutá Pura Vida sin preocuparte por nada</p>
           </div>
@@ -156,7 +156,7 @@
               </div>
               <div class="block-content">
                 <h3 class="block-title">Traslado</h3>
-                <p class="block-description">Transporte cómodo y coordinado ida y vuelta desde CABA</p>
+                <p class="block-description">Transporte cómodo y coordinado de ida y vuelta.</p>
               </div>
             </div>
           </div>
@@ -176,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted} from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
@@ -187,14 +187,13 @@ import { getDJArtists } from '../services/eventsService'
 const modules = [Pagination]
 const djArtists = getDJArtists()
 
-
-const onDJSwiperInit = () => {
-  // Initialized
-}
-
-const onDJSlideChange = () => {
-  // Slide changed
-}
+onMounted(() => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'instant' // o 'smooth' si querés animado
+  })
+})
 
 const eventIcon = useRotatingIcon(8)
 const mesasIcon = useRotatingIcon(8)
@@ -275,7 +274,7 @@ const openImage = (type) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   z-index: 1;
 }
 
@@ -451,12 +450,6 @@ const openImage = (type) => {
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s ease;
-}
-
-.hero-icon-item:hover {
-  background: rgba(0, 0, 0, 0.9);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
 }
 
 .hero-icon-item img {
@@ -812,10 +805,16 @@ const openImage = (type) => {
 }
 
 .experiencia-header {
-  text-align: center;
+  text-align: left; /* mobile */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .experiencia-header {
+    text-align: center;
+  }
 }
 
 .experiencia-title {

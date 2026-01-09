@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
 import Calendar from './views/Calendar.vue'
 import EventDetail from './views/EventDetail.vue'
+import AdminPanel from './views/AdminPanel.vue'
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/event/:id',
     name: 'EventDetail',
     component: EventDetail,
+  },
+  {
+    path: '/admin',
+    name: 'AdminPanel',
+    component: AdminPanel,
   },
 ]
 

@@ -21,7 +21,7 @@
 
       <!-- Descripción elaborada -->
       <div class="about-description">
-        <p class="about-intro">
+        <p class="about-intro max-w-[320px] mx-auto text-center mb-6 sm:max-w-none">
           No es solo una palabra, es un <span class="highlight">estado de ser</span>
         </p>
 
@@ -59,7 +59,7 @@
             <div class="pillar-line pillar-line-cyan"></div>
           </div>
           <h3 class="pillar-title">Ritual</h3>
-          <p class="pillar-subtitle pillar-subtitle-cyan">Contemporáneo & Inclusivo</p>
+          <p class="pillar-subtitle pillar-subtitle-cyan">Inclusivo & Contemporáneo</p>
           <p class="pillar-text">Eventos curados con atención extrema. Donde la energía es palpable y la experiencia es infinita.</p>
         </div>
       </div>
@@ -188,7 +188,6 @@ useScrollFadeInElements('.about-section p')
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1.75rem;
   color: #fff;
-  margin: 0 0 1.5rem 0;
   font-weight: 500;
   line-height: 1.4;
 }

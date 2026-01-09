@@ -20,15 +20,15 @@
 
         <!-- Redes sociales destacadas -->
         <div class="social-grid">
-          <a href="https://instagram.com/puravida" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram">
+          <a href="https://www.instagram.com/somospuravida._/" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram">
             <i class="bi bi-instagram"></i>
           </a>
-          <a href="https://tiktok.com/@puravida" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok">
+          <a href="https://www.tiktok.com/@somospuravida_" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok">
             <i class="bi bi-tiktok"></i>
           </a>
-          <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">
+          <!-- <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">
             <i class="bi bi-youtube"></i>
-          </a>
+          </a> -->
         </div>
       </div>
 
@@ -59,12 +59,12 @@
 
         <!-- Sección Redes -->
         <div class="footer-social-section">
-          <h4 class="footer-section-title">Síguenos</h4>
+          <h4 class="footer-section-title">Seguinos</h4>
           <nav class="footer-social-nav">
-            <a href="https://instagram.com/puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">Instagram</a>
-            <a href="https://tiktok.com/@puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">TikTok</a>
-            <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">YouTube</a>
-            <a href="https://twitter.com/puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">Twitter</a>
+            <a href="https://www.instagram.com/somospuravida._/" target="_blank" rel="noopener noreferrer" class="footer-social-link">Instagram</a>
+            <a href="https://www.tiktok.com/@somospuravida_" target="_blank" rel="noopener noreferrer" class="footer-social-link">TikTok</a>
+            <!-- <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">YouTube</a> -->
+            <a href="https://www.facebook.com/somospuravidaa?mibextid=wwXIfr&rdid=FeUY12fd7HXpWfZV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ghv8vVzma%2F%3Fmibextid%3DwwXIfr#" target="_blank" rel="noopener noreferrer" class="footer-social-link">Facebook</a>
           </nav>
         </div>
       </div>

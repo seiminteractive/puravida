@@ -5,12 +5,12 @@
 
     <div class="cta-container">
       <div class="cta-content">
-        <p class="cta-label">Conecta con nosotros</p>
-        <h2 class="cta-title">Preguntas sobre eventos y experiencias</h2>
-        <p class="cta-subtitle">Nuestro equipo está disponible para ayudarte. Escríbenos y responderemos pronto.</p>
+        <p class="cta-label">Conectá con nosotros</p>
+        <h2 class="cta-title max-w-[320px] mx-auto text-center mb-4 sm:max-w-none">Preguntas sobre eventos y experiencias</h2>
+        <p class="cta-subtitle max-w-[320px] mx-auto text-center mb-4 sm:max-w-none">Nuestro equipo está disponible para ayudarte. Escribinos y pronto nos contactamos con vos.</p>
         
         <a 
-          href="https://wa.me/5491234567890?text=Hola%20Pura%20Vida!%20Me%20gustaría%20conocer%20más%20sobre%20vuestros%20eventos%20y%20experiencias." 
+          href="https://wa.me/5493415492478?text=Hola%20Pura%20Vida!%20Me%20gustaría%20conocer%20más%20sobre%20sus%20eventos%20y%20experiencias." 
           target="_blank"
           rel="noopener noreferrer"
           class="whatsapp-btn"
@@ -90,7 +90,6 @@ useScrollFadeInElements('.whatsapp-btn')
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1.75rem;
   color: #fff;
-  margin: 0 0 1rem 0;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -99,7 +98,6 @@ useScrollFadeInElements('.whatsapp-btn')
   font-family: 'Standard', sans-serif;
   font-size: 0.95rem;
   color: #999;
-  margin: 0 0 2.5rem 0;
   font-weight: 300;
   line-height: 1.6;
 }
