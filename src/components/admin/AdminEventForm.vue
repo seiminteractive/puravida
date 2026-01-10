@@ -2,6 +2,12 @@
   <div class="form-wrapper">
     <h2 class="form-title">{{ event ? 'Editar Evento' : 'Crear Nuevo Evento' }}</h2>
 
+    <!-- Error de Upload -->
+    <div v-if="uploadError" class="upload-error">
+      <p>{{ uploadError }}</p>
+      <button type="button" @click="clearMediaError" class="btn-clear-error">✕</button>
+    </div>
+
     <form @submit.prevent="submitForm" class="admin-form">
       <!-- Evento Base -->
       <fieldset class="form-section">
@@ -68,14 +74,14 @@
       <!-- DJs/Artistas -->
       <fieldset class="form-section">
         <legend class="form-legend">Artistas</legend>
-        <p class="form-hint">Agregar múltiples imágenes o videos de artistas</p>
+        <p class="form-hint">Agregar múltiples imágenes o videos de artistas (subidas a Firebase)</p>
         
         <div class="gallery-list">
           <div v-if="formData.artists && formData.artists.length > 0" class="gallery-items">
             <div v-for="(artist, index) in formData.artists" :key="index" class="gallery-item">
               <div class="gallery-preview">
-                <img v-if="artist.image && !artist.image.includes('video')" :src="artist.image" :alt="`Artist ${index + 1}`" />
-                <video v-else-if="artist.image && artist.image.includes('video')" :src="artist.image" controls style="width: 100%; height: 100%; object-fit: cover;" />
+                <img v-if="artist.image_url && !artist.image_url.includes('video')" :src="artist.image_url" :alt="`Artist ${index + 1}`" />
+                <video v-else-if="artist.image_url && artist.image_url.includes('video')" :src="artist.image_url" controls style="width: 100%; height: 100%; object-fit: cover;" />
                 <div v-else class="gallery-empty">Sin archivo</div>
               </div>
               <div class="gallery-info">
@@ -83,21 +89,22 @@
                 <input 
                   v-model="artist.name" 
                   type="text" 
-                  class="form-input form--small"
+                  class="form-input form-input-small"
                   placeholder="Nombre del artista"
                 />
                 <input 
                   type="file" 
                   accept="image/*,video/*" 
                   class="form-input form-input-small"
-                  @change="(e) => handleArtistMediaUpload(e, index)"
+                  @change="(e) => handleMediaUpload(e, 'artist', index)"
+                  :disabled="isUploading"
                 />
               </div>
               <button type="button" @click="removeArtist(index)" class="btn-remove">✕</button>
             </div>
           </div>
 
-          <button type="button" @click="addArtist" class="admin-btn admin-btn-secondary">
+          <button type="button" @click="addArtist" class="admin-btn admin-btn-secondary" :disabled="isUploading">
             + Agregar Artista
           </button>
         </div>
@@ -114,7 +121,7 @@
         </div>
 
         <div v-if="formData.transportsEnabled" class="section-content">
-          <p class="form-hint">Agregar servicios de transporte disponibles</p>
+          <p class="form-hint">Agregar servicios de transporte disponibles (imágenes en Firebase)</p>
           <div class="transports-list">
           <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
             <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
@@ -140,11 +147,12 @@
                     type="file" 
                     accept="image/*" 
                     class="form-input"
-                    @change="(e) => handleTransportImageUpload(e, index)"
+                    @change="(e) => handleMediaUpload(e, 'transport', index)"
+                    :disabled="isUploading"
                   />
-                  <div v-if="transport.image" class="image-preview">
-                    <img :src="transport.image" :alt="`Transport ${index + 1}`" />
-                    <button type="button" @click="transport.image = null" class="btn-remove-image">✕</button>
+                  <div v-if="transport.image_url" class="image-preview">
+                    <img :src="transport.image_url" :alt="`Transport ${index + 1}`" />
+                    <button type="button" @click="transport.image_url = null" class="btn-remove-image">✕</button>
                   </div>
                 </div>
 
@@ -178,7 +186,7 @@
             </div>
           </div>
 
-          <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary">
+          <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary" :disabled="isUploading">
             + Agregar Servicio de Transporte
           </button>
           </div>
@@ -197,16 +205,17 @@
 
         <div v-if="formData.lodging.enabled" class="section-content">
           <div class="form-group">
-            <label class="form-label">Imagen/Flyer</label>
+            <label class="form-label">Imagen/Flyer (Firebase)</label>
             <input 
               type="file" 
-              accept="image/*" 
+              accept="image/*,video/*" 
               class="form-input"
-              @change="(e) => handleImageUpload(e, 'lodging')"
+              @change="(e) => handleMediaUpload(e, 'lodging')"
+              :disabled="isUploading"
             />
-            <div v-if="formData.lodging.image" class="image-preview">
-              <img :src="formData.lodging.image" alt="Lodging preview" />
-              <button type="button" @click="formData.lodging.image = null" class="btn-remove-image">✕</button>
+            <div v-if="formData.lodging.image_url" class="image-preview">
+              <img :src="formData.lodging.image_url" alt="Lodging preview" />
+              <button type="button" @click="formData.lodging.image_url = null" class="btn-remove-image">✕</button>
             </div>
           </div>
 
@@ -257,10 +266,10 @@
 
       <!-- Actions -->
       <div class="form-actions">
-        <button type="submit" class="admin-btn admin-btn-primary">
-          {{ event ? 'Actualizar Evento' : 'Crear Evento' }}
+        <button type="submit" class="admin-btn admin-btn-primary" :disabled="isUploading">
+          {{ isUploading ? 'Subiendo...' : (event ? 'Actualizar Evento' : 'Crear Evento') }}
         </button>
-        <button type="button" @click="$emit('cancel')" class="admin-btn admin-btn-secondary">
+        <button type="button" @click="$emit('cancel')" class="admin-btn admin-btn-secondary" :disabled="isUploading">
           Cancelar
         </button>
       </div>
@@ -270,6 +279,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { uploadImage, uploadVideo } from '../../services/apiService'
 
 const props = defineProps({
   event: {
@@ -279,6 +289,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['save', 'cancel'])
+
+const isUploading = ref(false)
+const uploadError = ref(null)
 
 const getDefaultFormData = () => ({
   dj: '',
@@ -290,7 +303,7 @@ const getDefaultFormData = () => ({
   transports: [],
   lodging: {
     enabled: false,
-    image: null,
+    image_url: null,
     description: '',
   },
   ticketLinks: [],
@@ -302,30 +315,42 @@ const resetForm = () => {
   formData.value = getDefaultFormData()
 }
 
-watch(() => props.event, (newEvent) => {
-  if (newEvent && newEvent.dj) {
+watch(() => props.event?.id, () => {
+  if (props.event && props.event.dj) {
+    const newEvent = props.event
+    
     const fecha = Array.isArray(newEvent.fecha) ? newEvent.fecha : ['', '']
     
-    // Procesar transports
     const transportsEnabled = newEvent.transportsEnabled || (newEvent.transports && newEvent.transports.length > 0)
     let transports = newEvent.transports || []
     if (transports.length > 0) {
       transports = transports.map(t => ({
-        name: t.name || '',
-        image: t.image || null,
+        name: t.name || t.transport_name || '',
+        image_url: t.image_url || null,
         description: t.description || '',
-        contacts: Array.isArray(t.contacts) ? t.contacts : [],
+        contacts: Array.isArray(t.contacts) ? t.contacts.filter(c => c).map(c => typeof c === 'string' ? c : c.contact || '') : [],
       }))
     }
     
-    // Procesar ticketLinks - convertir de array de strings a array de objetos si es necesario
     let ticketLinks = newEvent.ticketLinks || []
-    if (ticketLinks.length > 0 && typeof ticketLinks[0] === 'string') {
-      ticketLinks = ticketLinks.map(url => ({ name: '', url }))
-    } else if (ticketLinks.length > 0 && typeof ticketLinks[0] === 'object') {
-      ticketLinks = ticketLinks.map(link => ({ 
-        name: link.name || '', 
-        url: link.url || '' 
+    if (ticketLinks.length > 0) {
+      if (typeof ticketLinks[0] === 'string') {
+        ticketLinks = ticketLinks.map(url => ({ name: '', url }))
+      } else if (typeof ticketLinks[0] === 'object') {
+        ticketLinks = ticketLinks.map(link => ({ 
+          name: link.name || link.ticketer_name || '', 
+          url: link.url || link.link_url || '' 
+        }))
+      }
+    }
+    
+    // Procesar artists
+    let artists = newEvent.artists || []
+    if (artists.length > 0) {
+      artists = artists.map(a => ({
+        name: a.name || a.artist_name || '',
+        image_url: a.image_url || null,
+        media_type: a.media_type || 'image'
       }))
     }
     
@@ -334,12 +359,12 @@ watch(() => props.event, (newEvent) => {
       fecha: [...fecha],
       lugar: newEvent.lugar || '',
       descripcion: newEvent.descripcion || '',
-      artists: newEvent.artists || [],
+      artists: artists,
       transportsEnabled: transportsEnabled,
       transports: transports,
       lodging: {
-        enabled: newEvent.lodging?.enabled || false,
-        image: newEvent.lodging?.image || null,
+        enabled: newEvent.lodging?.enabled === 1 || newEvent.lodging?.enabled === true,
+        image_url: newEvent.lodging?.image_url || null,
         description: newEvent.lodging?.description || '',
       },
       ticketLinks: ticketLinks,
@@ -347,31 +372,41 @@ watch(() => props.event, (newEvent) => {
   } else {
     resetForm()
   }
-}, { immediate: true, deep: true })
+}, { immediate: true })
 
-const handleImageUpload = (e, section) => {
+const handleMediaUpload = async (e, type, target) => {
   const file = e.target.files?.[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      if (section === 'lodging') {
-        formData.value.lodging.image = event.target?.result
+  if (!file) return
+
+  isUploading.value = true
+  uploadError.value = null
+
+  try {
+    let url
+    if (file.type.startsWith('video/')) {
+      url = await uploadVideo(file)
+    } else if (file.type.startsWith('image/')) {
+      url = await uploadImage(file)
+    } else {
+      throw new Error('Tipo de archivo no soportado')
+    }
+
+    if (type === 'lodging') {
+      formData.value.lodging.image_url = url
+    } else if (type === 'transport' && target !== undefined) {
+      if (formData.value.transports && formData.value.transports[target]) {
+        formData.value.transports[target].image_url = url
+      }
+    } else if (type === 'artist' && target !== undefined) {
+      if (formData.value.artists && formData.value.artists[target]) {
+        formData.value.artists[target].image_url = url
       }
     }
-    reader.readAsDataURL(file)
-  }
-}
-
-const handleTransportImageUpload = (e, index) => {
-  const file = e.target.files?.[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      if (formData.value.transports && formData.value.transports[index]) {
-        formData.value.transports[index].image = event.target?.result
-      }
-    }
-    reader.readAsDataURL(file)
+  } catch (err) {
+    console.error('Error uploading file:', err)
+    uploadError.value = err.message || 'Error subiendo archivo'
+  } finally {
+    isUploading.value = false
   }
 }
 
@@ -381,7 +416,7 @@ const addTransport = () => {
   }
   formData.value.transports.push({ 
     name: '', 
-    image: null, 
+    image_url: null, 
     description: '', 
     contacts: [] 
   })
@@ -410,39 +445,11 @@ const addArtist = () => {
   if (!formData.value.artists) {
     formData.value.artists = []
   }
-  formData.value.artists.push({ name: '', image: null })
+  formData.value.artists.push({ name: '', image_url: null })
 }
 
 const removeArtist = (index) => {
   formData.value.artists.splice(index, 1)
-}
-
-const handleArtistMediaUpload = (e, index) => {
-  const file = e.target.files?.[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      if (formData.value.artists && formData.value.artists[index]) {
-        formData.value.artists[index].image = event.target?.result
-      }
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-const addContact = (section) => {
-  if (section === 'transport') {
-    if (!Array.isArray(formData.value.transport.contacts)) {
-      formData.value.transport.contacts = []
-    }
-    formData.value.transport.contacts.push('')
-  }
-}
-
-const removeContact = (index, section) => {
-  if (section === 'transport') {
-    formData.value.transport.contacts.splice(index, 1)
-  }
 }
 
 const addLink = () => {
@@ -456,51 +463,48 @@ const removeLink = (index) => {
   formData.value.ticketLinks.splice(index, 1)
 }
 
+const clearMediaError = () => {
+  uploadError.value = null
+}
+
 const submitForm = () => {
-  // Validar campos requeridos
   if (!formData.value.dj || !formData.value.lugar || !formData.value.descripcion) {
     alert('Por favor completa todos los campos requeridos')
     return
   }
 
-  // Validar fechas
   if (!formData.value.fecha[0] || !formData.value.fecha[1]) {
     alert('Por favor completa día y mes')
     return
   }
 
-  // Validar que haya al menos 1 artista
   if (!formData.value.artists || formData.value.artists.length === 0) {
     alert('Debes agregar al menos 1 artista')
     return
   }
 
-  // Validar que cada artista tenga nombre e imagen
-  const artistsValid = formData.value.artists.every(a => a.name && a.image)
+  const artistsValid = formData.value.artists.every(a => a.name && a.image_url)
   if (!artistsValid) {
     alert('Cada artista debe tener nombre e imagen/video')
     return
   }
 
-  // Validar que haya al menos 1 link de ticket válido
   const validTicketLinks = formData.value.ticketLinks.filter(l => l.url && l.url.trim())
   if (validTicketLinks.length === 0) {
     alert('Debes agregar al menos 1 link de compra de tickets')
     return
   }
 
-  // Procesar transports - solo si está activado
   let transports = []
   if (formData.value.transportsEnabled) {
     transports = (formData.value.transports || []).map(t => ({
       name: t.name,
-      image: t.image,
+      image_url: t.image_url,
       description: t.description,
       contacts: t.contacts.filter(c => c.trim()),
     }))
   }
 
-  // Enviar datos validados
   emit('save', {
     dj: formData.value.dj,
     fecha: [formData.value.fecha[0], formData.value.fecha[1]],
@@ -511,7 +515,7 @@ const submitForm = () => {
     transports: transports,
     lodging: {
       enabled: formData.value.lodging.enabled,
-      image: formData.value.lodging.image,
+      image_url: formData.value.lodging.image_url,
       description: formData.value.lodging.description,
     },
     ticketLinks: validTicketLinks,
@@ -531,6 +535,39 @@ const submitForm = () => {
   color: #fff;
   margin: 0 0 2rem 0;
   font-weight: 600;
+}
+
+.upload-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.upload-error p {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.95rem;
+  color: #ff6b6b;
+  margin: 0;
+  flex: 1;
+}
+
+.btn-clear-error {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.btn-clear-error:hover {
+  opacity: 0.7;
 }
 
 .admin-form {
@@ -623,26 +660,6 @@ const submitForm = () => {
   color: #666;
 }
 
-.form-input[type="file"] {
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.form-input[type="file"]::file-selector-button {
-  background: rgba(81, 193, 225, 0.2);
-  color: #51C1E1;
-  border: 1px solid #51C1E1;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.form-input[type="file"]::file-selector-button:hover {
-  background: rgba(81, 193, 225, 0.3);
-}
-
 .form-input-small {
   font-size: 0.85rem;
   padding: 0.5rem;
@@ -653,50 +670,6 @@ const submitForm = () => {
   min-height: 100px;
 }
 
-/* Lista de Transportes */
-.transports-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.transports-items {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.transport-item {
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(81, 193, 225, 0.1);
-  border-radius: 0.75rem;
-}
-
-.transport-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(81, 193, 225, 0.1);
-}
-
-.transport-title {
-  font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.1rem;
-  color: #51C1E1;
-  margin: 0;
-  font-weight: 600;
-}
-
-.transport-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Galería de Artistas */
 .gallery-list {
   display: flex;
   flex-direction: column;
@@ -757,12 +730,48 @@ const submitForm = () => {
   margin: 0;
 }
 
-.form-input-small {
-  font-size: 0.85rem;
-  padding: 0.5rem;
+.transports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-/* Contactos */
+.transports-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.transport-item {
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(81, 193, 225, 0.1);
+  border-radius: 0.75rem;
+}
+
+.transport-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(81, 193, 225, 0.1);
+}
+
+.transport-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.1rem;
+  color: #51C1E1;
+  margin: 0;
+  font-weight: 600;
+}
+
+.transport-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .contacts-list,
 .links-list {
   display: flex;
@@ -771,8 +780,7 @@ const submitForm = () => {
   margin-bottom: 1rem;
 }
 
-.contact-item,
-.link-item {
+.contact-item {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.75rem;
@@ -792,13 +800,6 @@ const submitForm = () => {
   gap: 0.75rem;
 }
 
-@media (max-width: 640px) {
-  .link-inputs {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Imagen Preview */
 .image-preview {
   position: relative;
   width: 100%;
@@ -835,7 +836,6 @@ const submitForm = () => {
   background: rgba(0, 0, 0, 0.9);
 }
 
-/* Botones pequenos */
 .btn-remove {
   width: 32px;
   height: 32px;
@@ -857,21 +857,6 @@ const submitForm = () => {
   padding: 0.5rem 1rem;
   font-size: 0.7rem;
   align-self: flex-start;
-}
-
-.placeholder-box {
-  padding: 2rem;
-  background: rgba(81, 193, 225, 0.05);
-  border: 2px dashed rgba(81, 193, 225, 0.2);
-  border-radius: 0.75rem;
-  text-align: center;
-}
-
-.placeholder-box p {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
-  color: #666;
-  margin: 0;
 }
 
 .form-checkbox {
@@ -915,6 +900,7 @@ const submitForm = () => {
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex: 1;
 }
 
 .admin-btn-primary {
@@ -922,7 +908,7 @@ const submitForm = () => {
   color: #000;
 }
 
-.admin-btn-primary:hover {
+.admin-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(255, 210, 92, 0.2);
 }
@@ -933,11 +919,20 @@ const submitForm = () => {
   border: 1px solid #51C1E1;
 }
 
-.admin-btn-secondary:hover {
+.admin-btn-secondary:hover:not(:disabled) {
   background: rgba(81, 193, 225, 0.1);
 }
 
-@media (max-width: 768px) {
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .link-inputs {
+    grid-template-columns: 1fr;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -945,6 +940,9 @@ const submitForm = () => {
   .form-actions {
     flex-direction: column;
   }
+
+  .gallery-item {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
-

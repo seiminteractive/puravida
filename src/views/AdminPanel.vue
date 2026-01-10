@@ -30,26 +30,52 @@
       <div class="admin-content">
         <!-- Events List Tab -->
         <div v-if="activeTab === 'events'" class="tab-content">
-          <div class="events-list">
-            <div v-if="events.length === 0" class="empty-state">
-              <p>No hay eventos creados</p>
-              <button @click="activeTab = 'create'" class="admin-btn admin-btn-primary">
-                Crear primer evento
-              </button>
-            </div>
+          <!-- Loading State -->
+          <div v-if="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando eventos...</p>
+          </div>
 
-            <div v-else class="events-grid">
-              <div v-for="event in events" :key="event.id" class="event-card">
-                <div class="event-card-header">
-                  <h3 class="event-card-title">{{ event.dj }}</h3>
-                  <span class="event-date">{{ event.fecha[0] }}/{{ event.fecha[1] }}</span>
-                </div>
-                <p class="event-card-location">{{ event.lugar }}</p>
-                <p class="event-card-desc">{{ event.descripcion }}</p>
-                <div class="event-card-actions">
-                  <button @click="editEvent(event)" class="admin-btn admin-btn-secondary">Editar</button>
-                  <button @click="deleteEvent(event.id)" class="admin-btn admin-btn-danger">Eliminar</button>
-                </div>
+          <!-- Error State -->
+          <div v-else-if="error" class="error-state">
+            <p>❌ {{ error }}</p>
+            <button @click="refreshEvents" class="admin-btn admin-btn-primary">
+              Reintentar
+            </button>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="events.length === 0" class="empty-state">
+            <p>No hay eventos creados</p>
+            <button @click="activeTab = 'create'" class="admin-btn admin-btn-primary">
+              Crear primer evento
+            </button>
+          </div>
+
+          <!-- Events Grid -->
+          <div v-else class="events-grid">
+            <div v-for="event in events" :key="event.id" class="event-card">
+              <div class="event-card-header">
+                <h3 class="event-card-title">{{ event.dj }}</h3>
+                <span class="event-date">{{ event.fecha[0] }}/{{ event.fecha[1] }}</span>
+              </div>
+              <p class="event-card-location">{{ event.lugar }}</p>
+              <p class="event-card-desc">{{ event.descripcion }}</p>
+              <div class="event-card-actions">
+                <button 
+                  @click="editEvent(event)" 
+                  class="admin-btn admin-btn-secondary"
+                  :disabled="isSubmitting || isLoadingEvent"
+                >
+                  {{ isLoadingEvent ? 'Cargando...' : 'Editar' }}
+                </button>
+                <button 
+                  @click="deleteEvent(event.id)" 
+                  class="admin-btn admin-btn-danger"
+                  :disabled="isSubmitting"
+                >
+                  Eliminar
+                </button>
               </div>
             </div>
           </div>
@@ -77,18 +103,68 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { getEvents } from '../services/eventsService'
+import { ref, watch } from 'vue'
 import AdminEventForm from '../components/admin/AdminEventForm.vue'
+import { useEvents } from '../composables/useEvents'
+import { fetchEventById } from '../services/apiService'
 
 const activeTab = ref('events')
 const tabs = ['events', 'create', 'settings']
-const events = ref(getEvents())
 const editingEvent = ref(null)
+const isSubmitting = ref(false)
+const isLoadingEvent = ref(false)
 
-const editEvent = (event) => {
-  editingEvent.value = { ...event }
-  activeTab.value = 'create'
+// Usar el composable para traer eventos de la API
+const { events, loading, error, refreshEvents, addEvent, editEvent: updateEventApi, removeEvent } = useEvents()
+
+const editEvent = async (event) => {
+  isLoadingEvent.value = true
+  try {
+    // Fetch del evento completo desde la DB
+    const response = await fetchEventById(event.id)
+    const freshEvent = response?.data || response
+    if (!freshEvent?.id) {
+      throw new Error('Respuesta inválida al obtener el evento')
+    }
+    
+    // Transformar al formato esperado por el formulario
+    editingEvent.value = {
+      id: freshEvent.id,
+      dj: freshEvent.dj,
+      fecha: [freshEvent.fecha_dia, freshEvent.fecha_mes],
+      lugar: freshEvent.lugar,
+      descripcion: freshEvent.descripcion,
+      imagen: freshEvent.media_url,
+      transportsEnabled: freshEvent.transports_enabled ? true : false,
+      artists: (freshEvent.artists || []).map(a => ({
+        name: a.artist_name,
+        image_url: a.image_url,
+        media_type: a.media_type
+      })),
+      ticketLinks: (freshEvent.tickets || []).map(t => ({
+        name: t.ticketer_name,
+        url: t.link_url
+      })),
+      transports: (freshEvent.transports || []).map(t => ({
+        name: t.transport_name,
+        image_url: t.image_url,
+        description: t.description,
+        contacts: (t.contacts || []).map(c => c.contact || c)
+      })),
+      lodging: freshEvent.lodging ? {
+        enabled: freshEvent.lodging.enabled ? true : false,
+        description: freshEvent.lodging.description,
+        image_url: freshEvent.lodging.image_url
+      } : { enabled: false, description: '', image_url: null },
+    }
+    
+    activeTab.value = 'create'
+  } catch (err) {
+    console.error('Error loading event:', err)
+    alert('Error cargando el evento: ' + err.message)
+  } finally {
+    isLoadingEvent.value = false
+  }
 }
 
 const cancelEdit = () => {
@@ -96,36 +172,83 @@ const cancelEdit = () => {
   activeTab.value = 'events'
 }
 
-const saveEvent = (eventData) => {
-  // Asegurar que la estructura de datos sea consistente
-  const newEvent = {
-    ...eventData,
-    fecha: Array.isArray(eventData.fecha) ? eventData.fecha : ['', ''],
-    transport: eventData.transport || { enabled: false, description: '', contacts: '' },
-    lodging: eventData.lodging || { enabled: false, description: '' },
-  }
+const saveEvent = async (eventData) => {
+  isSubmitting.value = true
+  try {
+    // Transformar artists al formato que espera el backend
+    const artists = (eventData.artists || []).map(a => ({
+      artist_name: a.name,
+      image_url: a.image_url,
+      media_type: a.image_url?.includes('.mp4') ? 'video' : 'image'
+    }))
 
-  if (editingEvent.value?.id) {
-    const index = events.value.findIndex(e => e.id === editingEvent.value.id)
-    if (index !== -1) {
-      events.value[index] = { ...newEvent, id: editingEvent.value.id }
+    // Transformar tickets al formato que espera el backend
+    const tickets = (eventData.ticketLinks || []).map(t => ({
+      ticketer_name: t.name,
+      link_url: t.url
+    }))
+
+    // Transformar transports al formato que espera el backend
+    const transports = (eventData.transports || []).map(t => ({
+      transport_name: t.name,
+      image_url: t.image_url,
+      description: t.description,
+      contacts: t.contacts || []
+    }))
+
+    const payload = {
+      dj: eventData.dj || '',
+      fecha_dia: eventData.fecha?.[0] || '',
+      fecha_mes: eventData.fecha?.[1] || '',
+      lugar: eventData.lugar || '',
+      descripcion: eventData.descripcion || '',
+      media_url: eventData.imagen || null,
+      transports_enabled: eventData.transportsEnabled ? 1 : 0,
+      artists: artists,
+      tickets: tickets,
+      transports: transports,
+      lodging: eventData.lodging || { enabled: false, description: '' },
     }
-  } else {
-    const maxId = events.value.length > 0 ? Math.max(...events.value.map(e => e.id)) : 0
-    events.value.push({
-      ...newEvent,
-      id: maxId + 1,
-    })
+
+    console.log('Payload enviado:', JSON.stringify(payload, null, 2))
+
+    if (editingEvent.value?.id) {
+      // Actualizar evento existente
+      console.log('Updating event:', editingEvent.value.id, payload)
+      await updateEventApi(editingEvent.value.id, payload)
+    } else {
+      // Crear nuevo evento
+      console.log('Creating new event:', payload)
+      await addEvent(payload)
+    }
+
+    editingEvent.value = null
+    activeTab.value = 'events'
+  } catch (err) {
+    console.error('Error saving event:', err)
+    alert('Error guardando evento: ' + err.message)
+  } finally {
+    isSubmitting.value = false
   }
-  editingEvent.value = null
-  activeTab.value = 'events'
 }
 
-const deleteEvent = (id) => {
+const deleteEvent = async (id) => {
   if (confirm('¿Estás seguro de que quieres eliminar este evento?')) {
-    events.value = events.value.filter(e => e.id !== id)
+    try {
+      await removeEvent(id)
+    } catch (err) {
+      console.error('Error deleting event:', err)
+      alert('Error eliminando evento: ' + err.message)
+    }
   }
 }
+
+// Cuando se vuelve a la vista de eventos, refrescar
+watch(() => activeTab.value, async (newTab) => {
+  if (newTab === 'events') {
+    await refreshEvents()
+  }
+})
 </script>
 
 <style scoped>
@@ -281,6 +404,51 @@ const deleteEvent = (id) => {
   width: 100%;
 }
 
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #FFD25C;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #bbb;
+  margin: 0;
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 1rem;
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.error-state p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #ff6b6b;
+  margin: 0 0 1.5rem 0;
+}
+
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
@@ -406,6 +574,11 @@ const deleteEvent = (id) => {
 
 .admin-btn-danger:hover {
   background: rgba(255, 107, 107, 0.1);
+}
+
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .settings-section {

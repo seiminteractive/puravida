@@ -16,8 +16,19 @@
         </router-link>  
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando eventos...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="error-state">
+        <p>❌ {{ error }}</p>
+      </div>
+
       <!-- Swiper Carousel -->
-      <div class="carousel-wrapper">
+      <div v-else class="carousel-wrapper">
         <Swiper
           :modules="modules"
           :slides-per-view="1"
@@ -40,23 +51,53 @@
 <script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
+import { ref, onMounted } from 'vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import EventCard from './EventCard.vue'
-import { getEvents } from '../../services/eventsService'
+import { fetchEvents } from '../../services/apiService'
 import { useRotatingIcon } from '../../composables/useRotatingIcon'
 import { useScrollFadeInElements } from '../../composables/useScrollFadeIn'
 
 const modules = [Pagination]
-const events = getEvents()
+const events = ref([])
+const loading = ref(true)
+const error = ref(null)
 
 // Icono rotativo del botón
 const btnIcon = useRotatingIcon(8)
 
-// Scroll fade-in para elementos internos
-useScrollFadeInElements('.event-card')
-useScrollFadeInElements('.events-title')
-useScrollFadeInElements('.calendar-btn')
+onMounted(async () => {
+  try {
+    const response = await fetchEvents()
+    const dataArray = response.data || response
+    
+    // Transformar datos de la API al formato esperado por EventCard
+    events.value = (Array.isArray(dataArray) ? dataArray : []).map(event => ({
+      id: event.id,
+      dj: event.dj || 'DJ Desconocido',
+      fecha: [event.fecha_dia, event.fecha_mes],
+      lugar: event.lugar || 'Por definir',
+      descripcion: event.descripcion || '',
+      imagen: event.media_url || event.artists?.[0]?.image_url || 'https://via.placeholder.com/600x400?text=Evento',
+      // Mantener datos originales también
+      ...event
+    }))
+    
+    // Scroll fade-in para elementos internos (después de que eventos se cargan)
+    setTimeout(() => {
+      useScrollFadeInElements('.event-card')
+      useScrollFadeInElements('.events-title')
+      useScrollFadeInElements('.calendar-btn')
+    }, 100)
+    
+    loading.value = false
+  } catch (err) {
+    console.error('Error loading events:', err)
+    error.value = 'Error cargando eventos'
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -81,6 +122,54 @@ useScrollFadeInElements('.calendar-btn')
   background: radial-gradient(circle, rgba(81, 193, 225, 0.12) 0%, transparent 70%);
   border-radius: 50%;
   z-index: 0;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  z-index: 1;
+  position: relative;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #51C1E1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #bbb;
+  margin: 0;
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 1rem;
+  background: rgba(255, 107, 107, 0.05);
+  position: relative;
+  z-index: 1;
+}
+
+.error-state p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #ff6b6b;
+  margin: 0;
 }
 
 .events-container {
