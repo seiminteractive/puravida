@@ -130,14 +130,15 @@ export const createEvent = async (eventData) => {
 
     // 1. Crear el evento principal
     const [result] = await connection.query(
-      `INSERT INTO events (dj, fecha_dia, fecha_mes, lugar, descripcion, transports_enabled)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO events (dj, fecha_dia, fecha_mes, lugar, descripcion, media_url, transports_enabled)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         eventData.dj,
         eventData.fecha_dia,
         eventData.fecha_mes,
         eventData.lugar,
         eventData.descripcion,
+        eventData.media_url || null,
         eventData.transports_enabled || false
       ]
     )
@@ -204,14 +205,25 @@ export const createEvent = async (eventData) => {
           [eventId, transport.transport_name, transport.image_url || null, transport.description || null]
         )
 
-        // Insertar contactos del transporte
+        // Insertar contactos del transporte (con nombre y número)
         if (transport.contacts && transport.contacts.length > 0) {
           for (const contact of transport.contacts) {
-            await connection.query(
-              `INSERT INTO transport_contacts (transport_id, contact)
-               VALUES (?, ?)`,
-              [transportResult.insertId, contact.contact]
-            )
+            // Aceptar strings (solo número) u objetos { name: "...", contact: "..." }
+            let contactName = 'Contacto'
+            let contactValue = contact
+            
+            if (typeof contact === 'object' && contact !== null) {
+              contactName = contact.name || 'Contacto'
+              contactValue = contact.contact || contact.number || contact
+            }
+            
+            if (contactValue) { // Solo insertar si hay valor
+              await connection.query(
+                `INSERT INTO transport_contacts (transport_id, contact_name, contact)
+                 VALUES (?, ?, ?)`,
+                [transportResult.insertId, contactName, contactValue]
+              )
+            }
           }
         }
       }
@@ -244,7 +256,7 @@ export const updateEvent = async (id, eventData) => {
     // 1. Actualizar evento principal
     await connection.query(
       `UPDATE events 
-       SET dj = ?, fecha_dia = ?, fecha_mes = ?, lugar = ?, descripcion = ?, transports_enabled = ?
+       SET dj = ?, fecha_dia = ?, fecha_mes = ?, lugar = ?, descripcion = ?, media_url = ?, transports_enabled = ?
        WHERE id = ?`,
       [
         eventData.dj,
@@ -252,6 +264,7 @@ export const updateEvent = async (id, eventData) => {
         eventData.fecha_mes,
         eventData.lugar,
         eventData.descripcion,
+        eventData.media_url || null,
         eventData.transports_enabled || false,
         id
       ]
@@ -324,11 +337,22 @@ export const updateEvent = async (id, eventData) => {
 
         if (transport.contacts && transport.contacts.length > 0) {
           for (const contact of transport.contacts) {
-            await connection.query(
-              `INSERT INTO transport_contacts (transport_id, contact)
-               VALUES (?, ?)`,
-              [transportResult.insertId, contact.contact]
-            )
+            // Aceptar strings (solo número) u objetos { name: "...", contact: "..." }
+            let contactName = 'Contacto'
+            let contactValue = contact
+            
+            if (typeof contact === 'object' && contact !== null) {
+              contactName = contact.name || 'Contacto'
+              contactValue = contact.contact || contact.number || contact
+            }
+            
+            if (contactValue) { // Solo insertar si hay valor
+              await connection.query(
+                `INSERT INTO transport_contacts (transport_id, contact_name, contact)
+                 VALUES (?, ?, ?)`,
+                [transportResult.insertId, contactName, contactValue]
+              )
+            }
           }
         }
       }

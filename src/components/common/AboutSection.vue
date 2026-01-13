@@ -1,11 +1,5 @@
 <template>
-  <section class="about-section pv-surface">
-    <!-- Fondos decorativos con luces de colores -->
-    <div class="about-bg-accent"></div>
-    <div class="about-light-indigo"></div>
-    <div class="about-light-yellow"></div>
-    <div class="about-light-cyan"></div>
-
+  <section class="about-section">
     <div class="about-container">
       <!-- Header con línea divisoria -->
       <div class="about-header">
@@ -85,57 +79,13 @@ useScrollFadeInElements('.about-section p')
 <style scoped>
 .about-section {
   min-height: 100vh;
-  background: #000;
+  background: transparent;
   position: relative;
   overflow: hidden;
   padding: 3rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.about-bg-accent {
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 210, 92, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.about-light-indigo {
-  position: absolute;
-  bottom: 12%;
-  right: -18%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(81, 193, 225, 0.12) 0%, transparent 80%);  
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.about-light-yellow {
-  position: absolute;
-  top: 45%;
-  left: -20%;
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(255, 210, 92, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.about-light-cyan {
-  position: absolute;
-  top: 5%;
-  right: -40%;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(79, 72, 152, 0.18) 0%, transparent 90%);
-  border-radius: 50%;
-  z-index: 0;
 }
 
 .about-container {

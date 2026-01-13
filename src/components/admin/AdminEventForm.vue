@@ -32,7 +32,6 @@
               type="text" 
               class="form-input"
               placeholder="07"
-              maxlength="2"
               required
             />
           </div>
@@ -43,7 +42,6 @@
               type="text" 
               class="form-input"
               placeholder="02"
-              maxlength="2"
               required
             />
           </div>
@@ -66,15 +64,31 @@
             v-model="formData.descripcion" 
             class="form-textarea"
             placeholder="Describe el evento..."
+            maxlength="50"
             required
           ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Imagen/Video del Evento</label>
+          <input 
+            type="file" 
+            accept="image/*,video/*" 
+            class="form-input"
+            @change="(e) => handleMediaUpload(e, 'event')"
+            :disabled="isUploading"
+          />
+          <div v-if="formData.media_url" class="image-preview">
+            <img v-if="!formData.media_url.includes('video')" :src="formData.media_url" alt="Event preview" />
+            <video v-else :src="formData.media_url" controls style="width: 100%; height: auto; max-height: 300px; object-fit: cover;" />
+            <button type="button" @click="formData.media_url = null" class="btn-remove-image">✕</button>
+          </div>
         </div>
       </fieldset>
 
       <!-- DJs/Artistas -->
       <fieldset class="form-section">
         <legend class="form-legend">Artistas</legend>
-        <p class="form-hint">Agregar múltiples imágenes o videos de artistas (subidas a Firebase)</p>
         
         <div class="gallery-list">
           <div v-if="formData.artists && formData.artists.length > 0" class="gallery-items">
@@ -114,14 +128,14 @@
       <fieldset class="form-section">
         <div class="section-header">
           <legend class="form-legend">Servicios de Transporte</legend>
-          <label class="form-checkbox">
-            <input v-model="formData.transportsEnabled" type="checkbox" />
-            <span>Activar servicios de transporte</span>
+          <label class="form-toggle">
+            <input v-model="formData.transportsEnabled" type="checkbox" class="toggle-input" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Activar servicios de transporte</span>
           </label>
         </div>
 
         <div v-if="formData.transportsEnabled" class="section-content">
-          <p class="form-hint">Agregar servicios de transporte disponibles (imágenes en Firebase)</p>
           <div class="transports-list">
           <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
             <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
@@ -166,15 +180,23 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Contactos</label>
+                  <label class="form-label">Contactos (Nombre + Número)</label>
                   <div class="contacts-list">
-                    <div v-for="(contact, contactIndex) in transport.contacts" :key="contactIndex" class="contact-item">
-                      <input 
-                        v-model="transport.contacts[contactIndex]" 
-                        type="text" 
-                        class="form-input"
-                        placeholder="Ej: +54 9 11 2345 6789"
-                      />
+                    <div v-for="(contact, contactIndex) in transport.contacts" :key="contactIndex" class="contact-item-group">
+                      <div class="contact-item-inputs">
+                        <input 
+                          v-model="transport.contacts[contactIndex].name" 
+                          type="text" 
+                          class="form-input"
+                          placeholder="Nombre del contacto"
+                        />
+                        <input 
+                          v-model="transport.contacts[contactIndex].contact" 
+                          type="text" 
+                          class="form-input"
+                          placeholder="Ej: +54 9 11 2345 6789"
+                        />
+                      </div>
                       <button type="button" @click="removeTransportContact(index, contactIndex)" class="btn-remove">✕</button>
                     </div>
                   </div>
@@ -197,9 +219,10 @@
       <fieldset class="form-section">
         <div class="section-header">
           <legend class="form-legend">Hospedaje</legend>
-          <label class="form-checkbox">
-            <input v-model="formData.lodging.enabled" type="checkbox" />
-            <span>Activar sección de hospedaje</span>
+          <label class="form-toggle">
+            <input v-model="formData.lodging.enabled" type="checkbox" class="toggle-input" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Activar sección de hospedaje</span>
           </label>
         </div>
 
@@ -226,6 +249,54 @@
               class="form-textarea"
               placeholder="Descripción del hospedaje..."
             ></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Mesas VIP -->
+      <fieldset class="form-section">
+        <div class="section-header">
+          <legend class="form-legend">Mesas VIP & Backstage</legend>
+          <label class="form-toggle">
+            <input v-model="formData.mesas.enabled" type="checkbox" class="toggle-input" />
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Activar sección de mesas VIP</span>
+          </label>
+        </div>
+
+        <div v-if="formData.mesas.enabled" class="section-content">
+          <div class="form-group">
+            <label class="form-label">Imagen/Flyer (Firebase)</label>
+            <input 
+              type="file" 
+              accept="image/*" 
+              class="form-input"
+              @change="(e) => handleMediaUpload(e, 'mesas')"
+              :disabled="isUploading"
+            />
+            <div v-if="formData.mesas.image_url" class="image-preview">
+              <img :src="formData.mesas.image_url" alt="Mesas preview" />
+              <button type="button" @click="formData.mesas.image_url = null" class="btn-remove-image">✕</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descripción</label>
+            <textarea 
+              v-model="formData.mesas.description" 
+              class="form-textarea"
+              placeholder="Descripción de las mesas VIP..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Número de WhatsApp para Contacto</label>
+            <input 
+              v-model="formData.mesas.whatsapp_number" 
+              type="text" 
+              class="form-input"
+              placeholder="Ej: +54 9 11 2345 6789"
+            />
           </div>
         </div>
       </fieldset>
@@ -298,6 +369,7 @@ const getDefaultFormData = () => ({
   fecha: ['', ''],
   lugar: '',
   descripcion: '',
+  media_url: null,
   artists: [],
   transportsEnabled: false,
   transports: [],
@@ -305,6 +377,12 @@ const getDefaultFormData = () => ({
     enabled: false,
     image_url: null,
     description: '',
+  },
+  mesas: {
+    enabled: false,
+    image_url: null,
+    description: '',
+    whatsapp_number: '',
   },
   ticketLinks: [],
 })
@@ -319,7 +397,7 @@ watch(() => props.event?.id, () => {
   if (props.event && props.event.dj) {
     const newEvent = props.event
     
-    const fecha = Array.isArray(newEvent.fecha) ? newEvent.fecha : ['', '']
+    const fecha = Array.isArray(newEvent.fecha) ? newEvent.fecha.map(f => String(f)) : ['', '']
     
     const transportsEnabled = newEvent.transportsEnabled || (newEvent.transports && newEvent.transports.length > 0)
     let transports = newEvent.transports || []
@@ -356,9 +434,10 @@ watch(() => props.event?.id, () => {
     
     formData.value = {
       dj: newEvent.dj || '',
-      fecha: [...fecha],
+      fecha: [String(newEvent.fecha?.[0] || ''), String(newEvent.fecha?.[1] || '')],
       lugar: newEvent.lugar || '',
       descripcion: newEvent.descripcion || '',
+      media_url: newEvent.media_url || null,
       artists: artists,
       transportsEnabled: transportsEnabled,
       transports: transports,
@@ -366,6 +445,12 @@ watch(() => props.event?.id, () => {
         enabled: newEvent.lodging?.enabled === 1 || newEvent.lodging?.enabled === true,
         image_url: newEvent.lodging?.image_url || null,
         description: newEvent.lodging?.description || '',
+      },
+      mesas: {
+        enabled: newEvent.mesas?.enabled === 1 || newEvent.mesas?.enabled === true,
+        image_url: newEvent.mesas?.image_url || null,
+        description: newEvent.mesas?.description || '',
+        whatsapp_number: newEvent.mesas?.whatsapp_number || '',
       },
       ticketLinks: ticketLinks,
     }
@@ -391,8 +476,14 @@ const handleMediaUpload = async (e, type, target) => {
       throw new Error('Tipo de archivo no soportado')
     }
 
-    if (type === 'lodging') {
+    if (type === 'event') {
+      formData.value.media_url = url
+    } else if (type === 'lodging') {
       formData.value.lodging.image_url = url
+    } else if (type === 'mesas') {
+      if (formData.value.mesas) {
+        formData.value.mesas.image_url = url
+      }
     } else if (type === 'transport' && target !== undefined) {
       if (formData.value.transports && formData.value.transports[target]) {
         formData.value.transports[target].image_url = url
@@ -431,7 +522,7 @@ const addTransportContact = (transportIndex) => {
     if (!Array.isArray(formData.value.transports[transportIndex].contacts)) {
       formData.value.transports[transportIndex].contacts = []
     }
-    formData.value.transports[transportIndex].contacts.push('')
+    formData.value.transports[transportIndex].contacts.push({ name: '', contact: '' })
   }
 }
 
@@ -510,6 +601,7 @@ const submitForm = () => {
     fecha: [formData.value.fecha[0], formData.value.fecha[1]],
     lugar: formData.value.lugar,
     descripcion: formData.value.descripcion,
+    media_url: formData.value.media_url,
     artists: formData.value.artists,
     transportsEnabled: formData.value.transportsEnabled,
     transports: transports,
@@ -618,13 +710,14 @@ const submitForm = () => {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .form-label {
@@ -673,38 +766,46 @@ const submitForm = () => {
 .gallery-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .gallery-items {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .gallery-item {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(81, 193, 225, 0.1);
-  border-radius: 0.75rem;
+  grid-template-columns: 120px 1fr auto;
+  gap: 1.5rem;
+  align-items: start;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.05) 0%, rgba(255, 210, 92, 0.02) 100%);
+  border: 1px solid rgba(81, 193, 225, 0.15);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+  border-color: rgba(81, 193, 225, 0.3);
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.1) 0%, rgba(255, 210, 92, 0.05) 100%);
 }
 
 .gallery-preview {
-  width: 80px;
-  height: 80px;
-  border-radius: 0.5rem;
+  width: 120px;
+  height: 120px;
+  border-radius: 0.75rem;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(81, 193, 225, 0.2);
 }
 
-.gallery-preview img {
+.gallery-preview img,
+.gallery-preview video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -724,10 +825,11 @@ const submitForm = () => {
 }
 
 .gallery-name {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
-  color: #bbb;
-  margin: 0;
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1rem;
+  color: #FFD25C;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
 }
 
 .transports-list {
@@ -795,6 +897,19 @@ const submitForm = () => {
 }
 
 .link-inputs {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.75rem;
+}
+
+.contact-item-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.contact-item-inputs {
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 0.75rem;
@@ -878,6 +993,57 @@ const submitForm = () => {
   font-family: 'Standard', sans-serif;
   font-size: 0.9rem;
   color: #bbb;
+}
+
+/* Toggle Switch Moderno */
+.form-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background: #444;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-input:checked + .toggle-slider {
+  background: #FFD25C;
+}
+
+.toggle-input:checked + .toggle-slider::after {
+  left: 22px;
+}
+
+.toggle-label {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.9rem;
+  color: #bbb;
+  font-weight: 500;
 }
 
 .form-actions {

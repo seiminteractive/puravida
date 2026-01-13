@@ -1,8 +1,5 @@
 <template>
-  <section class="whatsapp-cta pv-surface">
-    <!-- Fondo decorativo -->
-    <div class="cta-bg-decoration"></div>
-
+  <section class="whatsapp-cta bg-transparent">
     <div class="cta-container">
       <div class="cta-content">
         <p class="cta-label">Conectá con nosotros</p>
@@ -41,24 +38,13 @@ useScrollFadeInElements('.whatsapp-btn')
 <style scoped>
 .whatsapp-cta {
   min-height: 50vh;
-  background: #000;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0rem 1.5rem;
   position: relative;
   overflow: hidden;
-}
-
-.cta-bg-decoration {
-  position: absolute;
-  bottom: -100px;
-  right: -100px;
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 210, 92, 0.1) 0%, transparent 70%);
-  z-index: 1;
 }
 
 .cta-container {

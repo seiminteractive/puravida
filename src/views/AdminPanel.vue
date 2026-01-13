@@ -22,7 +22,7 @@
           @click="activeTab = tab"
           :class="['admin-tab', { active: activeTab === tab }]"
         >
-          {{ tab === 'events' ? 'Eventos' : tab === 'create' ? 'Crear Evento' : 'Configuración' }}
+          {{ tab === 'events' ? 'Eventos' : 'Crear Evento' }}
         </button>
       </div>
 
@@ -89,14 +89,6 @@
             @cancel="cancelEdit"
           />
         </div>
-
-        <!-- Settings Tab -->
-        <div v-if="activeTab === 'settings'" class="tab-content">
-          <div class="settings-section">
-            <h2 class="settings-title">Configuración General</h2>
-            <p class="settings-description">Aquí irán las opciones de configuración del sitio.</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -109,7 +101,7 @@ import { useEvents } from '../composables/useEvents'
 import { fetchEventById } from '../services/apiService'
 
 const activeTab = ref('events')
-const tabs = ['events', 'create', 'settings']
+const tabs = ['events', 'create']
 const editingEvent = ref(null)
 const isSubmitting = ref(false)
 const isLoadingEvent = ref(false)
@@ -134,7 +126,7 @@ const editEvent = async (event) => {
       fecha: [freshEvent.fecha_dia, freshEvent.fecha_mes],
       lugar: freshEvent.lugar,
       descripcion: freshEvent.descripcion,
-      imagen: freshEvent.media_url,
+      media_url: freshEvent.media_url,
       transportsEnabled: freshEvent.transports_enabled ? true : false,
       artists: (freshEvent.artists || []).map(a => ({
         name: a.artist_name,
@@ -149,13 +141,22 @@ const editEvent = async (event) => {
         name: t.transport_name,
         image_url: t.image_url,
         description: t.description,
-        contacts: (t.contacts || []).map(c => c.contact || c)
+        contacts: (t.contacts || []).map(c => ({
+          name: c.contact_name || 'Contacto',
+          contact: c.contact
+        }))
       })),
       lodging: freshEvent.lodging ? {
         enabled: freshEvent.lodging.enabled ? true : false,
         description: freshEvent.lodging.description,
         image_url: freshEvent.lodging.image_url
       } : { enabled: false, description: '', image_url: null },
+      mesas: freshEvent.mesas ? {
+        enabled: freshEvent.mesas.enabled ? true : false,
+        description: freshEvent.mesas.description,
+        image_url: freshEvent.mesas.image_url,
+        whatsapp_number: freshEvent.mesas.whatsapp_number
+      } : { enabled: false, description: '', image_url: null, whatsapp_number: '' },
     }
     
     activeTab.value = 'create'
@@ -202,12 +203,13 @@ const saveEvent = async (eventData) => {
       fecha_mes: eventData.fecha?.[1] || '',
       lugar: eventData.lugar || '',
       descripcion: eventData.descripcion || '',
-      media_url: eventData.imagen || null,
+      media_url: eventData.media_url || null,
       transports_enabled: eventData.transportsEnabled ? 1 : 0,
       artists: artists,
       tickets: tickets,
       transports: transports,
       lodging: eventData.lodging || { enabled: false, description: '' },
+      mesas: eventData.mesas || { enabled: false, description: '', image_url: null, whatsapp_number: '' },
     }
 
     console.log('Payload enviado:', JSON.stringify(payload, null, 2))

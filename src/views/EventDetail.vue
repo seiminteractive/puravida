@@ -1,14 +1,25 @@
 <template>
   <div class="event-detail-view">
-    <!-- Luces de fondo decorativas -->
-    <div class="bg-light-cyan-1"></div>
-    <div class="bg-light-indigo"></div>
-    <div class="bg-light-yellow"></div>
-    <!-- Video Section (3/4 height, fixed background) -->
-    <section class="video-section">
-      <video autoplay muted loop playsinline class="hero-video">
-        <source src="/assets/promo_lineup.mp4" type="video/mp4" />
-      </video>
+    <!-- Loading state -->
+    <div v-if="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando evento...</p>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="error-container">
+      <p>Error cargando evento: {{ error }}</p>
+      <router-link to="/" class="back-link">Volver</router-link>
+    </div>
+
+    <!-- Event content -->
+    <div v-else>
+      <!-- Video Section (3/4 height, fixed background) -->
+      <section class="video-section">
+        <video v-if="isVideoMedia" autoplay muted loop playsinline class="hero-video">
+          <source :src="heroMedia" type="video/mp4" />
+        </video>
+        <img v-else :src="heroMedia" alt="Event" class="hero-image" />
       
       <!-- Dark overlay -->
       <div class="video-dark-overlay"></div>
@@ -34,9 +45,9 @@
           <div class="event-hero-badge">
             <span>PURA:VIDA PRESENTS</span>
           </div>
-          <h1 class="event-hero-title">Mariano Mellino</h1>
+          <h1 class="event-hero-title">{{ event?.dj || 'DJ Desconocido' }}</h1>
           <div class="event-hero-details">
-            <p class="hero-location">Hotel Termas de Victoria, Entre Ríos</p>
+            <p class="hero-location">{{ event?.lugar || 'Ubicación no disponible' }}</p>
           </div>
           
           <!-- Circular icons section -->
@@ -55,8 +66,8 @@
 
         <!-- Bottom left info -->
         <div class="video-bottom-left">
-          <p class="bottom-date">17 JUL</p>
-          <p class="bottom-subtitle">Ritual de conexión bajo las estrellas</p>
+          <p class="bottom-date">{{ formatDate(event?.fecha_dia, event?.fecha_mes) }}</p>
+          <p class="bottom-subtitle">{{ event?.descripcion || 'Descripción no disponible' }}</p>
         </div>
       </div>
     </section>
@@ -64,26 +75,30 @@
     <!-- Content Wrapper -->
     <div class="event-content pv-surface">
       <!-- DJs/Artistas Section -->
-      <section class="py-3 px-3 sm:py-4 sm:px-4 border-t border-white border-opacity-10 flex flex-col items-center">
-        <!-- Header -->
-        <div class="text-center mb-2">
-          <h2 class="font-napzer sm:text-lg text-white font-semibold tracking-wide text-2xl lg:text-4xl mt-6">ARTISTAS</h2>
-          <p class="font-standard text-xs text-cyan-400 mt-0.5 lg:text-1xl">Deslizá para conocer</p>
+      <section class="artistas-section">
+        <!-- Tickets Header Container -->
+        <div class="entradas-header-container">
+          <!-- Title -->
+          <h2 class="entradas-header-title">Vive la experiencia completa</h2>
+          
+          <!-- Description -->
+          <p class="entradas-header-desc">Acceso a la mejor música, ambiente exclusivo y conexión espiritual con nuestra comunidad</p>
         </div>
 
         <!-- Get Tickets Button -->
-        <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="inline-block mb-2 px-3 sm:px-4 py-1 bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-semibold uppercase tracking-wider rounded-full transition-all">
-          Entradas
+        <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="entradas-btn">
+          Obtener Entradas
         </a>
 
         <!-- Carousel -->
-        <div class="w-full max-w-sm sm:max-w-md lg:max-w-lg py-6">
+        <div class="artistas-carousel-wrapper">
           <Swiper
           :modules="modules"
           :slides-per-view="1"
           :centered-slides="true"
-          :loop="true"
+          :loop="djArtists.length > 1"
           :space-between="0"
+          :autoplay="{ delay: 1500, disableOnInteraction: false }"
           class="djs-carousel"
           >
             <SwiperSlide v-for="(artist, index) in djArtists" :key="artist.id" class="artist-slide">
@@ -91,11 +106,9 @@
                 <div class="relative w-full aspect-[3/4] overflow-hidden rounded-md bg-cyan-400 bg-opacity-10">
                   <img :src="artist.image" :alt="artist.name" class="artist-image w-full h-full object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                  <div class="absolute bottom-0 left-0 right-0 p-2">
-                    <h3 class="font-napzer text-xs sm:text-sm text-white font-semibold leading-tight">{{ artist.name }}</h3>
-                    <p class="font-standard text-xs text-cyan-400 mt-0.5 leading-none">{{ artist.genre }}</p>
-                  </div>
                 </div>
+                <!-- Artist Name Below Card -->
+                <h3 class="artist-name">{{ artist.name }}</h3>
               </div>
             </SwiperSlide>
           </Swiper>
@@ -103,16 +116,16 @@
       </section>
 
       <!-- Mesas Section -->
-      <section class="mesas-section">
+      <section class="mesas-section" v-if="event?.mesas">
         <div class="mesas-container">
           <!-- Columna izquierda - Contenido -->
           <div class="mesas-content">
             <div class="mesas-text-group">
               <h2 class="mesas-title">Mesas VIP & Backstage</h2>
               <p class="mesas-subtitle">Viví la experiencia más exclusiva de Pura Vida</p>
-              <p class="mesas-description">Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento</p>
+              <p class="mesas-description">{{ event.mesas.description || 'Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento' }}</p>
             </div>
-            <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="mesas-btn">
+            <a :href="`https://wa.me/${getWhatsAppNumber(event.mesas.contacts)}`" target="_blank" rel="noopener noreferrer" class="mesas-btn">
               <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consultar mesas VIP</span>
             </a>
@@ -120,7 +133,7 @@
 
           <!-- Columna derecha - Imagen -->
           <div class="mesas-image-wrapper">
-            <img src="/assets/mesas.png" alt="Mesas" class="mesas-image" @click="openImage('mesas')" />
+            <img :src="event.mesas.image_url" alt="Mesas" class="mesas-image" @click="openImage('mesas')" />
           </div>
         </div>
       </section>
@@ -137,70 +150,184 @@
           <!-- Grid de bloques -->
           <div class="experiencia-blocks">
             <!-- Hospedaje Block -->
-            <div class="experiencia-block">
+            <div v-if="lodgingData" class="experiencia-block">
+              <!-- Title -->
+              <h3 class="block-title-top">Hospedaje</h3>
+              <!-- Media Card -->
               <div class="block-media">
-                <video autoplay muted loop playsinline class="block-video" @click="openImage('hospedaje')">
-                  <source src="/assets/VIDEO_PLAZAS.mp4" type="video/mp4" />
+                <video v-if="lodgingData.image_url?.includes('mp4')" autoplay muted loop playsinline class="block-video" @click="openImage('hospedaje')">
+                  <source :src="lodgingData.image_url" type="video/mp4" />
                 </video>
+                <img v-else :src="lodgingData.image_url" alt="Hospedaje" class="block-image" @click="openImage('hospedaje')" />
               </div>
+              <!-- Description & Button -->
               <div class="block-content">
-                <h3 class="block-title">Hospedaje</h3>
-                <p class="block-description">Opciones de hospedaje cercanas y seguras para tu descanso</p>
+                <p class="block-description">{{ lodgingData.description || 'Opciones de hospedaje cercanas y seguras para tu descanso' }}</p>
+                <a :href="`https://wa.me/${getLodgingWhatsApp()}`" target="_blank" rel="noopener noreferrer" class="block-btn">
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon" />
+                  <span class="block-btn-text">Consultar hospedaje</span>
+                </a>
               </div>
             </div>
 
             <!-- Traslado Block -->
-            <div class="experiencia-block">
+            <div v-for="transport in transportsData" :key="transport.id" class="experiencia-block">
+              <!-- Title -->
+              <h3 class="block-title-top">{{ transport.transport_name }}</h3>
+              <!-- Media Card -->
               <div class="block-media">
-                <img src="/assets/transporte.png" alt="Traslado" class="block-image" @click="openImage('traslados')" />
+                <img :src="transport.image_url" :alt="transport.transport_name" class="block-image" @click="openImage('traslados')" />
               </div>
+              <!-- Description & Button -->
               <div class="block-content">
-                <h3 class="block-title">Traslado</h3>
-                <p class="block-description">Transporte cómodo y coordinado de ida y vuelta.</p>
+                <p class="block-description">{{ transport.description || 'Transporte cómodo y coordinado de ida y vuelta.' }}</p>
+                <button @click="handleTransportClick(transport)" class="block-btn">
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon" />
+                  <span class="block-btn-text">Consultar traslados</span>
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <!-- CTA -->
-          <div class="experiencia-cta">
-            <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="experiencia-btn">
-              <img ref="experienciaIcon" src="/assets/iconoComunidad3.png" alt="Contactar" class="btn-rotating-icon" />
-              <span>Consulta por nuestra experiencia</span>
+      <!-- Transport Contacts Modal -->
+      <div v-if="showTransportModal" class="modal-overlay" @click.self="showTransportModal = false">
+        <div class="modal-content">
+          <button @click="showTransportModal = false" class="modal-close">&times;</button>
+          <h3 class="modal-title">Contactos de {{ selectedTransport?.transport_name }}</h3>
+          <div class="modal-contacts">
+            <a
+              v-for="contact in selectedTransport?.contacts"
+              :key="contact.id || contact.contact"
+              :href="`https://wa.me/${typeof contact === 'string' ? contact.replace(/\D/g, '') : contact.contact.replace(/\D/g, '')}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="modal-contact-btn"
+            >
+              <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon" />
+              <span>{{ typeof contact === 'string' ? contact : contact.contact }}</span>
             </a>
           </div>
         </div>
-      </section>
+      </div>
+
+    </div>
 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
+import { Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
-import { getDJArtists } from '../services/eventsService'
+import { fetchEventById } from '../services/apiService'
 
-const modules = [Pagination]
-const djArtists = getDJArtists()
+const modules = [Pagination, Autoplay]
+const route = useRoute()
 
-onMounted(() => {
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: 'instant' // o 'smooth' si querés animado
-  })
+// Estado
+const event = ref(null)
+const loading = ref(true)
+const error = ref(null)
+
+// Computed properties para datos del evento
+const heroMedia = computed(() => {
+  if (!event.value?.media_url) return '/assets/promo_lineup.mp4'
+  return event.value.media_url
 })
 
-const eventIcon = useRotatingIcon(8)
+const isVideoMedia = computed(() => {
+  const url = heroMedia.value
+  return url.endsWith('.mp4') || url.endsWith('.webm') || url.includes('video')
+})
+
+const djArtists = computed(() => {
+  return (event.value?.artists || []).map(a => ({
+    id: a.id,
+    name: a.artist_name,
+    image: a.image_url,
+    genre: 'DJ'
+  }))
+})
+
+const lodgingData = computed(() => {
+  if (!event.value?.lodging || !event.value.lodging.enabled) return null
+  return event.value.lodging
+})
+
+const transportsData = computed(() => {
+  return (event.value?.transports || [])
+})
+
+// Icones rotativos
 const mesasIcon = useRotatingIcon(8)
 const experienciaIcon = useRotatingIcon(8)
 
+// Modal de transporte
+const showTransportModal = ref(false)
+const selectedTransport = ref(null)
+
+const formatDate = (dia, mes) => {
+  const monthMap = {
+    '01': 'ENE', '02': 'FEB', '03': 'MAR', '04': 'ABR',
+    '05': 'MAY', '06': 'JUN', '07': 'JUL', '08': 'AGO',
+    '09': 'SEP', '10': 'OCT', '11': 'NOV', '12': 'DIC'
+  }
+  const monthStr = String(mes).padStart(2, '0')
+  return `${String(dia).padStart(2, '0')} ${monthMap[monthStr] || monthStr}`
+}
+
+const getWhatsAppNumber = (contacts) => {
+  if (!Array.isArray(contacts) || contacts.length === 0) return '5491234567890'
+  const contact = contacts[0]
+  const num = typeof contact === 'string' ? contact : contact.contact
+  return num ? num.replace(/\D/g, '') : '5491234567890'
+}
+
+const getLodgingWhatsApp = () => {
+  if (!lodgingData.value?.whatsapp_number) return '5491234567890'
+  return lodgingData.value.whatsapp_number.replace(/\D/g, '')
+}
+
+const handleTransportClick = (transport) => {
+  if (transport.contacts && transport.contacts.length > 1) {
+    selectedTransport.value = transport
+    showTransportModal.value = true
+  } else {
+    const contact = transport.contacts?.[0] || '5491234567890'
+    const number = typeof contact === 'string' ? contact : contact.contact
+    const whatsapp = number.replace(/\D/g, '')
+    window.open(`https://wa.me/${whatsapp}`, '_blank')
+  }
+}
+
+onMounted(async () => {
+  try {
+    const eventId = route.params.id
+    const response = await fetchEventById(eventId)
+    const eventData = response.data || response
+    event.value = eventData
+  } catch (err) {
+    console.error('Error cargando evento:', err)
+    error.value = err.message
+  } finally {
+    loading.value = false
+  }
+
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'instant'
+  })
+})
+
 const openImage = (type) => {
-  // Por ahora solo log, luego implementaremos modal
   console.log(`Abriendo ${type}`)
 }
 </script>
@@ -213,6 +340,61 @@ const openImage = (type) => {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+}
+
+.loading-container,
+.error-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  z-index: 5;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #51C1E1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container p,
+.error-container p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #bbb;
+  margin: 0;
+}
+
+.back-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #51C1E1;
+  color: #000;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.back-link:hover {
+  background: #6ADDEE;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* Background Lights */
@@ -258,7 +440,13 @@ const openImage = (type) => {
   width: 100%;
   height: 85vh;
   overflow: visible;
-  z-index: 10;
+  z-index: 50;
+}
+
+@media (min-width: 1024px) {
+  .video-section {
+    height: 100vh;
+  }
 }
 
 .hero-video {
@@ -303,10 +491,24 @@ const openImage = (type) => {
   gap: 0.75rem;
 }
 
+@media (min-width: 1024px) {
+  .video-top-right {
+    top: 2rem;
+    right: 2rem;
+  }
+}
+
 .video-logo {
   width: 60px;
   height: 60px;
   opacity: 0.8;
+}
+
+@media (min-width: 1024px) {
+  .video-logo {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .video-weekend {
@@ -325,13 +527,26 @@ const openImage = (type) => {
   left: 1.5rem;
 }
 
+@media (min-width: 1024px) {
+  .video-bottom-left {
+    bottom: 5rem;
+    left: 3rem;
+  }
+}
+
 .bottom-date {
-  font-family: 'Napzer Rounded', sans-serif;
+  font-family: 'Standerd Bold', sans-serif;
   font-size: 1.75rem;
-  color: #FFD25C;
+  color: #51C1E1;
   margin: 0 0 0.25rem 0;
   font-weight: 700;
   letter-spacing: 0.05em;
+}
+
+@media (min-width: 1024px) {
+  .bottom-date {
+    font-size: 2.5rem;
+  }
 }
 
 .bottom-subtitle {
@@ -342,6 +557,13 @@ const openImage = (type) => {
   font-weight: 300;
   max-width: 200px;
   line-height: 1.4;
+}
+
+@media (min-width: 1024px) {
+  .bottom-subtitle {
+    font-size: 1rem;
+    max-width: 300px;
+  }
 }
 
 .back-button {
@@ -362,6 +584,15 @@ const openImage = (type) => {
   z-index: 3;
 }
 
+@media (min-width: 1024px) {
+  .back-button {
+    top: 2rem;
+    left: 2rem;
+    width: 50px;
+    height: 50px;
+  }
+}
+
 .back-button:hover {
   background: rgba(255, 255, 255, 0.3);
 }
@@ -369,6 +600,13 @@ const openImage = (type) => {
 .back-button svg {
   width: 20px;
   height: 20px;
+}
+
+@media (min-width: 1024px) {
+  .back-button svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .event-hero-info {
@@ -380,12 +618,25 @@ const openImage = (type) => {
   max-width: 600px;
 }
 
+@media (min-width: 1024px) {
+  .event-hero-info {
+    max-width: 800px;
+    gap: 2rem;
+  }
+}
+
 .event-hero-badge {
   display: inline-block;
   background: rgba(255, 255, 255, 0.95);
   padding: 0.4rem 1.2rem;
   border-radius: 2rem;
   width: fit-content;
+}
+
+@media (min-width: 1024px) {
+  .event-hero-badge {
+    padding: 0.6rem 1.8rem;
+  }
 }
 
 .event-hero-badge span {
@@ -397,13 +648,26 @@ const openImage = (type) => {
   letter-spacing: 0.1em;
 }
 
+@media (min-width: 1024px) {
+  .event-hero-badge span {
+    font-size: 0.85rem;
+  }
+}
+
 .event-hero-title {
-  font-family: 'Napzer Rounded', sans-serif;
+  font-family: 'Standerd Black', sans-serif;
   font-size: 3rem;
   color: #fff;
   margin: 0;
-  font-weight: 700;
+  font-weight: 900;
   line-height: 1.1;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1024px) {
+  .event-hero-title {
+    font-size: 5rem;
+  }
 }
 
 .event-hero-details {
@@ -415,7 +679,7 @@ const openImage = (type) => {
 .hero-date {
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1.25rem;
-  color: #FFD25C;
+  color: #51C1E1;
   margin: 0;
   font-weight: 600;
 }
@@ -426,6 +690,12 @@ const openImage = (type) => {
   color: #bbb;
   margin: 0;
   font-weight: 300;
+}
+
+@media (min-width: 1024px) {
+  .hero-location {
+    font-size: 1.3rem;
+  }
 }
 
 .event-hero-icons {
@@ -440,6 +710,13 @@ const openImage = (type) => {
   padding: 0 1.5rem;
 }
 
+@media (min-width: 1024px) {
+  .event-hero-icons {
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+}
+
 .hero-icon-item {
   width: 56px;
   height: 56px;
@@ -452,10 +729,24 @@ const openImage = (type) => {
   transition: all 0.3s ease;
 }
 
+@media (min-width: 1024px) {
+  .hero-icon-item {
+    width: 72px;
+    height: 72px;
+  }
+}
+
 .hero-icon-item img {
   width: 28px;
   height: 28px;
   opacity: 1;
+}
+
+@media (min-width: 1024px) {
+  .hero-icon-item img {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 .event-tickets-btn {
@@ -463,7 +754,7 @@ const openImage = (type) => {
   align-items: center;
   justify-content: center;
   padding: 1rem 2.5rem;
-  background: #FFD25C;
+  background: #51C1E1;
   color: #000;
   text-decoration: none;
   border-radius: 2rem;
@@ -533,7 +824,7 @@ const openImage = (type) => {
 .badge-date {
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1rem;
-  color: #FFD25C;
+  color: #51C1E1;
   font-weight: 500;
   letter-spacing: 0.1em;
   white-space: nowrap;
@@ -560,7 +851,7 @@ const openImage = (type) => {
 .tickets-btn {
   display: inline-block;
   padding: 0.75rem 2.5rem;
-  background: #FFD25C;
+  background: #51C1E1;
   color: #000;
   border-radius: 2rem;
   font-family: 'Standard', sans-serif;
@@ -586,6 +877,7 @@ const openImage = (type) => {
   overflow: visible;
   display: flex;
   justify-content: center;
+  max-height: 800px;
 }
 
 .artist-slide {
@@ -631,6 +923,29 @@ const openImage = (type) => {
 .artist-card {
   width: 100%;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.artist-name {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.95;
+  max-width: 220px;
+}
+
+@media (min-width: 1024px) {
+  .artist-name {
+    font-size: 1rem;
+  }
 }
 
 .artist-image {
@@ -654,8 +969,174 @@ const openImage = (type) => {
   width: 8px !important;
 }
 
-:deep(.swiper-pagination) {
-  bottom: 0 !important;
+/* Artistas Section */
+.artistas-section {
+  padding: 3rem 1.5rem;
+  background: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .artistas-section {
+    padding: 5rem 2rem;
+    gap: 3.5rem;
+  }
+}
+
+.entradas-invitation {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  opacity: 0.9;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+@media (min-width: 1024px) {
+  .entradas-invitation {
+    font-size: 1.1rem;
+    max-width: 500px;
+  }
+}
+
+.entradas-header-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+}
+
+.entradas-header-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 1024px) {
+  .entradas-header-title {
+    font-size: 2.8rem;
+  }
+}
+
+.entradas-header-desc {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.85rem;
+  color: #ccc;
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+@media (min-width: 1024px) {
+  .entradas-header-desc {
+    font-size: 1rem;
+  }
+}
+
+.entradas-perks {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.perk {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.75rem;
+  color: #51C1E1;
+  opacity: 0.9;
+}
+
+.perk-icon {
+  font-size: 1rem;
+}
+
+.perk-text {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}
+
+@media (min-width: 1024px) {
+  .perk {
+    font-size: 0.9rem;
+  }
+  
+  .perk-icon {
+    font-size: 1.3rem;
+  }
+}
+
+.entradas-cta-text {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 1024px) {
+  .entradas-cta-text {
+    font-size: 1.05rem;
+    margin-top: 1rem;
+  }
+}
+
+.entradas-btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: #51C1E1;
+  color: #000;
+  text-decoration: none;
+  border-radius: 2rem;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .entradas-btn {
+    padding: 1rem 2.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+.entradas-btn:hover {
+  background: #FFE47C;
+  transform: scale(1.05);
+}
+
+.artistas-carousel-wrapper {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.5rem 0;
+}
+
+@media (min-width: 1024px) {
+  .artistas-carousel-wrapper {
+    max-width: 600px;
+    padding: 0.5rem 0;
+  }
 }
 
 /* Mesas Section */
@@ -791,9 +1272,8 @@ const openImage = (type) => {
 .experiencia-section {
   padding: 4rem 1.5rem;
   background: #000;
-  position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative; 
+  padding-top: 0;
 }
 
 .experiencia-container {
@@ -805,7 +1285,7 @@ const openImage = (type) => {
 }
 
 .experiencia-header {
-  text-align: left; /* mobile */
+  text-align: center; /* mobile */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -858,8 +1338,27 @@ const openImage = (type) => {
 .experiencia-block {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   transition: all 0.3s ease;
+  align-items: center;
+  text-align: center;
+}
+
+.block-title-top {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  order: 1;
+}
+
+@media (min-width: 768px) {
+  .block-title-top {
+    font-size: 1.8rem;
+  }
 }
 
 .experiencia-block:hover {
@@ -875,6 +1374,7 @@ const openImage = (type) => {
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   aspect-ratio: 4 / 5;
+  order: 2;
 }
 
 .block-video,
@@ -897,18 +1397,11 @@ const openImage = (type) => {
 .block-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   text-align: center;
-}
-
-.block-title {
-  font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.5rem;
-  color: #fff;
-  margin: 0;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  align-items: center;
+  width: 100%;
+  order: 3;
 }
 
 .block-description {
@@ -918,6 +1411,48 @@ const openImage = (type) => {
   line-height: 1.6;
   margin: 0;
   font-weight: 300;
+  max-width: 400px;
+}
+
+.block-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1px solid #51C1E1;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.85rem;
+  color: #51C1E1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.block-btn:hover {
+  border-color: #51C1E1;
+  color: #51C1E1;
+  transform: scale(1.05);
+}
+
+.block-btn-icon {
+  width: 20px;
+  height: 20px;
+  animation: spin 8s linear infinite;
+}
+
+.block-btn-text {
+  display: inline;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .experiencia-cta {
@@ -983,7 +1518,7 @@ const openImage = (type) => {
 .section-title {
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1.75rem;
-  color: #FFD25C;
+  color: #51C1E1;
   margin: 0 0 0.75rem 0;
   font-weight: 600;
 }
@@ -999,7 +1534,7 @@ const openImage = (type) => {
 .contact-btn {
   display: inline-block;
   padding: 0.75rem 2rem;
-  background: #FFD25C;
+  background: #51C1E1;
   color: #000;
   border-radius: 2rem;
   font-family: 'Standard', sans-serif;
@@ -1023,10 +1558,118 @@ const openImage = (type) => {
 }
 
 :deep(.swiper-pagination-bullet-active) {
-  background: #FFD25C;
+  background: #51C1E1;
 }
 
 :deep(.swiper-pagination) {
   bottom: 0;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: black;
+  border: .5px solid #51C1E1;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.modal-close:hover {
+  opacity: 1;
+}
+
+.modal-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-contact-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: 1px solid #51C1E1;
+  border-radius: 1rem;
+  color: #51C1E1;
+  text-decoration: none;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  justify-content: center;
+}
+
+.modal-contact-btn:hover {
+  background: rgba(81, 193, 225, 0.2);
+  border-color: #51C1E1;
+  color: #51C1E1;
+  transform: scale(1.02);
+}
+
+.modal-contact-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (min-width: 768px) {
+  .modal-content {
+    padding: 2.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.8rem;
+  }
 }
 </style>

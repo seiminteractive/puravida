@@ -45,7 +45,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-defineProps({
+const props = defineProps({
   event: {
     type: Object,
     required: true,
@@ -53,7 +53,7 @@ defineProps({
 })
 
 const goToEventDetail = () => {
-  router.push(`/event/${event.id}`)
+  router.push(`/event/${props.event.id}`)
 }
 </script>
 
@@ -74,7 +74,7 @@ const goToEventDetail = () => {
 .event-background {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 9 / 16;
   min-height: 500px;
   overflow: hidden;
 }

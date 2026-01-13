@@ -19,21 +19,31 @@
         </div>
       </div>
 
-      <!-- Sección de carrousel destacado (MISMA ESTÉTICA QUE EventCarousel) -->
+      <!-- Sección de carrousel destacado (Carousel de Tailwind) -->
       <section class="featured-carousel-section">
-        <div class="carousel-wrapper">
-          <Swiper
-            :modules="modules"
-            :slides-per-view="1"
-            :centered-slides="true"
-            :loop="true"
-            :space-between="0"
-            class="swiper-container"
-          >
-            <SwiperSlide v-for="(event, index) in allEvents" :key="event.id" class="featured-event-slide">
+        <!-- Loading State -->
+        <div v-if="loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando eventos...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="error-state">
+          <p>❌ {{ error }}</p>
+        </div>
+
+        <!-- Carousel Tailwind -->
+        <div v-else class="carousel-wrapper">
+          <div class="flex gap-6 overflow-x-auto pb-4 scroll-smooth carousel-tailwind" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
+            <div
+              v-for="(event, index) in renderedEvents"
+              :key="`event-${event.id}-${index}`"
+              :data-carousel-item="index"
+              class="flex-shrink-0 w-72 carousel-item"
+            >
               <EventCard :event="event" />
-            </SwiperSlide>
-          </Swiper>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -82,40 +92,63 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/pagination'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import Navbar from '../components/common/Navbar.vue'
 import EventCard from '../components/common/EventCard.vue'
-import { getEvents, getPastEvents } from '../services/eventsService'
+import { fetchEvents } from '../services/apiService'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
 
-const modules = [Pagination]
-const allEvents = computed(() => [...getEvents(), ...getPastEvents()])
+const events = ref([])
+const loading = ref(true)
+const error = ref(null)
+const currentSlide = ref(0)
+let autoplayInterval = null
 
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
+
+// Triplicar eventos si hay solo 1
+const renderedEvents = computed(() => {
+  if (events.value.length === 0) return []
+  if (events.value.length < 3) {
+    const result = []
+    while (result.length < 3) {
+      result.push(...events.value)
+    }
+    return result.slice(0, 3)
+  }
+  return events.value
+})
+
+// Transformar datos de API al formato esperado
+const transformEventData = (event) => ({
+  id: event.id,
+  dj: event.dj || 'DJ Desconocido',
+  fecha: [event.fecha_dia, event.fecha_mes],
+  lugar: event.lugar || 'Por definir',
+  descripcion: event.descripcion || '',
+  imagen: event.media_url || event.artists?.[0]?.image_url || 'https://via.placeholder.com/600x400?text=Evento',
+  ...event
+})
 
 // Agrupar eventos por mes/año
 const eventsByMonth = computed(() => {
   const grouped = {}
   
-  allEvents.value.forEach(event => {
+  events.value.forEach(event => {
     const monthMap = {
-      '01': 'January',
-      '02': 'February',
-      '03': 'March',
-      '04': 'April',
-      '05': 'May',
-      '06': 'June',
-      '07': 'July',
-      '08': 'August',
-      '09': 'September',
-      '10': 'October',
-      '11': 'November',
-      '12': 'December',
+      '01': 'Enero',
+      '02': 'Febrero',
+      '03': 'Marzo',
+      '04': 'Abril',
+      '05': 'Mayo',
+      '06': 'Junio',
+      '07': 'Julio',
+      '08': 'Agosto',
+      '09': 'Septiembre',
+      '10': 'Octubre',
+      '11': 'Noviembre',
+      '12': 'Diciembre',
     }
     
     const monthName = monthMap[event.fecha[1]]
@@ -134,6 +167,54 @@ const eventsByMonth = computed(() => {
     events: events.sort((a, b) => parseInt(a.fecha[0]) - parseInt(b.fecha[0])),
   }))
 })
+
+onMounted(async () => {
+  try {
+    const response = await fetchEvents()
+    const dataArray = response.data || response
+    
+    events.value = (Array.isArray(dataArray) ? dataArray : []).map(transformEventData)
+    loading.value = false
+
+    // Iniciar autoplay después de cargar eventos
+    if (events.value.length > 0) {
+      startAutoplay()
+    }
+  } catch (err) {
+    console.error('Error loading events:', err)
+    error.value = 'Error cargando eventos'
+    loading.value = false
+  }
+})
+
+onUnmounted(() => {
+  if (autoplayInterval) {
+    clearInterval(autoplayInterval)
+  }
+})
+
+const startAutoplay = () => {
+  if (renderedEvents.value.length === 0) return
+  
+  autoplayInterval = setInterval(() => {
+    currentSlide.value = (currentSlide.value + 1) % renderedEvents.value.length
+    scrollToSlide()
+  }, 4000) // Cambiar cada 4 segundos
+}
+
+const scrollToSlide = () => {
+  const carousel = document.querySelector('.carousel-tailwind')
+  if (carousel) {
+    const slideWidth = carousel.querySelector('[data-carousel-item]')?.offsetWidth || 0
+    const gap = 24 // gap-6 = 1.5rem = 24px
+    const scrollAmount = (slideWidth + gap) * currentSlide.value
+    carousel.scrollTo({
+      left: scrollAmount,
+      behavior: 'smooth'
+    })
+  }
+}
+
 </script>
 
 <style scoped>
@@ -142,24 +223,11 @@ const eventsByMonth = computed(() => {
   min-height: 100vh;
   background: #000;
   position: relative;
-  overflow-x: hidden;
-}
-
-.bg-light-cyan-1 {
-  position: absolute;
-  top: 30%;
-  left: 25%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(81, 193, 225, .17) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-  pointer-events: none;
 }
 
 .bg-light-cyan-2 {
   position: absolute;
-  top: 50%;
+  top: 65%;
   right: 30%;
   width: 450px;
   height: 450px;
@@ -193,6 +261,13 @@ const eventsByMonth = computed(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .calendar-header {
+    padding: 2rem 4rem;
+    gap: 2rem;
+  }
 }
 
 .header-title-group {
@@ -236,6 +311,14 @@ const eventsByMonth = computed(() => {
   padding: 3rem 1.5rem;
   background: #000;
   position: relative;
+  margin-bottom: 4rem;
+}
+
+@media (min-width: 1024px) {
+  .featured-carousel-section {
+    padding: 4rem 0;
+    margin-bottom: 6rem;
+  }
 }
 
 .events-by-month-wrapper {
@@ -262,66 +345,55 @@ const eventsByMonth = computed(() => {
   }
 }
 
-.swiper-container {
-  width: 100%;
-  overflow: visible;
+/* Carousel de Tailwind - Estilos para scroll suave */
+
+/* Ocultar scrollbar en todos los navegadores */
+.carousel-tailwind::-webkit-scrollbar {
+  display: none;
 }
 
-.featured-event-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0.4;
-  transform: scale(0.8);
-  padding: 0 6px;
+.carousel-tailwind {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Active slide - main card */
-:deep(.swiper-slide-active.featured-event-slide) {
-  opacity: 1;
-  transform: scale(1);
-  z-index: 10;
-}
+/* Desktop: hacer carousel más grande con slide del medio más grande */
+@media (min-width: 1024px) {
+  .carousel-wrapper {
+    max-width: 100% !important;
+    padding: 0 2rem;
+  }
 
-/* Adjacent slides - prev and next */
-:deep(.swiper-slide-prev.featured-event-slide),
-:deep(.swiper-slide-next.featured-event-slide) {
-  opacity: 0.2;
-  transform: scale(0.88);
-}
+  .carousel-tailwind {
+    justify-content: center;
+    padding: 0 !important;
+  }
 
-:deep(.swiper-wrapper) {
-  align-items: center;
-}
+  .carousel-item {
+    width: 350px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0.85;
+  }
 
-:deep(.swiper-slide) {
-  height: auto;
-  width: 220px;
-}
+  /* Slide del medio - un poco más chico */
+  .carousel-item:nth-child(2) {
+    width: 380px;
+    opacity: 1;
+  }
 
-:deep(.swiper-pagination-bullet) {
-  background: rgba(255, 255, 255, 0.3) !important;
-  width: 5px !important;
-  height: 5px !important;
-  margin: 0 2px !important;
-  transition: all 0.3s ease !important;
-}
-
-:deep(.swiper-pagination-bullet-active) {
-  background: #51C1E1 !important;
-  width: 8px !important;
-}
-
-:deep(.swiper-pagination) {
-  bottom: 0 !important;
-  padding-top: 1rem;
+  /* Slides laterales - más grandes */
+  .carousel-item:nth-child(1),
+  .carousel-item:nth-child(3) {
+    width: 380px;
+    opacity: 0.9;
+  }
 }
 
 .section-divider {
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 210, 92, 0.2), transparent);
+  margin: 2rem 0;
 }
 
 /* SECCIÓN MINIMALISTA CON PREVIEW VIDEO */
