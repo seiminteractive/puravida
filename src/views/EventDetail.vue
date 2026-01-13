@@ -92,26 +92,10 @@
 
         <!-- Carousel -->
         <div class="artistas-carousel-wrapper">
-          <Swiper
-          :modules="modules"
-          :slides-per-view="1"
-          :centered-slides="true"
-          :loop="djArtists.length > 1"
-          :space-between="0"
-          :autoplay="{ delay: 1500, disableOnInteraction: false }"
-          class="djs-carousel"
-          >
-            <SwiperSlide v-for="(artist, index) in djArtists" :key="artist.id" class="artist-slide">
-              <div class="artist-card">
-                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-md bg-cyan-400 bg-opacity-10">
-                  <img :src="artist.image" :alt="artist.name" class="artist-image w-full h-full object-cover" />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                </div>
-                <!-- Artist Name Below Card -->
-                <h3 class="artist-name">{{ artist.name }}</h3>
-              </div>
-            </SwiperSlide>
-          </Swiper>
+          <SwiperCarousel 
+            :events="djEventsForCarousel"
+            @cardClick="handleArtistClick"
+          />
         </div>
       </section>
 
@@ -220,16 +204,12 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination, Autoplay } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/pagination'
+import { useRoute, useRouter } from 'vue-router'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
 import { fetchEventById } from '../services/apiService'
-
-const modules = [Pagination, Autoplay]
+import SwiperCarousel from '../components/common/SwiperCarousel.vue'
 const route = useRoute()
+const router = useRouter()
 
 // Estado
 const event = ref(null)
@@ -247,12 +227,14 @@ const isVideoMedia = computed(() => {
   return url.endsWith('.mp4') || url.endsWith('.webm') || url.includes('video')
 })
 
-const djArtists = computed(() => {
+const djEventsForCarousel = computed(() => {
   return (event.value?.artists || []).map(a => ({
     id: a.id,
-    name: a.artist_name,
-    image: a.image_url,
-    genre: 'DJ'
+    title: a.artist_name,
+    media_url: a.image_url,
+    fecha_dia: event.value?.fecha_dia,
+    fecha_mes: event.value?.fecha_mes,
+    tickets: []
   }))
 })
 
@@ -305,6 +287,10 @@ const handleTransportClick = (transport) => {
     const whatsapp = number.replace(/\D/g, '')
     window.open(`https://wa.me/${whatsapp}`, '_blank')
   }
+}
+
+const handleArtistClick = (artist) => {
+  // Handle artist click - can be used for future navigation
 }
 
 onMounted(async () => {
@@ -871,103 +857,6 @@ const openImage = (type) => {
   box-shadow: 0 8px 20px rgba(255, 210, 92, 0.3);
 }
 
-.djs-carousel {
-  width: 100%;
-  padding-bottom: 1rem;
-  overflow: visible;
-  display: flex;
-  justify-content: center;
-  max-height: 800px;
-}
-
-.artist-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0.4;
-  transform: scale(0.8);
-  padding: 0 6px;
-}
-
-/* Active slide - main card */
-:deep(.swiper-slide-active.artist-slide) {
-  opacity: 1;
-  transform: scale(1);
-  z-index: 10;
-}
-
-/* Adjacent slides - prev and next */
-:deep(.swiper-slide-prev.artist-slide),
-:deep(.swiper-slide-next.artist-slide) {
-  opacity: 0.65;
-  transform: scale(0.88);
-}
-
-:deep(.swiper-wrapper) {
-  align-items: center;
-}
-
-:deep(.swiper-slide) {
-  height: auto;
-  width: 220px;
-}
-
-/* All other slides */
-:deep(.swiper-slide-active ~ .artist-slide),
-:deep(.artist-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next)) {
-  opacity: 0.3;
-  transform: scale(0.88);
-}
-
-.artist-card {
-  width: 100%;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.artist-name {
-  font-family: 'Napzer Rounded', sans-serif;
-  font-size: 0.9rem;
-  color: #fff;
-  text-align: center;
-  margin: 0;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.95;
-  max-width: 220px;
-}
-
-@media (min-width: 1024px) {
-  .artist-name {
-    font-size: 1rem;
-  }
-}
-
-.artist-image {
-  transition: transform 0.3s ease;
-}
-
-:deep(.swiper-slide-active) .artist-image {
-  transform: scale(1.03);
-}
-
-:deep(.swiper-pagination-bullet) {
-  background: rgba(255, 255, 255, 0.3) !important;
-  width: 5px !important;
-  height: 5px !important;
-  margin: 0 2px !important;
-  transition: all 0.3s ease !important;
-}
-
-:deep(.swiper-pagination-bullet-active) {
-  background: #51C1E1 !important;
-  width: 8px !important;
-}
 
 /* Artistas Section */
 .artistas-section {
@@ -1128,15 +1017,6 @@ const openImage = (type) => {
 
 .artistas-carousel-wrapper {
   width: 100%;
-  max-width: 500px;
-  padding: 0.5rem 0;
-}
-
-@media (min-width: 1024px) {
-  .artistas-carousel-wrapper {
-    max-width: 600px;
-    padding: 0.5rem 0;
-  }
 }
 
 /* Mesas Section */

@@ -19,7 +19,7 @@
         </div>
       </div>
 
-      <!-- Sección de carrousel destacado (Carousel de Tailwind) -->
+      <!-- Sección de carrousel destacado (Carousel de Swiper) -->
       <section class="featured-carousel-section">
         <!-- Loading State -->
         <div v-if="loading" class="loading-state">
@@ -32,19 +32,14 @@
           <p>❌ {{ error }}</p>
         </div>
 
-        <!-- Carousel Tailwind -->
-        <div v-else class="carousel-wrapper">
-          <div class="flex gap-6 overflow-x-auto pb-4 scroll-smooth carousel-tailwind" style="scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none;">
-            <div
-              v-for="(event, index) in renderedEvents"
-              :key="`event-${event.id}-${index}`"
-              :data-carousel-item="index"
-              class="flex-shrink-0 w-72 carousel-item"
-            >
-              <EventCard :event="event" />
-            </div>
-          </div>
-        </div>
+        <!-- Carousel Swiper -->
+        <SwiperCarousel 
+          v-else
+          :events="events"
+          @cardClick="goToEventDetail"
+          @infoClick="goToEventDetail"
+          @ticketsClick="handleTicketsClick"
+        />
       </section>
 
       <!-- Separador -->
@@ -93,11 +88,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Navbar from '../components/common/Navbar.vue'
-import EventCard from '../components/common/EventCard.vue'
 import { fetchEvents } from '../services/apiService'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
+import SwiperCarousel from '../components/common/SwiperCarousel.vue'
 
+const router = useRouter()
 const events = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -107,18 +104,23 @@ let autoplayInterval = null
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
 
-// Triplicar eventos si hay solo 1
-const renderedEvents = computed(() => {
-  if (events.value.length === 0) return []
-  if (events.value.length < 3) {
-    const result = []
-    while (result.length < 3) {
-      result.push(...events.value)
-    }
-    return result.slice(0, 3)
+const goToEventDetail = (event) => {
+  router.push(`/event/${event.id}`)
+}
+
+const handleTicketsClick = (event) => {
+  if (!event.tickets || event.tickets.length === 0) {
+    return
   }
-  return events.value
-})
+  
+  if (event.tickets.length === 1) {
+    window.open(event.tickets[0].link_url, '_blank')
+  } else {
+    // Multiple tickets could show a modal here
+    window.open(event.tickets[0].link_url, '_blank')
+  }
+}
+
 
 // Transformar datos de API al formato esperado
 const transformEventData = (event) => ({
@@ -175,45 +177,12 @@ onMounted(async () => {
     
     events.value = (Array.isArray(dataArray) ? dataArray : []).map(transformEventData)
     loading.value = false
-
-    // Iniciar autoplay después de cargar eventos
-    if (events.value.length > 0) {
-      startAutoplay()
-    }
   } catch (err) {
     console.error('Error loading events:', err)
     error.value = 'Error cargando eventos'
     loading.value = false
   }
 })
-
-onUnmounted(() => {
-  if (autoplayInterval) {
-    clearInterval(autoplayInterval)
-  }
-})
-
-const startAutoplay = () => {
-  if (renderedEvents.value.length === 0) return
-  
-  autoplayInterval = setInterval(() => {
-    currentSlide.value = (currentSlide.value + 1) % renderedEvents.value.length
-    scrollToSlide()
-  }, 4000) // Cambiar cada 4 segundos
-}
-
-const scrollToSlide = () => {
-  const carousel = document.querySelector('.carousel-tailwind')
-  if (carousel) {
-    const slideWidth = carousel.querySelector('[data-carousel-item]')?.offsetWidth || 0
-    const gap = 24 // gap-6 = 1.5rem = 24px
-    const scrollAmount = (slideWidth + gap) * currentSlide.value
-    carousel.scrollTo({
-      left: scrollAmount,
-      behavior: 'smooth'
-    })
-  }
-}
 
 </script>
 
@@ -306,87 +275,47 @@ const scrollToSlide = () => {
   font-weight: 600;
 }
 
-/* SECCIÓN CARROUSEL - MISMA ESTÉTICA QUE EventCarousel */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #51C1E1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p,
+.error-state p {
+  font-family: 'Standard', sans-serif;
+  font-size: 1rem;
+  color: #bbb;
+  margin: 0;
+}
+
+.error-state p {
+  color: #ff6b6b;
+}
+
+/* SECCIÓN CARROUSEL - SWIPER */
 .featured-carousel-section {
-  padding: 3rem 1.5rem;
   background: #000;
   position: relative;
-  margin-bottom: 4rem;
-}
-
-@media (min-width: 1024px) {
-  .featured-carousel-section {
-    padding: 4rem 0;
-    margin-bottom: 6rem;
-  }
-}
-
-.events-by-month-wrapper {
-  width: 100%;
-  max-width: 950px;
-  margin: 0 auto;
-}
-
-.carousel-wrapper {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-  .carousel-wrapper {
-    max-width: 650px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .carousel-wrapper {
-    max-width: 950px;
-  }
-}
-
-/* Carousel de Tailwind - Estilos para scroll suave */
-
-/* Ocultar scrollbar en todos los navegadores */
-.carousel-tailwind::-webkit-scrollbar {
-  display: none;
-}
-
-.carousel-tailwind {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Desktop: hacer carousel más grande con slide del medio más grande */
-@media (min-width: 1024px) {
-  .carousel-wrapper {
-    max-width: 100% !important;
-    padding: 0 2rem;
-  }
-
-  .carousel-tailwind {
-    justify-content: center;
-    padding: 0 !important;
-  }
-
-  .carousel-item {
-    width: 350px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    opacity: 0.85;
-  }
-
-  /* Slide del medio - un poco más chico */
-  .carousel-item:nth-child(2) {
-    width: 380px;
-    opacity: 1;
-  }
-
-  /* Slides laterales - más grandes */
-  .carousel-item:nth-child(1),
-  .carousel-item:nth-child(3) {
-    width: 380px;
-    opacity: 0.9;
-  }
 }
 
 .section-divider {

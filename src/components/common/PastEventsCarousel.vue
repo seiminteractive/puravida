@@ -16,36 +16,44 @@
         </button>  
       </div>
 
-      <!-- Swiper Carousel -->
+      <!-- Carousel -->
       <div class="carousel-wrapper">
-        <Swiper
-          :modules="modules"
-          :slides-per-view="1"
-          :centered-slides="true"
-          :loop="true"
-          :space-between="0"
-          class="swiper-container"
+        <Carousel
+          :opts="{
+            align: 'center',
+            loop: true,
+          }"
+          class="w-full"
         >
-          <SwiperSlide v-for="(event, index) in pastEvents" :key="event.id" class="past-event-slide">
-            <PastEventCard :event="event" />
-          </SwiperSlide>
-        </Swiper>
+          <CarouselContent class="swiper-container">
+            <CarouselItem 
+              v-for="(event, index) in pastEvents" 
+              :key="event.id" 
+              class="past-event-slide basis-full"
+            >
+              <PastEventCard :event="event" />
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/pagination'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui'
 import PastEventCard from './PastEventCard.vue'
 import { getPastEvents } from '../../services/eventsService'
 import { useRotatingIcon } from '../../composables/useRotatingIcon'
 import { useScrollFadeInElements } from '../../composables/useScrollFadeIn'
-
-const modules = [Pagination]
 const pastEvents = getPastEvents()
 
 // Icono rotativo del botón

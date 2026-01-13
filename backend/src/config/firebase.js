@@ -7,8 +7,10 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Cargar .env desde la carpeta backend
-dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+// Cargar .env desde la carpeta backend (si no está ya cargado)
+if (!process.env.DB_HOST) {
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+}
 
 console.log('🔍 .env loaded from:', path.resolve(__dirname, '../../.env'))
 console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID)
@@ -17,7 +19,7 @@ console.log('FIREBASE_PRIVATE_KEY exists:', !!process.env.FIREBASE_PRIVATE_KEY)
 
 // Normalizar private key - intentar ambas formas
 let privateKey = process.env.FIREBASE_PRIVATE_KEY
-if (privateKey.includes('\\n')) {
+if (privateKey && privateKey.includes('\\n')) {
   // Si tiene \n literal (backslash + n)
   privateKey = privateKey.replace(/\\n/g, '\n')
 }
@@ -47,18 +49,23 @@ console.log('🔐 Service account config:', {
 })
 
 console.log('🚀 Initializing Firebase Admin SDK...')
+let firebaseInitialized = false
 try {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET
   })
   console.log('✅ Firebase initialized successfully')
+  firebaseInitialized = true
 } catch (error) {
-  console.error('❌ Firebase init error:', error.message)
-  throw error
+  console.warn('⚠️  Firebase init warning:', error.message)
+  console.warn('⚠️  File uploads will not work - please add valid Firebase credentials to .env')
 }
 
-const bucket = admin.storage().bucket()
+let bucket = null
+if (firebaseInitialized) {
+  bucket = admin.storage().bucket()
+}
 
 /**
  * Subir archivo a Firebase Storage
@@ -70,6 +77,10 @@ const bucket = admin.storage().bucket()
  */
 export const uploadFileToFirebase = async (fileBuffer, fileName, folder = 'uploads', mimeType = 'application/octet-stream') => {
   try {
+    if (!firebaseInitialized) {
+      throw new Error('Firebase not initialized. Please configure valid Firebase credentials.')
+    }
+    
     console.log('📤 Firebase upload started:', { fileName, folder, mimeType, bufferSize: fileBuffer.length })
     
     // Crear nombre único con timestamp

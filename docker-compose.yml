@@ -1,0 +1,49 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: puravida_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_123
+      MYSQL_DATABASE: puravida
+      MYSQL_USER: puravida_admin
+      MYSQL_PASSWORD: puravida_password_123
+      MYSQL_INITDB_SKIP_TZINFO: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+    networks:
+      - puravida_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: puravida_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: puravida_admin
+      PMA_PASSWORD: puravida_password_123
+      PMA_ROOT_PASSWORD: root_password_123
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - puravida_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  puravida_network:
+    driver: bridge
+
