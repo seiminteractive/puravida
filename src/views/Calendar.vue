@@ -83,6 +83,31 @@
         </div>
       </section>
     </div>
+
+    <!-- Tickets Modal -->
+    <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
+      <div class="modal-content">
+        <button @click="showTicketsModal = false" class="modal-close">&times;</button>
+        <h3 class="modal-title">Selecciona una ticketera</h3>
+        <div class="modal-tickets">
+          <a
+            v-for="ticket in selectedEvent?.tickets"
+            :key="`${ticket.id}-${ticket.url || ticket.link_url}`"
+            :href="ticket.url || ticket.link_url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="modal-ticket-btn"
+          >
+            <span>{{ ticket.name || ticket.ticketer_name }}</span>
+            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -101,6 +126,10 @@ const error = ref(null)
 const currentSlide = ref(0)
 let autoplayInterval = null
 
+// Modal de tickets
+const showTicketsModal = ref(false)
+const selectedEvent = ref(null)
+
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
 
@@ -114,10 +143,11 @@ const handleTicketsClick = (event) => {
   }
   
   if (event.tickets.length === 1) {
-    window.open(event.tickets[0].link_url, '_blank')
+    window.open(event.tickets[0].url || event.tickets[0].link_url, '_blank')
   } else {
-    // Multiple tickets could show a modal here
-    window.open(event.tickets[0].link_url, '_blank')
+    // Múltiples tickets, abrir modal para seleccionar
+    selectedEvent.value = event
+    showTicketsModal.value = true
   }
 }
 
@@ -483,5 +513,117 @@ onMounted(async () => {
   .month-title {
     font-size: 1.25rem;
   }
+}
+
+/* MODAL DE TICKETS */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(10, 10, 15, 0.95));
+  border: 1px solid rgba(255, 210, 92, 0.2);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #FFD25C;
+}
+
+.modal-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.modal-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal-ticket-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.1), rgba(255, 210, 92, 0.05));
+  border: 1px solid rgba(255, 210, 92, 0.2);
+  border-radius: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-ticket-btn:hover {
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.2), rgba(255, 210, 92, 0.1));
+  border-color: rgba(255, 210, 92, 0.4);
+  transform: translateX(4px);
+}
+
+.external-icon {
+  width: 18px;
+  height: 18px;
+  color: #51C1E1;
+  flex-shrink: 0;
 }
 </style>

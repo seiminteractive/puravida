@@ -39,16 +39,15 @@
           <div class="event-overlay">
             <!-- Fecha en esquina superior -->
             <div class="event-date-badge">
-              <div class="date-badge-content">
-                <div class="date-group">
-                  <span class="date-label">DÍA</span>
-                  <span class="date-value">{{ event.fecha_dia || getDay(event.date) }}</span>
+                <div class="date-group date-box">
+                    <span class="date-label">DÍA</span>
+                    <span class="date-value">{{ event.fecha_dia || getDay(event.date) }}</span>
                 </div>
-                <div class="date-group">
-                  <span class="date-label">MES</span>
-                  <span class="date-value">{{ event.fecha_mes || getMonth(event.date) }}</span>
+
+                <div class="date-group date-box">
+                    <span class="date-label">MES</span>
+                    <span class="date-value">{{ event.fecha_mes || getMonth(event.date) }}</span>
                 </div>
-              </div>
             </div>
 
             <!-- Info en la parte inferior -->
@@ -144,7 +143,17 @@ const handleInfoClick = (event) => {
 }
 
 const handleTicketsClick = (event) => {
-  emit('ticketsClick', event)
+  if (!event.tickets || event.tickets.length === 0) {
+    return
+  }
+  
+  if (event.tickets.length === 1) {
+    // Un solo ticket, redirigir directo
+    window.open(event.tickets[0].url || event.tickets[0].link_url, '_blank')
+  } else {
+    // Múltiples tickets, emitir evento para abrir modal
+    emit('ticketsClick', event)
+  }
 }
 </script>
 
@@ -254,22 +263,26 @@ const handleTicketsClick = (event) => {
 }
 
 .event-date-badge {
+    display: flex;
+  gap: 0.6rem;
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
+
+.date-box {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  min-width: 46px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 
 .date-badge-content {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .date-group {

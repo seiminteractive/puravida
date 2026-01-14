@@ -17,78 +17,81 @@
       <!-- Video Section (3/4 height, fixed background) -->
       <section class="video-section">
         <video v-if="isVideoMedia" autoplay muted loop playsinline class="hero-video">
-          <source :src="heroMedia" type="video/mp4" />
+          <source :src="heroMedia" type="video/mp4">
         </video>
-        <img v-else :src="heroMedia" alt="Event" class="hero-image" />
-      
-      <!-- Dark overlay -->
-      <div class="video-dark-overlay"></div>
-      
-      <!-- Back button (outside overlay for positioning) -->
-      <router-link to="/" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </router-link>
-      
-      <!-- Event info overlay -->
-      <div class="video-content-overlay">
+        <img v-else :src="heroMedia" alt="Event" class="hero-image">
         
-        <!-- Top right logo/info -->
-        <div class="video-top-right">
-          <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="video-logo" />
-          <p class="video-weekend"></p>
-        </div>
-
-        <!-- Main content center -->
-        <div class="event-hero-info">
-          <div class="event-hero-badge">
-            <span>PURA:VIDA PRESENTS</span>
-          </div>
-          <h1 class="event-hero-title">{{ event?.dj || 'DJ Desconocido' }}</h1>
-          <div class="event-hero-details">
-            <p class="hero-location">{{ event?.lugar || 'Ubicación no disponible' }}</p>
-          </div>
+        <!-- Dark overlay -->
+        <div class="video-dark-overlay"></div>
+        
+        <!-- Back button (outside overlay for positioning) -->
+        <router-link to="/" class="back-button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </router-link>
+        
+        <!-- Event info overlay -->
+        <div class="video-content-overlay">
           
-          <!-- Circular icons section -->
-          <div class="event-hero-icons">
-            <div class="hero-icon-item">
-              <img src="/assets/iconoEventos3.png" alt="Eventos" />
+          <!-- Top right logo/info -->
+          <div class="video-top-right">
+            <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="video-logo">
+            <p class="video-weekend"></p>
+          </div>
+
+          <!-- Main content center -->
+          <div class="event-hero-info">
+            <div class="event-hero-badge">
+              <span>PURA:VIDA PRESENTS</span>
             </div>
-            <div class="hero-icon-item">
-              <img src="/assets/iconoComunidad3.png" alt="Comunidad" />
+            <h1 class="event-hero-title">{{ event?.dj || 'DJ Desconocido' }}</h1>
+            <div class="event-hero-details">
+              <p class="hero-location">{{ event?.lugar || 'Ubicación no disponible' }}</p>
             </div>
-            <div class="hero-icon-item">
-              <img src="/assets/iconoExperiencia1.png" alt="Experiencia" />
+            
+            <!-- Circular icons section -->
+            <div class="event-hero-icons">
+              <div class="hero-icon-item">
+                <img src="/assets/iconoEventos3.png" alt="Eventos">
+              </div>
+              <div class="hero-icon-item">
+                <img src="/assets/iconoComunidad3.png" alt="Comunidad">
+              </div>
+              <div class="hero-icon-item">
+                <img src="/assets/iconoExperiencia1.png" alt="Experiencia">
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Bottom left info -->
-        <div class="video-bottom-left">
-          <p class="bottom-date">{{ formatDate(event?.fecha_dia, event?.fecha_mes) }}</p>
-          <p class="bottom-subtitle">{{ event?.descripcion || 'Descripción no disponible' }}</p>
+          <!-- Bottom left info -->
+          <div class="video-bottom-left">
+            <p class="bottom-date">{{ formatDate(event?.fecha_dia, event?.fecha_mes) }}</p>
+            <p class="bottom-subtitle">{{ event?.descripcion || 'Descripción no disponible' }}</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Content Wrapper -->
-    <div class="event-content pv-surface">
+      <!-- Content Wrapper -->
+      <div class="event-content pv-surface">
       <!-- DJs/Artistas Section -->
       <section class="artistas-section">
         <!-- Tickets Header Container -->
         <div class="entradas-header-container">
           <!-- Title -->
-          <h2 class="entradas-header-title">Vive la experiencia completa</h2>
+          <h2 class="entradas-header-title">Viví la experiencia completa</h2>
           
           <!-- Description -->
           <p class="entradas-header-desc">Acceso a la mejor música, ambiente exclusivo y conexión espiritual con nuestra comunidad</p>
         </div>
 
         <!-- Get Tickets Button -->
-        <a href="https://wa.me/5491234567890" target="_blank" rel="noopener noreferrer" class="entradas-btn">
+        <button 
+          @click="handleTicketsClick(event)"
+          class="entradas-btn"
+        >
           Obtener Entradas
-        </a>
+        </button>
 
         <!-- Carousel -->
         <div class="artistas-carousel-wrapper">
@@ -100,7 +103,7 @@
       </section>
 
       <!-- Mesas Section -->
-      <section class="mesas-section" v-if="event?.mesas">
+      <section class="mesas-section" v-if="event?.mesas?.enabled">
         <div class="mesas-container">
           <!-- Columna izquierda - Contenido -->
           <div class="mesas-content">
@@ -109,7 +112,7 @@
               <p class="mesas-subtitle">Viví la experiencia más exclusiva de Pura Vida</p>
               <p class="mesas-description">{{ event.mesas.description || 'Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento' }}</p>
             </div>
-            <a :href="`https://wa.me/${getWhatsAppNumber(event.mesas.contacts)}`" target="_blank" rel="noopener noreferrer" class="mesas-btn">
+            <a :href="`https://wa.me/${getMesasWhatsApp()}`" target="_blank" rel="noopener noreferrer" class="mesas-btn">
               <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consultar mesas VIP</span>
             </a>
@@ -117,13 +120,13 @@
 
           <!-- Columna derecha - Imagen -->
           <div class="mesas-image-wrapper">
-            <img :src="event.mesas.image_url" alt="Mesas" class="mesas-image" @click="openImage('mesas')" />
+                <img :src="event.mesas.image_url" alt="Mesas" class="mesas-image" @click="openImage('mesas')">
           </div>
         </div>
       </section>
 
       <!-- Experiencia Completa Section -->
-      <section class="experiencia-section">
+      <section v-if="lodgingData?.enabled || transportsData.length > 0" class="experiencia-section">
         <div class="experiencia-container">
           <!-- Header -->
           <div class="experiencia-header text-left sm:text-center">
@@ -132,23 +135,23 @@
           </div>
 
           <!-- Grid de bloques -->
-          <div class="experiencia-blocks">
+          <div class="experiencia-blocks" :class="activeBlocksCount === 1 ? 'single-block' : ''">
             <!-- Hospedaje Block -->
-            <div v-if="lodgingData" class="experiencia-block">
+            <div v-if="lodgingData && lodgingData.enabled" class="experiencia-block">
               <!-- Title -->
               <h3 class="block-title-top">Hospedaje</h3>
               <!-- Media Card -->
               <div class="block-media">
                 <video v-if="lodgingData.image_url?.includes('mp4')" autoplay muted loop playsinline class="block-video" @click="openImage('hospedaje')">
-                  <source :src="lodgingData.image_url" type="video/mp4" />
+                  <source :src="lodgingData.image_url" type="video/mp4">
                 </video>
-                <img v-else :src="lodgingData.image_url" alt="Hospedaje" class="block-image" @click="openImage('hospedaje')" />
+                <img v-else :src="lodgingData.image_url" alt="Hospedaje" class="block-image" @click="openImage('hospedaje')">
               </div>
               <!-- Description & Button -->
               <div class="block-content">
                 <p class="block-description">{{ lodgingData.description || 'Opciones de hospedaje cercanas y seguras para tu descanso' }}</p>
                 <a :href="`https://wa.me/${getLodgingWhatsApp()}`" target="_blank" rel="noopener noreferrer" class="block-btn">
-                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon" />
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon">
                   <span class="block-btn-text">Consultar hospedaje</span>
                 </a>
               </div>
@@ -157,16 +160,16 @@
             <!-- Traslado Block -->
             <div v-for="transport in transportsData" :key="transport.id" class="experiencia-block">
               <!-- Title -->
-              <h3 class="block-title-top">{{ transport.transport_name }}</h3>
+              <h3 class="block-title-top">Traslados</h3>
               <!-- Media Card -->
               <div class="block-media">
-                <img :src="transport.image_url" :alt="transport.transport_name" class="block-image" @click="openImage('traslados')" />
+                <img :src="transport.image_url" :alt="transport.transport_name" class="block-image" @click="openImage('traslados')">
               </div>
               <!-- Description & Button -->
               <div class="block-content">
                 <p class="block-description">{{ transport.description || 'Transporte cómodo y coordinado de ida y vuelta.' }}</p>
                 <button @click="handleTransportClick(transport)" class="block-btn">
-                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon" />
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon">
                   <span class="block-btn-text">Consultar traslados</span>
                 </button>
               </div>
@@ -189,15 +192,38 @@
               rel="noopener noreferrer"
               class="modal-contact-btn"
             >
-              <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon" />
+              <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon">
               <span>{{ typeof contact === 'string' ? contact : contact.contact }}</span>
             </a>
           </div>
         </div>
+        </div>
       </div>
 
-    </div>
-
+      <!-- Tickets Modal -->
+      <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
+        <div class="modal-content">
+          <button @click="showTicketsModal = false" class="modal-close">&times;</button>
+          <h3 class="modal-title">Selecciona una ticketera</h3>
+          <div class="modal-tickets">
+            <a
+              v-for="ticket in event?.tickets"
+              :key="`${ticket.id}-${ticket.url || ticket.link_url}`"
+              :href="ticket.url || ticket.link_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="modal-ticket-btn"
+            >
+              <span>{{ ticket.name || ticket.ticketer_name }}</span>
+              <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -215,6 +241,7 @@ const router = useRouter()
 const event = ref(null)
 const loading = ref(true)
 const error = ref(null)
+const showTicketsModal = ref(false)
 
 // Computed properties para datos del evento
 const heroMedia = computed(() => {
@@ -244,7 +271,15 @@ const lodgingData = computed(() => {
 })
 
 const transportsData = computed(() => {
+  if (!event.value?.transports_enabled) return []
   return (event.value?.transports || [])
+})
+
+const activeBlocksCount = computed(() => {
+  let count = 0
+  if (lodgingData.value?.enabled) count++
+  if (transportsData.value.length > 0) count += transportsData.value.length
+  return count
 })
 
 // Icones rotativos
@@ -277,6 +312,11 @@ const getLodgingWhatsApp = () => {
   return lodgingData.value.whatsapp_number.replace(/\D/g, '')
 }
 
+const getMesasWhatsApp = () => {
+  if (!event.value?.mesas?.whatsapp_number) return '5491234567890'
+  return event.value.mesas.whatsapp_number.replace(/\D/g, '')
+}
+
 const handleTransportClick = (transport) => {
   if (transport.contacts && transport.contacts.length > 1) {
     selectedTransport.value = transport
@@ -291,6 +331,19 @@ const handleTransportClick = (transport) => {
 
 const handleArtistClick = (artist) => {
   // Handle artist click - can be used for future navigation
+}
+
+const handleTicketsClick = (event) => {
+  if (!event.tickets || event.tickets.length === 0) {
+    return
+  }
+  
+  if (event.tickets.length === 1) {
+    window.open(event.tickets[0].url || event.tickets[0].link_url, '_blank')
+  } else {
+    // Múltiples tickets, abrir modal para seleccionar
+    showTicketsModal.value = true
+  }
 }
 
 onMounted(async () => {
@@ -1098,12 +1151,6 @@ const openImage = (type) => {
   justify-content: center;
 }
 
-@media (min-width: 1024px) {
-  .mesas-image-wrapper {
-    transform: translateY(-2rem);
-  }
-}
-
 .mesas-image {
   width: 100%;
   max-width: 500px;
@@ -1152,8 +1199,9 @@ const openImage = (type) => {
 .experiencia-section {
   padding: 4rem 1.5rem;
   background: #000;
-  position: relative; 
-  padding-top: 0;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .experiencia-container {
@@ -1209,9 +1257,20 @@ const openImage = (type) => {
   gap: 2.5rem;
 }
 
+.experiencia-blocks.single-block {
+  max-width: 400px;
+  margin: 0 auto;
+  justify-items: center;
+}
+
 @media (min-width: 768px) {
   .experiencia-blocks {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .experiencia-blocks.single-block {
+    grid-template-columns: 1fr;
+    max-width: 500px;
   }
 }
 
@@ -1446,17 +1505,6 @@ const openImage = (type) => {
 }
 
 /* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(4px);
-}
-
 .modal-content {
   background: black;
   border: .5px solid #51C1E1;
@@ -1551,5 +1599,117 @@ const openImage = (type) => {
   .modal-title {
     font-size: 1.8rem;
   }
+}
+
+/* MODAL DE TICKETS */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(10, 10, 15, 0.95));
+  border: 1px solid rgba(255, 210, 92, 0.2);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #FFD25C;
+}
+
+.modal-title {
+  font-family: 'Napzer Rounded', sans-serif;
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.modal-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal-ticket-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.1), rgba(255, 210, 92, 0.05));
+  border: 1px solid rgba(255, 210, 92, 0.2);
+  border-radius: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-ticket-btn:hover {
+  background: linear-gradient(135deg, rgba(81, 193, 225, 0.2), rgba(255, 210, 92, 0.1));
+  border-color: rgba(255, 210, 92, 0.4);
+  transform: translateX(4px);
+}
+
+.external-icon {
+  width: 18px;
+  height: 18px;
+  color: #51C1E1;
+  flex-shrink: 0;
 }
 </style>

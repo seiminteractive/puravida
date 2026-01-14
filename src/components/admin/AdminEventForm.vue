@@ -140,8 +140,8 @@
           <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
             <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
               <div class="transport-header">
-                <h4 class="transport-title">{{ transport.name || `Transporte ${index + 1}` }}</h4>
-                <button type="button" @click="removeTransport(index)" class="btn-remove">✕</button>
+                <h4 class="transport-title">{{ transport.name || `Transporte` }}</h4>
+                <!-- <button type="button" @click="removeTransport(index)" class="btn-remove">✕</button> -->
               </div>
 
               <div class="transport-content">
@@ -170,14 +170,14 @@
                   </div>
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label class="form-label">Descripción</label>
                   <textarea 
                     v-model="transport.description" 
                     class="form-textarea"
                     placeholder="Descripción del servicio de transporte..."
                   ></textarea>
-                </div>
+                </div> -->
 
                 <div class="form-group">
                   <label class="form-label">Contactos (Nombre + Número)</label>
@@ -208,9 +208,9 @@
             </div>
           </div>
 
-          <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary" :disabled="isUploading">
+          <!-- <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary" :disabled="isUploading">
             + Agregar Servicio de Transporte
-          </button>
+          </button> -->
           </div>
         </div>
       </fieldset>
@@ -242,14 +242,14 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Descripción</label>
             <textarea 
               v-model="formData.lodging.description" 
               class="form-textarea"
               placeholder="Descripción del hospedaje..."
             ></textarea>
-          </div>
+          </div> -->
         </div>
       </fieldset>
 
@@ -280,14 +280,14 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Descripción</label>
             <textarea 
               v-model="formData.mesas.description" 
               class="form-textarea"
               placeholder="Descripción de las mesas VIP..."
             ></textarea>
-          </div>
+          </div> -->
 
           <div class="form-group">
             <label class="form-label">Número de WhatsApp para Contacto</label>
@@ -592,7 +592,14 @@ const submitForm = () => {
       name: t.name,
       image_url: t.image_url,
       description: t.description,
-      contacts: t.contacts.filter(c => c.trim()),
+      contacts: (t.contacts || []).filter(c => {
+        if (typeof c === 'string') {
+          return c && c.trim()
+        } else if (c && typeof c === 'object' && c.contact) {
+          return c.contact && c.contact.trim()
+        }
+        return false
+      }),
     }))
   }
 
@@ -609,6 +616,13 @@ const submitForm = () => {
       enabled: formData.value.lodging.enabled,
       image_url: formData.value.lodging.image_url,
       description: formData.value.lodging.description,
+    },
+    mesas: {
+      enabled: formData.value.mesas.enabled,
+      image_url: formData.value.mesas.image_url,
+      description: formData.value.mesas.description,
+      whatsapp_number: formData.value.mesas.whatsapp_number,
+      contacts: [],
     },
     ticketLinks: validTicketLinks,
   })

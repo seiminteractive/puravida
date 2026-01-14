@@ -41,17 +41,17 @@
     <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
       <div class="modal-content">
         <button @click="showTicketsModal = false" class="modal-close">&times;</button>
-        <h3 class="modal-title">Comprá tu entrada</h3>
+        <h3 class="modal-title">Selecciona una ticketera</h3>
         <div class="modal-tickets">
           <a
             v-for="ticket in selectedEvent?.tickets"
-            :key="ticket.id"
-            :href="ticket.link_url"
+            :key="`${ticket.id}-${ticket.url || ticket.link_url}`"
+            :href="ticket.url || ticket.link_url"
             target="_blank"
             rel="noopener noreferrer"
             class="modal-ticket-btn"
           >
-            <span>{{ ticket.ticketer_name }}</span>
+            <span>{{ ticket.name || ticket.ticketer_name }}</span>
             <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
               <polyline points="15 3 21 3 21 9"></polyline>
@@ -94,9 +94,9 @@ const handleTicketsClick = (event) => {
   
   if (event.tickets.length === 1) {
     // Un solo ticket, redirigir directo
-    window.open(event.tickets[0].link_url, '_blank')
+    window.open(event.tickets[0].url || event.tickets[0].link_url, '_blank')
   } else {
-    // Múltiples tickets, abrir modal
+    // Múltiples tickets, abrir modal para seleccionar
     selectedEvent.value = event
     showTicketsModal.value = true
   }
@@ -303,7 +303,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 1000;
   backdrop-filter: blur(4px);
 }
 

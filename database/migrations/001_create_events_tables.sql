@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS event_transports (
 CREATE TABLE IF NOT EXISTS transport_contacts (
   id INT PRIMARY KEY AUTO_INCREMENT,
   transport_id INT NOT NULL,
+  contact_name VARCHAR(255),
   contact VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (transport_id) REFERENCES event_transports(id) ON DELETE CASCADE,
