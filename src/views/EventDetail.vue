@@ -179,26 +179,28 @@
       </section>
 
       <!-- Transport Contacts Modal -->
-      <div v-if="showTransportModal" class="modal-overlay" @click.self="showTransportModal = false">
-        <div class="modal-content">
-          <button @click="showTransportModal = false" class="modal-close">&times;</button>
-          <h3 class="modal-title">Contactos de {{ selectedTransport?.transport_name }}</h3>
-          <div class="modal-contacts">
-            <a
-              v-for="contact in selectedTransport?.contacts"
-              :key="contact.id || contact.contact"
-              :href="`https://wa.me/${typeof contact === 'string' ? contact.replace(/\D/g, '') : contact.contact.replace(/\D/g, '')}`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="modal-contact-btn"
-            >
-              <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon">
-              <span>{{ typeof contact === 'string' ? contact : contact.contact }}</span>
-            </a>
+      <Teleport to="body">
+        <div v-if="showTransportModal" class="modal-overlay" @click.self="showTransportModal = false">
+          <div class="modal-content">
+            <button @click="showTransportModal = false" class="modal-close">&times;</button>
+            <h3 class="modal-title">Contactos de {{ selectedTransport?.transport_name }}</h3>
+            <div class="modal-contacts">
+              <a
+                v-for="contact in selectedTransport?.contacts"
+                :key="contact.id || contact.contact"
+                :href="`https://wa.me/${typeof contact === 'string' ? contact.replace(/\D/g, '') : contact.contact.replace(/\D/g, '')}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="modal-contact-btn"
+              >
+                <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon">
+                <span>{{ typeof contact === 'string' ? contact : contact.contact }}</span>
+              </a>
+            </div>
           </div>
+          </div>
+        </Teleport>
         </div>
-        </div>
-      </div>
 
       <!-- Tickets Modal -->
       <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
@@ -229,7 +231,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
 import { fetchEventById } from '../services/apiService'
@@ -345,6 +347,15 @@ const handleTicketsClick = (event) => {
     showTicketsModal.value = true
   }
 }
+
+// Controlar scroll del body cuando los modales están abiertos
+watch([showTicketsModal, showTransportModal], ([ticketsOpen, transportOpen]) => {
+  if (ticketsOpen || transportOpen) {
+    document.body.classList.add('modal-open')
+  } else {
+    document.body.classList.remove('modal-open')
+  }
+})
 
 onMounted(async () => {
   try {
@@ -1614,6 +1625,11 @@ const openImage = (type) => {
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.2s ease-out;
+}
+
+/* Deshabilitar scroll de la página cuando modal está abierto */
+:global(body.modal-open) {
+  overflow: hidden;
 }
 
 @keyframes fadeIn {

@@ -36,8 +36,10 @@
     <div v-else class="no-events">
       <p>No hay eventos disponibles</p>
     </div>
+  </div>
 
-    <!-- Tickets Modal -->
+  <!-- Tickets Modal - Teleported to body to escape Swiper's transform -->
+  <Teleport to="body">
     <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
       <div class="modal-content">
         <button @click="showTicketsModal = false" class="modal-close">&times;</button>
@@ -61,15 +63,17 @@
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchEvents } from '../../services/apiService'
 import { useRotatingIcon } from '../../composables/useRotatingIcon'
 import SwiperCarousel from './SwiperCarousel.vue'
+
+// Teleport está disponible globalmente en Vue 3
 
 const router = useRouter()
 const events = ref([])
@@ -101,6 +105,15 @@ const handleTicketsClick = (event) => {
     showTicketsModal.value = true
   }
 }
+
+// Controlar scroll del body cuando el modal está abierto
+watch(showTicketsModal, (isOpen) => {
+  if (isOpen) {
+    document.body.classList.add('modal-open')
+  } else {
+    document.body.classList.remove('modal-open')
+  }
+})
 
 onMounted(async () => {
   try {
@@ -305,6 +318,11 @@ onMounted(async () => {
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
+}
+
+/* Deshabilitar scroll de la página cuando modal está abierto */
+:global(body.modal-open) {
+  overflow: hidden;
 }
 
 .modal-content {

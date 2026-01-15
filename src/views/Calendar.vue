@@ -83,8 +83,10 @@
         </div>
       </section>
     </div>
+  </div>
 
-    <!-- Tickets Modal -->
+  <!-- Tickets Modal - Teleported to body to escape Swiper's transform -->
+  <Teleport to="body">
     <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
       <div class="modal-content">
         <button @click="showTicketsModal = false" class="modal-close">&times;</button>
@@ -108,11 +110,11 @@
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '../components/common/Navbar.vue'
 import { fetchEvents } from '../services/apiService'
@@ -150,6 +152,15 @@ const handleTicketsClick = (event) => {
     showTicketsModal.value = true
   }
 }
+
+// Controlar scroll del body cuando el modal está abierto
+watch(showTicketsModal, (isOpen) => {
+  if (isOpen) {
+    document.body.classList.add('modal-open')
+  } else {
+    document.body.classList.remove('modal-open')
+  }
+})
 
 
 // Transformar datos de API al formato esperado
@@ -528,6 +539,11 @@ onMounted(async () => {
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.2s ease-out;
+}
+
+/* Deshabilitar scroll de la página cuando modal está abierto */
+:global(body.modal-open) {
+  overflow: hidden;
 }
 
 @keyframes fadeIn {

@@ -105,7 +105,7 @@
   padding: 4rem 1.5rem 2rem;
   position: relative;
   overflow: hidden;
-  z-index: 100;
+  z-index: 10;
 }
 
 .footer-top-decoration {
