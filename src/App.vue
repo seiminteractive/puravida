@@ -33,6 +33,5 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import Footer from './components/common/Footer.vue'
-
 const route = useRoute()
 </script>

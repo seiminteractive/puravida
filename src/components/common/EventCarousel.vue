@@ -43,7 +43,7 @@
     <div v-if="showTicketsModal" class="modal-overlay" @click.self="showTicketsModal = false">
       <div class="modal-content">
         <button @click="showTicketsModal = false" class="modal-close">&times;</button>
-        <h3 class="modal-title">Selecciona una ticketera</h3>
+        <h3 class="modal-title">Seleccioná una ticketera</h3>
         <div class="modal-tickets">
           <a
             v-for="ticket in selectedEvent?.tickets"
@@ -309,15 +309,17 @@ onMounted(async () => {
 }
 
 /* Tickets Modal */
+/* ================== MODAL STYLES ================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  padding: 1rem;
 }
 
 /* Deshabilitar scroll de la página cuando modal está abierto */
@@ -326,20 +328,21 @@ onMounted(async () => {
 }
 
 .modal-content {
-  background: black;
-  border: 1px solid rgba(81, 193, 225, 0.3);
-  border-radius: 1.5rem;
+  background: #000;
+  border: 1px solid rgba(79, 72, 152, 0.15);
+  border-radius: 1.2rem;
   padding: 2rem;
   max-width: 500px;
-  width: 90%;
+  width: 100%;
   position: relative;
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -349,66 +352,79 @@ onMounted(async () => {
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
   border: none;
-  color: #fff;
-  font-size: 2rem;
+  color: #aaa;
+  font-size: 1.8rem;
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .modal-close:hover {
-  opacity: 1;
+  color: #4F4898;
+  transform: rotate(90deg);
 }
 
 .modal-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   color: #fff;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.75rem 0;
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .modal-tickets {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .modal-ticket-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: transparent;
-  border: 1px solid #51C1E1;
-  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(79, 72, 152, 0.05);
+  border: 1px solid rgba(79, 72, 152, 0.15);
+  border-radius: 0.8rem;
   color: #51C1E1;
   text-decoration: none;
   font-family: 'Standard', sans-serif;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.25s ease;
   cursor: pointer;
-  text-transform: uppercase;
 }
 
 .modal-ticket-btn:hover {
-  background: rgba(81, 193, 225, 0.2);
-  border-color: #FFD25C;
-  color: #FFD25C;
-  transform: scale(1.02);
+  background: rgba(79, 72, 152, 0.1);
+  border-color: #4F4898;
+  color: #4F4898;
+  transform: translateX(4px);
+}
+
+.modal-ticket-btn:active {
+  transform: translateX(2px);
 }
 
 .external-icon {
   width: 16px;
   height: 16px;
-  margin-left: 0.5rem;
+  margin-left: 0.75rem;
+  transition: transform 0.25s ease;
+}
+
+.modal-ticket-btn:hover .external-icon {
+  transform: translateX(3px);
 }
 
 @media (min-width: 768px) {
@@ -417,7 +433,7 @@ onMounted(async () => {
   }
 
   .modal-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 }
 </style>

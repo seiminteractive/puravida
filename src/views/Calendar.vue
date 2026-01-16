@@ -166,11 +166,15 @@ watch(showTicketsModal, (isOpen) => {
 // Transformar datos de API al formato esperado
 const transformEventData = (event) => ({
   id: event.id,
+  title: event.dj || 'DJ Desconocido',
   dj: event.dj || 'DJ Desconocido',
   fecha: [event.fecha_dia, event.fecha_mes],
+  fecha_dia: event.fecha_dia,
+  fecha_mes: event.fecha_mes,
   lugar: event.lugar || 'Por definir',
   descripcion: event.descripcion || '',
   imagen: event.media_url || event.artists?.[0]?.image_url || 'https://via.placeholder.com/600x400?text=Evento',
+  media_url: event.media_url || event.artists?.[0]?.image_url,
   ...event
 })
 
@@ -527,18 +531,17 @@ onMounted(async () => {
 }
 
 /* MODAL DE TICKETS */
+/* ================== MODAL STYLES ================== */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(6px);
+  padding: 1rem;
 }
 
 /* Deshabilitar scroll de la página cuando modal está abierto */
@@ -546,71 +549,65 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .modal-content {
-  background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(10, 10, 15, 0.95));
-  border: 1px solid rgba(255, 210, 92, 0.2);
-  border-radius: 1rem;
+  background: #000;
+  border: 1px solid rgba(79, 72, 152, 0.15);
+  border-radius: 1.2rem;
   padding: 2rem;
   max-width: 500px;
-  width: 90%;
+  width: 100%;
   position: relative;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
     opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
   border: none;
-  color: #999;
-  font-size: 1.5rem;
+  color: #aaa;
+  font-size: 1.8rem;
   cursor: pointer;
-  transition: color 0.2s ease;
-  padding: 0.5rem;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .modal-close:hover {
-  color: #FFD25C;
+  color: #4F4898;
+  transform: rotate(90deg);
 }
 
 .modal-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #fff;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.75rem 0;
   text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .modal-tickets {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .modal-ticket-btn {
@@ -618,28 +615,37 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, rgba(81, 193, 225, 0.1), rgba(255, 210, 92, 0.05));
-  border: 1px solid rgba(255, 210, 92, 0.2);
-  border-radius: 0.75rem;
-  color: #fff;
+  background: rgba(79, 72, 152, 0.05);
+  border: 1px solid rgba(79, 72, 152, 0.15);
+  border-radius: 0.8rem;
+  color: #51C1E1;
   text-decoration: none;
   font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .modal-ticket-btn:hover {
-  background: linear-gradient(135deg, rgba(81, 193, 225, 0.2), rgba(255, 210, 92, 0.1));
-  border-color: rgba(255, 210, 92, 0.4);
+  background: rgba(79, 72, 152, 0.1);
+  border-color: #4F4898;
+  color: #4F4898;
   transform: translateX(4px);
 }
 
+.modal-ticket-btn:active {
+  transform: translateX(2px);
+}
+
 .external-icon {
-  width: 18px;
-  height: 18px;
-  color: #51C1E1;
-  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-left: 0.75rem;
+  transition: transform 0.25s ease;
+}
+
+.modal-ticket-btn:hover .external-icon {
+  transform: translateX(3px);
 }
 </style>

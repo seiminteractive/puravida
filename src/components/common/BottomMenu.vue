@@ -43,7 +43,7 @@
             <p class="selected-machine-status">{{ selectedMachine.status }}</p>
           </div>
           <div v-else class="no-selection">
-            <p>Selecciona una máquina para ver sus mediciones</p>
+            <p>Seleccioná una máquina para ver sus mediciones</p>
           </div>
 
           <!-- Mediciones Grid -->

@@ -19,9 +19,11 @@
             v-model="formData.dj" 
             type="text" 
             class="form-input"
+            :class="{ 'form-input-error': errors.dj }"
             placeholder="Ej: Mariano Mellino"
             required
           />
+          <span v-if="errors.dj" class="form-error-message">{{ errors.dj }}</span>
         </div>
 
         <div class="form-row">
@@ -31,9 +33,11 @@
               v-model="formData.fecha[0]" 
               type="text" 
               class="form-input"
+              :class="{ 'form-input-error': errors.fechaDia }"
               placeholder="07"
               required
             />
+            <span v-if="errors.fechaDia" class="form-error-message">{{ errors.fechaDia }}</span>
           </div>
           <div class="form-group">
             <label class="form-label">Mes</label>
@@ -41,9 +45,11 @@
               v-model="formData.fecha[1]" 
               type="text" 
               class="form-input"
+              :class="{ 'form-input-error': errors.fechaMes }"
               placeholder="02"
               required
             />
+            <span v-if="errors.fechaMes" class="form-error-message">{{ errors.fechaMes }}</span>
           </div>
         </div>
 
@@ -53,9 +59,11 @@
             v-model="formData.lugar" 
             type="text" 
             class="form-input"
+            :class="{ 'form-input-error': errors.lugar }"
             placeholder="Ej: Hotel Termas de Victoria"
             required
           />
+          <span v-if="errors.lugar" class="form-error-message">{{ errors.lugar }}</span>
         </div>
 
         <div class="form-group">
@@ -63,10 +71,12 @@
           <textarea 
             v-model="formData.descripcion" 
             class="form-textarea"
+            :class="{ 'form-input-error': errors.descripcion }"
             placeholder="Describe el evento..."
             maxlength="50"
             required
           ></textarea>
+          <span v-if="errors.descripcion" class="form-error-message">{{ errors.descripcion }}</span>
         </div>
 
         <div class="form-group">
@@ -89,6 +99,7 @@
       <!-- DJs/Artistas -->
       <fieldset class="form-section">
         <legend class="form-legend">Artistas</legend>
+        <span v-if="errors.artists" class="form-error-message">{{ errors.artists }}</span>
         
         <div class="gallery-list">
           <div v-if="formData.artists && formData.artists.length > 0" class="gallery-items">
@@ -100,12 +111,16 @@
               </div>
               <div class="gallery-info">
                 <p class="gallery-name">{{ artist.name || `Artista ${index + 1}` }}</p>
-                <input 
-                  v-model="artist.name" 
-                  type="text" 
-                  class="form-input form-input-small"
-                  placeholder="Nombre del artista"
-                />
+                <div>
+                  <input 
+                    v-model="artist.name" 
+                    type="text" 
+                    class="form-input form-input-small"
+                    :class="{ 'form-input-error': errors.artistsItems[index] }"
+                    placeholder="Nombre del artista"
+                  />
+                  <span v-if="errors.artistsItems[index]" class="form-error-message" style="font-size: 0.75rem;">{{ errors.artistsItems[index] }}</span>
+                </div>
                 <input 
                   type="file" 
                   accept="image/*,video/*" 
@@ -137,80 +152,85 @@
 
         <div v-if="formData.transportsEnabled" class="section-content">
           <div class="transports-list">
-          <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
-            <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
-              <div class="transport-header">
-                <h4 class="transport-title">{{ transport.name || `Transporte` }}</h4>
-                <!-- <button type="button" @click="removeTransport(index)" class="btn-remove">✕</button> -->
-              </div>
-
-              <div class="transport-content">
-                <div class="form-group">
-                  <label class="form-label">Nombre del Servicio</label>
-                  <input 
-                    v-model="transport.name" 
-                    type="text" 
-                    class="form-input"
-                    placeholder="Ej: Transporte desde CABA"
-                  />
+            <!-- Mostrar si hay transportes -->
+            <div v-if="formData.transports && formData.transports.length > 0" class="transports-items">
+              <div v-for="(transport, index) in formData.transports" :key="index" class="transport-item">
+                <div class="transport-header">
+                  <h4 class="transport-title">{{ transport.name || `Transporte` }}</h4>
+                  <!-- <button type="button" @click="removeTransport(index)" class="btn-remove">✕</button> -->
                 </div>
 
-                <div class="form-group">
-                  <label class="form-label">Imagen/Flyer</label>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    class="form-input"
-                    @change="(e) => handleMediaUpload(e, 'transport', index)"
-                    :disabled="isUploading"
-                  />
-                  <div v-if="transport.image_url" class="image-preview">
-                    <img :src="transport.image_url" :alt="`Transport ${index + 1}`" />
-                    <button type="button" @click="transport.image_url = null" class="btn-remove-image">✕</button>
+                <div class="transport-content">
+                  <div class="form-group">
+                    <label class="form-label">Nombre del Servicio</label>
+                    <input 
+                      v-model="transport.name" 
+                      type="text" 
+                      class="form-input"
+                      placeholder="Ej: Transporte desde CABA"
+                    />
                   </div>
-                </div>
 
-                <!-- <div class="form-group">
-                  <label class="form-label">Descripción</label>
-                  <textarea 
-                    v-model="transport.description" 
-                    class="form-textarea"
-                    placeholder="Descripción del servicio de transporte..."
-                  ></textarea>
-                </div> -->
-
-                <div class="form-group">
-                  <label class="form-label">Contactos (Nombre + Número)</label>
-                  <div class="contacts-list">
-                    <div v-for="(contact, contactIndex) in transport.contacts" :key="contactIndex" class="contact-item-group">
-                      <div class="contact-item-inputs">
-                        <input 
-                          v-model="transport.contacts[contactIndex].name" 
-                          type="text" 
-                          class="form-input"
-                          placeholder="Nombre del contacto"
-                        />
-                        <input 
-                          v-model="transport.contacts[contactIndex].contact" 
-                          type="text" 
-                          class="form-input"
-                          placeholder="Ej: +54 9 11 2345 6789"
-                        />
-                      </div>
-                      <button type="button" @click="removeTransportContact(index, contactIndex)" class="btn-remove">✕</button>
+                  <div class="form-group">
+                    <label class="form-label">Imagen/Flyer</label>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      class="form-input"
+                      @change="(e) => handleMediaUpload(e, 'transport', index)"
+                      :disabled="isUploading"
+                    />
+                    <div v-if="transport.image_url" class="image-preview">
+                      <img :src="transport.image_url" :alt="`Transport ${index + 1}`" />
+                      <button type="button" @click="transport.image_url = null" class="btn-remove-image">✕</button>
                     </div>
                   </div>
-                  <button type="button" @click="addTransportContact(index)" class="admin-btn admin-btn-secondary admin-btn-small">
-                    + Agregar Contacto
-                  </button>
+
+                  <!-- <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <textarea 
+                      v-model="transport.description" 
+                      class="form-textarea"
+                      placeholder="Descripción del servicio de transporte..."
+                    ></textarea>
+                  </div> -->
+
+                  <div class="form-group">
+                    <label class="form-label">Contactos (Nombre + Número)</label>
+                    <div class="contacts-list">
+                      <div v-for="(contact, contactIndex) in transport.contacts" :key="contactIndex" class="contact-item-group">
+                        <div class="contact-item-inputs">
+                          <input 
+                            v-model="transport.contacts[contactIndex].name" 
+                            type="text" 
+                            class="form-input"
+                            placeholder="Nombre del contacto"
+                          />
+                          <input 
+                            v-model="transport.contacts[contactIndex].contact" 
+                            type="text" 
+                            class="form-input"
+                            placeholder="Ej: +54 9 11 2345 6789"
+                          />
+                        </div>
+                        <button type="button" @click="removeTransportContact(index, contactIndex)" class="btn-remove">✕</button>
+                      </div>
+                    </div>
+                    <button type="button" @click="addTransportContact(index)" class="admin-btn admin-btn-secondary admin-btn-small">
+                      + Agregar Contacto
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary" :disabled="isUploading">
-            + Agregar Servicio de Transporte
-          </button> -->
+            <!-- Mostrar mensaje si no hay transportes (inicialmente) -->
+            <div v-else class="empty-section-message">
+              <p>No hay servicios de transporte configurados</p>
+              <button type="button" @click="addTransport" class="admin-btn admin-btn-secondary" :disabled="isUploading">
+                + Agregar Servicio de Transporte
+              </button>
+            </div>
           </div>
         </div>
       </fieldset>
@@ -308,6 +328,7 @@
           <span style="color: #ff6b6b; margin-left: 0.5rem;">*</span>
         </legend>
         <p class="form-hint">Agregar al menos 1 link de compra (obligatorio)</p>
+        <span v-if="errors.ticketLinks" class="form-error-message">{{ errors.ticketLinks }}</span>
         <div class="form-group">
           <label class="form-label">Ticketeras</label>
           <div class="links-list">
@@ -317,15 +338,18 @@
                   v-model="formData.ticketLinks[index].name" 
                   type="text" 
                   class="form-input"
+                  :class="{ 'form-input-error': errors.ticketLinksItems[index] }"
                   placeholder="Ej: Ticketmaster"
                 />
                 <input 
                   v-model="formData.ticketLinks[index].url" 
                   type="url" 
                   class="form-input"
+                  :class="{ 'form-input-error': errors.ticketLinksItems[index] }"
                   placeholder="Ej: https://www.ticketmaster.com/..."
                 />
               </div>
+              <span v-if="errors.ticketLinksItems[index]" class="form-error-message" style="font-size: 0.75rem;">{{ errors.ticketLinksItems[index] }}</span>
               <button type="button" @click="removeLink(index)" class="btn-remove">✕</button>
             </div>
           </div>
@@ -337,7 +361,7 @@
 
       <!-- Actions -->
       <div class="form-actions">
-        <button type="submit" class="admin-btn admin-btn-primary" :disabled="isUploading">
+        <button type="submit" class="admin-btn admin-btn-primary" :disabled="isUploading || !isFormValid">
           {{ isUploading ? 'Subiendo...' : (event ? 'Actualizar Evento' : 'Crear Evento') }}
         </button>
         <button type="button" @click="$emit('cancel')" class="admin-btn admin-btn-secondary" :disabled="isUploading">
@@ -349,7 +373,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { uploadImage, uploadVideo } from '../../services/apiService'
 
 const props = defineProps({
@@ -364,6 +388,7 @@ const emit = defineEmits(['save', 'cancel'])
 const isUploading = ref(false)
 const uploadError = ref(null)
 
+// =============== FORM DATA ===============
 const getDefaultFormData = () => ({
   dj: '',
   fecha: ['', ''],
@@ -392,6 +417,184 @@ const formData = ref(getDefaultFormData())
 const resetForm = () => {
   formData.value = getDefaultFormData()
 }
+
+// =============== VALIDACIONES EN TIEMPO REAL ===============
+const errors = ref({
+  dj: '',
+  fechaDia: '',
+  fechaMes: '',
+  lugar: '',
+  descripcion: '',
+  artists: '',
+  artistsItems: {},
+  ticketLinks: '',
+  ticketLinksItems: {},
+})
+
+// Utilidad para validar strings
+const isValidString = (value) => {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+// =============== SANITIZACIÓN Y NORMALIZACIÓN DE FECHA ===============
+// Sanitizar entrada: solo permitir dígitos
+const sanitizeNumberInput = (value) => {
+  return String(value).replace(/[^\d]/g, '')
+}
+
+// Normalizar día: a dos dígitos (1 → 01), máximo 31
+const normalizeDia = (value) => {
+  const sanitized = sanitizeNumberInput(value)
+  if (!sanitized) return ''
+  const num = parseInt(sanitized, 10)
+  if (num < 1) return '01'
+  if (num > 31) return '31'
+  return String(num).padStart(2, '0')
+}
+
+// Normalizar mes: a dos dígitos (1 → 01), máximo 12
+const normalizeMes = (value) => {
+  const sanitized = sanitizeNumberInput(value)
+  if (!sanitized) return ''
+  const num = parseInt(sanitized, 10)
+  if (num < 1) return '01'
+  if (num > 12) return '12'
+  return String(num).padStart(2, '0')
+}
+
+// Validadores
+const validateDj = (value) => {
+  if (!isValidString(value)) {
+    return 'El nombre del DJ/Artista es obligatorio'
+  }
+  if (value.trim().length < 2) {
+    return 'Debe tener al menos 2 caracteres'
+  }
+  return ''
+}
+
+const validateFecha = (value) => {
+  if (!isValidString(value)) {
+    return 'Campo obligatorio'
+  }
+  const num = parseInt(value, 10)
+  if (isNaN(num)) {
+    return 'Debe ser un número'
+  }
+  return ''
+}
+
+const validateFechaDia = (value) => {
+  const baseError = validateFecha(value)
+  if (baseError) return baseError
+  const num = parseInt(value, 10)
+  if (num < 1 || num > 31) {
+    return 'Día debe estar entre 1 y 31'
+  }
+  return ''
+}
+
+const validateFechaMes = (value) => {
+  const baseError = validateFecha(value)
+  if (baseError) return baseError
+  const num = parseInt(value, 10)
+  if (num < 1 || num > 12) {
+    return 'Mes debe estar entre 1 y 12'
+  }
+  return ''
+}
+
+const validateLugar = (value) => {
+  if (!isValidString(value)) {
+    return 'El lugar es obligatorio'
+  }
+  if (value.trim().length < 3) {
+    return 'Debe tener al menos 3 caracteres'
+  }
+  return ''
+}
+
+const validateDescripcion = (value) => {
+  if (!isValidString(value)) {
+    return 'La descripción es obligatoria'
+  }
+  if (value.trim().length < 5) {
+    return 'Debe tener al menos 5 caracteres'
+  }
+  return ''
+}
+
+// Watchers para validaciones en tiempo real
+watch(() => formData.value.dj, (value) => {
+  errors.value.dj = validateDj(value)
+}, { immediate: true })
+
+watch(() => formData.value.fecha[0], (value) => {
+  errors.value.fechaDia = validateFechaDia(value)
+}, { immediate: true })
+
+watch(() => formData.value.fecha[1], (value) => {
+  errors.value.fechaMes = validateFechaMes(value)
+}, { immediate: true })
+
+watch(() => formData.value.lugar, (value) => {
+  errors.value.lugar = validateLugar(value)
+}, { immediate: true })
+
+watch(() => formData.value.descripcion, (value) => {
+  errors.value.descripcion = validateDescripcion(value)
+}, { immediate: true })
+
+// Validación de artistas
+watch(() => formData.value.artists, (value) => {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.value.artists = 'Debe agregar al menos 1 artista'
+  } else {
+    const invalidArtists = {}
+    value.forEach((artist, idx) => {
+      if (!isValidString(artist.name)) {
+        invalidArtists[idx] = 'Nombre requerido'
+      } else if (!artist.image_url) {
+        invalidArtists[idx] = 'Imagen requerida'
+      }
+    })
+    errors.value.artistsItems = invalidArtists
+    errors.value.artists = Object.keys(invalidArtists).length > 0 ? 'Artistas incompletos' : ''
+  }
+}, { deep: true, immediate: true })
+
+// Validación de tickets
+watch(() => formData.value.ticketLinks, (value) => {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.value.ticketLinks = 'Debe agregar al menos 1 link de tickets'
+  } else {
+    const invalidLinks = {}
+    value.forEach((link, idx) => {
+      if (!isValidString(link.url)) {
+        invalidLinks[idx] = 'URL requerida'
+      } else if (!isValidString(link.name)) {
+        invalidLinks[idx] = 'Nombre requerido'
+      }
+    })
+    errors.value.ticketLinksItems = invalidLinks
+    errors.value.ticketLinks = Object.keys(invalidLinks).length > 0 ? 'Links incompletos' : ''
+  }
+}, { deep: true, immediate: true })
+
+// Computed para verificar si el formulario es válido
+const isFormValid = computed(() => {
+  return (
+    !errors.value.dj &&
+    !errors.value.fechaDia &&
+    !errors.value.fechaMes &&
+    !errors.value.lugar &&
+    !errors.value.descripcion &&
+    !errors.value.artists &&
+    !errors.value.ticketLinks &&
+    Object.keys(errors.value.artistsItems).length === 0 &&
+    Object.keys(errors.value.ticketLinksItems).length === 0
+  )
+})
 
 watch(() => props.event?.id, () => {
   if (props.event && props.event.dj) {
@@ -603,9 +806,15 @@ const submitForm = () => {
     }))
   }
 
+  // Normalizar día y mes solo en el momento de guardar
+  const normalizedFecha = [
+    normalizeDia(formData.value.fecha[0]),
+    normalizeMes(formData.value.fecha[1])
+  ]
+
   emit('save', {
     dj: formData.value.dj,
-    fecha: [formData.value.fecha[0], formData.value.fecha[1]],
+    fecha: normalizedFecha,
     lugar: formData.value.lugar,
     descripcion: formData.value.descripcion,
     media_url: formData.value.media_url,
@@ -630,34 +839,37 @@ const submitForm = () => {
 </script>
 
 <style scoped>
+/* ================== LAYOUT BASE ================== */
 .form-wrapper {
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto;
 }
 
 .form-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.75rem;
+  font-size: 2rem;
   color: #fff;
-  margin: 0 0 2rem 0;
-  font-weight: 600;
+  margin: 0 0 2.5rem 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
+/* ================== ERRORS ================== */
 .upload-error {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid #ff6b6b;
-  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(225, 109, 96, 0.08);
+  border: 1px solid rgba(225, 109, 96, 0.3);
+  border-radius: 0.75rem;
   margin-bottom: 2rem;
 }
 
 .upload-error p {
   font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  color: #ff6b6b;
+  font-size: 0.9rem;
+  color: #E16D60;
   margin: 0;
   flex: 1;
 }
@@ -665,101 +877,98 @@ const submitForm = () => {
 .btn-clear-error {
   background: transparent;
   border: none;
-  color: #ff6b6b;
+  color: #E16D60;
   cursor: pointer;
   font-size: 1.2rem;
   padding: 0 0.5rem;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .btn-clear-error:hover {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
+/* ================== FORM SECTIONS ================== */
 .admin-form {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .form-section {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 210, 92, 0.03) 0%, rgba(81, 193, 225, 0.02) 100%);
-  border: 1px solid rgba(255, 210, 92, 0.15);
-  border-radius: 1rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(79, 72, 152, 0.1);
+  border-radius: 1.2rem;
+  backdrop-filter: blur(10px);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
 }
 
 .form-legend {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.25rem;
-  color: #FFD25C;
-  margin: 0 0 1rem 0;
-  font-weight: 600;
+  font-size: 1.35rem;
+  color: #4F4898;
+  margin: 0;
+  font-weight: 700;
 }
 
 .form-hint {
   font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
-  color: #999;
-  margin: 0;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0.5rem 0 0 0;
   font-style: italic;
+  font-weight: 400;
 }
 
 .section-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 210, 92, 0.1);
+  gap: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(79, 72, 152, 0.08);
 }
 
+/* ================== FORM GROUPS ================== */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 0.6rem;
+  margin-bottom: 0;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .form-label {
   font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
-  color: #bbb;
-  font-weight: 500;
+  font-size: 0.8rem;
+  color: #aaa;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
 }
 
 .form-input,
 .form-textarea {
-  padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(81, 193, 225, 0.2);
-  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(79, 72, 152, 0.15);
+  border-radius: 0.7rem;
   color: #fff;
   font-family: 'Standard', sans-serif;
   font-size: 0.95rem;
-  transition: all 0.3s ease;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #51C1E1;
-  background: rgba(0, 0, 0, 0.5);
+  transition: all 0.25s ease;
 }
 
 .form-input::placeholder,
@@ -767,55 +976,71 @@ const submitForm = () => {
   color: #666;
 }
 
+.form-input:hover,
+.form-textarea:hover {
+  border-color: rgba(79, 72, 152, 0.25);
+  background: rgba(79, 72, 152, 0.03);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #4F4898;
+  background: rgba(79, 72, 152, 0.05);
+  box-shadow: 0 0 0 3px rgba(79, 72, 152, 0.08);
+}
+
 .form-input-small {
   font-size: 0.85rem;
-  padding: 0.5rem;
+  padding: 0.65rem 0.85rem;
 }
 
 .form-textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 110px;
+  line-height: 1.5;
 }
 
+/* ================== GALLERY ITEMS ================== */
 .gallery-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .gallery-items {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .gallery-item {
   display: grid;
-  grid-template-columns: 120px 1fr auto;
-  gap: 1.5rem;
+  grid-template-columns: 130px 1fr auto;
+  gap: 1.75rem;
   align-items: start;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(81, 193, 225, 0.05) 0%, rgba(255, 210, 92, 0.02) 100%);
-  border: 1px solid rgba(81, 193, 225, 0.15);
+  padding: 1.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(81, 193, 225, 0.1);
   border-radius: 1rem;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .gallery-item:hover {
-  border-color: rgba(81, 193, 225, 0.3);
-  background: linear-gradient(135deg, rgba(81, 193, 225, 0.1) 0%, rgba(255, 210, 92, 0.05) 100%);
+  border-color: rgba(81, 193, 225, 0.2);
+  background: rgba(81, 193, 225, 0.04);
 }
 
 .gallery-preview {
-  width: 120px;
-  height: 120px;
-  border-radius: 0.75rem;
+  width: 130px;
+  height: 130px;
+  border-radius: 0.8rem;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(81, 193, 225, 0.2);
+  border: 1px solid rgba(79, 72, 152, 0.15);
 }
 
 .gallery-preview img,
@@ -827,50 +1052,52 @@ const submitForm = () => {
 
 .gallery-empty {
   font-family: 'Standard', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #666;
   text-align: center;
+  font-weight: 500;
 }
 
 .gallery-info {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .gallery-name {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1rem;
-  color: #FFD25C;
-  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  color: #51C1E1;
+  margin: 0;
   font-weight: 600;
 }
 
+/* ================== TRANSPORTS ================== */
 .transports-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .transports-items {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .transport-item {
-  padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(81, 193, 225, 0.1);
-  border-radius: 0.75rem;
+  padding: 1.75rem;
+  background: rgba(81, 193, 225, 0.03);
+  border: 1px solid rgba(81, 193, 225, 0.12);
+  border-radius: 0.9rem;
 }
 
 .transport-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(81, 193, 225, 0.1);
 }
 
@@ -885,135 +1112,130 @@ const submitForm = () => {
 .transport-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
+/* ================== LISTS ================== */
 .contacts-list,
 .links-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.85rem;
+  margin-bottom: 0;
 }
 
 .contact-item {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.75rem;
+  gap: 0.85rem;
   align-items: center;
 }
 
 .link-item-group {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
-  align-items: flex-start;
+}
+
+.link-item-group > .btn-remove {
+  align-self: flex-end;
+  margin-top: 0.5rem;
 }
 
 .link-inputs {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 160px 1fr;
+  gap: 0.85rem;
 }
 
 .contact-item-group {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.75rem;
+  gap: 0.85rem;
   align-items: flex-start;
 }
 
 .contact-item-inputs {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 160px 1fr;
+  gap: 0.85rem;
 }
 
+/* ================== PREVIEWS ================== */
 .image-preview {
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   margin-top: 1rem;
-  border-radius: 0.75rem;
+  border-radius: 0.8rem;
   overflow: hidden;
+  border: 1px solid rgba(79, 72, 152, 0.1);
 }
 
 .image-preview img {
   width: 100%;
   height: auto;
-  max-height: 300px;
+  max-height: 320px;
   object-fit: contain;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
 }
 
+/* ================== BUTTONS ================== */
 .btn-remove-image {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 32px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
   border: none;
-  color: #ff6b6b;
-  border-radius: 0.25rem;
+  color: #E16D60;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-remove-image:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
 }
 
 .btn-remove {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   background: transparent;
-  border: 1px solid #ff6b6b;
-  color: #ff6b6b;
-  border-radius: 0.25rem;
+  border: 1.5px solid rgba(225, 109, 96, 0.4);
+  color: #E16D60;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-remove:hover {
-  background: rgba(255, 107, 107, 0.1);
+  border-color: #E16D60;
+  background: rgba(225, 109, 96, 0.08);
 }
 
 .admin-btn-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.7rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.75rem;
   align-self: flex-start;
 }
 
-.form-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.form-checkbox input {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: #FFD25C;
-}
-
-.form-checkbox span {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
-  color: #bbb;
-}
-
-/* Toggle Switch Moderno */
+/* ================== TOGGLE ================== */
 .form-toggle {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
   cursor: pointer;
   user-select: none;
 }
@@ -1024,105 +1246,222 @@ const submitForm = () => {
 
 .toggle-slider {
   position: relative;
-  width: 48px;
-  height: 28px;
-  background: #444;
-  border-radius: 14px;
-  transition: all 0.3s ease;
+  width: 52px;
+  height: 30px;
+  background: #333;
+  border-radius: 15px;
+  transition: all 0.25s ease;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .toggle-slider::after {
   content: '';
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   background: #fff;
   border-radius: 50%;
   top: 2px;
   left: 2px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-input:checked + .toggle-slider {
-  background: #FFD25C;
+  background: #4F4898;
+  border-color: #4F4898;
 }
 
 .toggle-input:checked + .toggle-slider::after {
-  left: 22px;
+  left: 24px;
 }
 
 .toggle-label {
   font-family: 'Standard', sans-serif;
   font-size: 0.9rem;
-  color: #bbb;
+  color: #aaa;
   font-weight: 500;
 }
 
+/* ================== ACTIONS ================== */
 .form-actions {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(79, 72, 152, 0.1);
 }
 
 .admin-btn {
   font-family: 'Standard', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.75rem 1.5rem;
+  letter-spacing: 0.06em;
+  padding: 0.85rem 1.75rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.7rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   flex: 1;
 }
 
 .admin-btn-primary {
-  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
-  color: #000;
+  background: #4F4898;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(79, 72, 152, 0.15);
 }
 
 .admin-btn-primary:hover:not(:disabled) {
+  background: #5c5aab;
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(255, 210, 92, 0.2);
+  box-shadow: 0 6px 20px rgba(79, 72, 152, 0.25);
+}
+
+.admin-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .admin-btn-secondary {
   background: transparent;
   color: #51C1E1;
-  border: 1px solid #51C1E1;
+  border: 1.5px solid rgba(81, 193, 225, 0.4);
 }
 
 .admin-btn-secondary:hover:not(:disabled) {
-  background: rgba(81, 193, 225, 0.1);
+  background: rgba(81, 193, 225, 0.08);
+  border-color: #51C1E1;
 }
 
 .admin-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
-  .link-inputs {
+/* ================== EMPTY SECTION MESSAGE ================== */
+.empty-section-message {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: rgba(79, 72, 152, 0.03);
+  border: 1px dashed rgba(79, 72, 152, 0.15);
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.empty-section-message p {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ================== VALIDATION MESSAGES ================== */
+.form-input-error,
+.form-textarea.form-input-error {
+  border-color: #E16D60 !important;
+  background: rgba(225, 109, 96, 0.05) !important;
+}
+
+.form-input-error:focus,
+.form-textarea.form-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(225, 109, 96, 0.08) !important;
+}
+
+.form-error-message {
+  display: block;
+  font-family: 'Standard', sans-serif;
+  font-size: 0.8rem;
+  color: #E16D60;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+  .form-wrapper {
+    padding: 0 1rem;
+  }
+
+  .form-title {
+    font-size: 1.75rem;
+  }
+
+  .form-section {
+    padding: 1.5rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .form-legend {
+    font-size: 1.2rem;
+  }
+
+  .gallery-item {
+    grid-template-columns: 110px 1fr auto;
+    gap: 1.25rem;
+  }
+
+  .gallery-preview {
+    width: 110px;
+    height: 110px;
+  }
+
+  .link-inputs,
+  .contact-item-inputs {
     grid-template-columns: 1fr;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
   .form-actions {
     flex-direction: column;
   }
+}
+
+@media (max-width: 640px) {
+  .form-wrapper {
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-section {
+    padding: 1.25rem;
+    gap: 0.5rem;
+  }
 
   .gallery-item {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gallery-preview {
+    width: 100%;
+    height: 180px;
+  }
+
+  .admin-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.7rem;
+  }
+
+  .admin-btn-small {
+    padding: 0.5rem 1rem;
   }
 }
 </style>

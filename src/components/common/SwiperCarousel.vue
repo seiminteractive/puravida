@@ -6,7 +6,7 @@
       :centered-slides="true"
       :loop="true"
       :space-between="20"
-      :initial-slide="0"
+      :initial-slide="props.events.length >= 3 ? 1 : 0"
       :preload-images="true"
       class="swiper-carousel"
       :breakpoints="{
@@ -37,8 +37,8 @@
 
           <!-- Overlay con info -->
           <div class="event-overlay">
-            <!-- Fecha en esquina superior -->
-            <div class="event-date-badge">
+            <!-- Fecha en esquina superior (solo si no hideDetails) -->
+            <div v-if="!hideDetails" class="event-date-badge">
                 <div class="date-group date-box">
                     <span class="date-label">DÍA</span>
                     <span class="date-value">{{ event.fecha_dia || getDay(event.date) }}</span>
@@ -54,8 +54,8 @@
             <div class="event-info">
               <h3 class="event-title">{{ event.title }}</h3>
 
-              <!-- Botones -->
-              <div class="event-actions">
+              <!-- Botones (solo si no hideDetails) -->
+              <div v-if="!hideDetails" class="event-actions">
                 <button class="event-btn info-btn" @click.stop="handleInfoClick(event)">
                   Info
                 </button>
@@ -85,6 +85,14 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => []
+  },
+  hideDetails: {
+    type: Boolean,
+    default: false
+  },
+  showTitle: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -104,8 +112,9 @@ const displayEvents = computed(() => {
     return [props.events[0], props.events[1], props.events[0], props.events[1], props.events[0]]
   }
   
-  if (props.events.length === 3) {
-    return [...props.events, props.events[0], props.events[1]]
+  // Para 3 o más items: prepend última card para que initialSlide=1 muestre (última, primera, segunda)
+  if (props.events.length >= 3) {
+    return [props.events[props.events.length - 1], ...props.events, props.events[0], props.events[1]]
   }
   
   return [...props.events, props.events[0], props.events[1]]

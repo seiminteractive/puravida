@@ -1,10 +1,5 @@
 <template>
   <div class="admin-view">
-    <!-- Luces de fondo decorativas -->
-    <div class="admin-bg-light-1"></div>
-    <div class="admin-bg-light-2"></div>
-    <div class="admin-bg-light-3"></div>
-    <div class="admin-bg-light-4"></div>
 
     <!-- Container -->
     <div class="admin-container">
@@ -55,6 +50,11 @@
           <!-- Events Grid -->
           <div v-else class="events-grid">
             <div v-for="event in events" :key="event.id" class="event-card">
+              <div class="event-card-media">
+                <img v-if="event.media_url && !event.media_url.includes('video')" :src="event.media_url" :alt="event.dj" class="event-card-image" />
+                <video v-else-if="event.media_url && event.media_url.includes('video')" :src="event.media_url" class="event-card-video" />
+                <div v-else class="event-card-empty">Sin imagen</div>
+              </div>
               <div class="event-card-header">
                 <h3 class="event-card-title">{{ event.dj }}</h3>
                 <span class="event-date">{{ event.fecha[0] }}/{{ event.fecha[1] }}</span>
@@ -325,7 +325,7 @@ watch(() => activeTab.value, async (newTab) => {
   align-items: center;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(79, 72, 152, 0.1);
 }
 
 .admin-title {
@@ -333,45 +333,47 @@ watch(() => activeTab.value, async (newTab) => {
   font-size: 2.5rem;
   color: #fff;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .admin-back-btn {
   font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #51C1E1;
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border: 1px solid rgba(81, 193, 225, 0.3);
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
+  padding: 0.7rem 1.2rem;
+  border: 1.5px solid rgba(81, 193, 225, 0.4);
+  border-radius: 0.7rem;
+  transition: all 0.25s ease;
+  font-weight: 600;
 }
 
 .admin-back-btn:hover {
   border-color: #51C1E1;
-  background: rgba(81, 193, 225, 0.1);
+  background: rgba(81, 193, 225, 0.08);
 }
 
 .admin-tabs {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(79, 72, 152, 0.1);
   padding-bottom: 1rem;
 }
 
 .admin-tab {
   font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  color: #999;
+  font-size: 0.8rem;
+  color: #888;
   background: transparent;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 .admin-tab:hover {
@@ -379,10 +381,10 @@ watch(() => activeTab.value, async (newTab) => {
 }
 
 .admin-tab.active {
-  color: #FFD25C;
-  border-bottom: 2px solid #FFD25C;
+  color: #4F4898;
+  border-bottom: 2px solid #4F4898;
   margin-bottom: -1rem;
-  padding-bottom: calc(0.75rem + 1rem);
+  padding-bottom: calc(0.7rem + 1rem);
 }
 
 .admin-content {
@@ -418,8 +420,8 @@ watch(() => activeTab.value, async (newTab) => {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: #FFD25C;
+  border: 3px solid rgba(79, 72, 152, 0.2);
+  border-top-color: #4F4898;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -431,97 +433,135 @@ watch(() => activeTab.value, async (newTab) => {
 
 .loading-state p {
   font-family: 'Standard', sans-serif;
-  font-size: 1rem;
-  color: #bbb;
+  font-size: 0.95rem;
+  color: #aaa;
   margin: 0;
 }
 
 .error-state {
   text-align: center;
   padding: 3rem 2rem;
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  border: 1px solid rgba(225, 109, 96, 0.3);
   border-radius: 1rem;
-  background: rgba(255, 107, 107, 0.05);
+  background: rgba(225, 109, 96, 0.08);
 }
 
 .error-state p {
   font-family: 'Standard', sans-serif;
   font-size: 1rem;
-  color: #ff6b6b;
+  color: #E16D60;
   margin: 0 0 1.5rem 0;
 }
 
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border: 1px dashed rgba(79, 72, 152, 0.2);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(79, 72, 152, 0.03);
 }
 
 .empty-state p {
   font-family: 'Standard', sans-serif;
   font-size: 1rem;
-  color: #bbb;
+  color: #aaa;
   margin: 0 0 1.5rem 0;
 }
 
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
 }
 
 .event-card {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 210, 92, 0.03) 0%, rgba(81, 193, 225, 0.02) 100%);
-  border: 1px solid rgba(255, 210, 92, 0.15);
-  border-radius: 1rem;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(79, 72, 152, 0.1);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
 }
 
 .event-card:hover {
-  border-color: rgba(255, 210, 92, 0.3);
-  background: linear-gradient(135deg, rgba(255, 210, 92, 0.05) 0%, rgba(81, 193, 225, 0.04) 100%);
+  border-color: rgba(79, 72, 152, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-2px);
+}
+
+.event-card-media {
+  width: 100%;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(79, 72, 152, 0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-card-image,
+.event-card-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-card-empty {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .event-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin: 0;
   gap: 1rem;
+  padding: 0 1.5rem;
+  padding-top: 1.25rem;
 }
 
 .event-card-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: #fff;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .event-date {
   font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #51C1E1;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .event-card-location {
   font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
-  color: #999;
-  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+  padding: 0 1.5rem;
+  font-weight: 500;
 }
 
 .event-card-desc {
   font-family: 'Standard', sans-serif;
-  font-size: 0.9rem;
-  color: #bbb;
+  font-size: 0.85rem;
+  color: #aaa;
   line-height: 1.5;
-  margin: 0 0 1.5rem 0;
+  margin: 0;
+  padding: 0 1.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -532,54 +572,63 @@ watch(() => activeTab.value, async (newTab) => {
 .event-card-actions {
   display: flex;
   gap: 0.75rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
 .admin-btn {
   font-family: 'Standard', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.5rem 1rem;
+  letter-spacing: 0.06em;
+  padding: 0.65rem 1.25rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.7rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   flex: 1;
 }
 
 .admin-btn-primary {
-  background: linear-gradient(135deg, #FFD25C 0%, #E6B633 100%);
-  color: #000;
+  background: #4F4898;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(79, 72, 152, 0.15);
 }
 
-.admin-btn-primary:hover {
+.admin-btn-primary:hover:not(:disabled) {
+  background: #5c5aab;
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(255, 210, 92, 0.2);
+  box-shadow: 0 6px 20px rgba(79, 72, 152, 0.25);
+}
+
+.admin-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .admin-btn-secondary {
   background: transparent;
   color: #51C1E1;
-  border: 1px solid #51C1E1;
+  border: 1.5px solid rgba(81, 193, 225, 0.4);
 }
 
-.admin-btn-secondary:hover {
-  background: rgba(81, 193, 225, 0.1);
+.admin-btn-secondary:hover:not(:disabled) {
+  background: rgba(81, 193, 225, 0.08);
+  border-color: #51C1E1;
 }
 
 .admin-btn-danger {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: #E16D60;
+  border: 1.5px solid rgba(225, 109, 96, 0.4);
 }
 
-.admin-btn-danger:hover {
-  background: rgba(255, 107, 107, 0.1);
+.admin-btn-danger:hover:not(:disabled) {
+  background: rgba(225, 109, 96, 0.08);
+  border-color: #E16D60;
 }
 
 .admin-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -607,8 +656,12 @@ watch(() => activeTab.value, async (newTab) => {
 }
 
 @media (max-width: 768px) {
+  .admin-view {
+    padding: 1.5rem 1rem;
+  }
+
   .admin-title {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 
   .admin-header {
@@ -623,6 +676,47 @@ watch(() => activeTab.value, async (newTab) => {
 
   .admin-tabs {
     flex-wrap: wrap;
+  }
+
+  .event-card-media {
+    height: 150px;
+  }
+
+  .event-card-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.75rem;
+  }
+
+  .admin-tabs {
+    gap: 0.25rem;
+  }
+
+  .admin-tab {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .event-card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .event-card-title {
+    font-size: 1rem;
+  }
+
+  .event-card-media {
+    height: 120px;
+  }
+
+  .admin-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.65rem;
   }
 }
 </style>
