@@ -44,17 +44,29 @@
     <!-- Hamburger Menu Button (Mobile) -->
     <button
       @click="toggleMenu"
-      class="md:hidden flex flex-col gap-1.5 cursor-pointer hover:opacity-70 transition-opacity z-50 absolute right-6"
+      class="md:hidden flex flex-col gap-1.5 cursor-pointer hover:opacity-70 transition-opacity absolute right-6 hamburger-btn"
       aria-label="Toggle menu"
     >
       <span :class="['h-0.5 w-6 bg-white transition-all', isOpen && 'rotate-45 translate-y-2']"></span>
       <span :class="['h-0.5 w-6 bg-white transition-all', isOpen && 'opacity-0']"></span>
       <span :class="['h-0.5 w-6 bg-white transition-all', isOpen && '-rotate-45 -translate-y-2']"></span>
     </button>
+  </nav>
 
-    <!-- Fullscreen Menu (Mobile) -->
+  <!-- Fullscreen Menu (Mobile) - Teleported to body -->
+  <Teleport to="body">
     <transition name="menu-fade">
-      <div v-if="isOpen" class="fixed inset-0 bg-black z-1000 flex flex-col items-start justify-center pl-8 md:hidden">
+      <div v-if="isOpen" class="fullscreen-menu md:hidden">
+        <!-- Close Button -->
+        <button
+          @click="closeMenu"
+          class="close-menu-btn"
+          aria-label="Close menu"
+        >
+          <span class="close-line close-line-1"></span>
+          <span class="close-line close-line-2"></span>
+        </button>
+
         <!-- Menu Links -->
         <nav class="flex flex-col gap-20">
           <a
@@ -108,7 +120,7 @@
         </nav>
       </div>
     </transition>
-  </nav>
+  </Teleport>
 </template>
 
 <script setup>
@@ -164,14 +176,8 @@ watch(isOpen, (newVal) => {
 </script>
 
 <style scoped>
-.menu-fade-enter-active,
-.menu-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.menu-fade-enter-from,
-.menu-fade-leave-to {
-  opacity: 0;
+.hamburger-btn {
+  z-index: 10000;
 }
 
 .menu-left {
@@ -182,5 +188,68 @@ watch(isOpen, (newVal) => {
 .menu-right {
   padding-left: 7rem;
   gap: 7rem;
+}
+</style>
+
+<style>
+/* Global styles for Teleported menu */
+.fullscreen-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 2rem;
+}
+
+.close-menu-btn {
+  position: absolute;
+  top: 2.2rem;
+  right: 1.5rem;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.close-line {
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  top: 50%;
+  left: 0;
+}
+
+.close-line-1 {
+  transform: rotate(45deg);
+}
+
+.close-line-2 {
+  transform: rotate(-45deg);
+}
+
+.close-menu-btn:hover .close-line {
+  opacity: 0.7;
+}
+
+.menu-fade-enter-active,
+.menu-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.menu-fade-enter-from,
+.menu-fade-leave-to {
+  opacity: 0;
 }
 </style>

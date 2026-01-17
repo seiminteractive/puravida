@@ -6,6 +6,19 @@
         <h2 class="cta-title max-w-[320px] mx-auto text-center mb-4 sm:max-w-none">Preguntas sobre eventos y experiencias</h2>
         <p class="cta-subtitle max-w-[320px] mx-auto text-center mb-4 sm:max-w-none">Nuestro equipo está disponible para ayudarte. Escribinos y pronto nos contactamos con vos.</p>
         
+        <!-- Instagram Embed -->
+        <div class="instagram-embed-container">
+          <iframe 
+            src="https://www.instagram.com/somospuravida._/embed"
+            width="400"
+            height="375"
+            frameborder="0"
+            scrolling="no"
+            allowtransparency="true"
+            class="instagram-iframe"
+          ></iframe>
+        </div>
+
         <a 
           href="https://wa.me/5493415492478?text=Hola%20Pura%20Vida!%20Me%20gustaría%20conocer%20más%20sobre%20sus%20eventos%20y%20experiencias." 
           target="_blank"
@@ -33,6 +46,7 @@ useScrollFadeInElements('.cta-title')
 useScrollFadeInElements('.cta-label')
 useScrollFadeInElements('.cta-subtitle')
 useScrollFadeInElements('.whatsapp-btn')
+
 </script>
 
 <style scoped>
@@ -86,6 +100,23 @@ useScrollFadeInElements('.whatsapp-btn')
   color: #999;
   font-weight: 300;
   line-height: 1.6;
+}
+
+.instagram-embed-container {
+  margin: 2rem auto;
+  max-width: 400px;
+  max-height: 480px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.instagram-iframe {
+  border-radius: 12px;
+  max-width: 100%;
+  background: #fff;
 }
 
 .whatsapp-btn {

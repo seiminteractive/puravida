@@ -105,7 +105,7 @@
   padding: 4rem 1.5rem 2rem;
   position: relative;
   overflow: hidden;
-  z-index: 10;
+  z-index: 100;
 }
 
 .footer-top-decoration {
@@ -312,7 +312,6 @@
 
 /* Bottom Section */
 .footer-bottom {
-  padding: 2rem 0;
   position: relative;
   z-index: 1;
 }
