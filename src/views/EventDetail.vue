@@ -113,7 +113,12 @@
               <p class="mesas-subtitle">Viví la experiencia más exclusiva de Pura Vida</p>
               <p class="mesas-description">{{ event.mesas.description || 'Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento' }}</p>
             </div>
-            <a :href="`https://wa.me/${getMesasWhatsApp()}`" target="_blank" rel="noopener noreferrer" class="mesas-btn">
+            <a
+              href="https://wa.me/5493415492478?text=%C2%A1Hola%20Pura%20Vida!%20Me%20interesa%20reservar%20una%20mesa%20VIP%20para%20el%20evento."
+              target="_blank"
+              rel="noopener"
+              class="mesas-btn"
+            >
               <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
               <span>Consultar mesas VIP</span>
             </a>
@@ -151,7 +156,12 @@
               <!-- Description & Button -->
               <div class="block-content">
                 <p class="block-description">{{ lodgingData.description || 'Opciones de hospedaje cercanas y seguras para tu descanso' }}</p>
-                <a :href="`https://wa.me/${getLodgingWhatsApp()}`" target="_blank" rel="noopener noreferrer" class="block-btn">
+                <a
+              href="https://wa.me/5493415492478?text=%C2%A1Hola%20Pura%20Vida!%20Me%20gustar%C3%ADa%20consultar%20las%20opciones%20de%20hospedaje%20para%20el%20evento."
+              target="_blank"
+              rel="noopener"
+              class="block-btn"
+            >
                   <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon">
                   <span class="block-btn-text">Consultar hospedaje</span>
                 </a>
@@ -184,7 +194,7 @@
         <div v-if="showTransportModal" class="modal-overlay" @click.self="showTransportModal = false">
           <div class="modal-content">
             <button @click="showTransportModal = false" class="modal-close">&times;</button>
-            <h3 class="modal-title">Contactos de {{ selectedTransport?.transport_name }}</h3>
+            <h3 class="modal-title">Contactos de Traslados</h3>
             <div class="modal-contacts">
               <a
                 v-for="contact in selectedTransport?.contacts"
@@ -195,7 +205,8 @@
                 class="modal-contact-btn"
               >
                 <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon">
-                <span>{{ typeof contact === 'string' ? contact : contact.contact }}</span>
+                <span v-if="typeof contact === 'string'">{{ contact }}</span>
+                <span v-else>{{ contact.name ? `${contact.name} - ${contact.contact}` : contact.contact }}</span>
               </a>
             </div>
           </div>
@@ -316,8 +327,30 @@ const getLodgingWhatsApp = () => {
 }
 
 const getMesasWhatsApp = () => {
-  if (!event.value?.mesas?.whatsapp_number) return '5491234567890'
-  return event.value.mesas.whatsapp_number.replace(/\D/g, '')
+  return event.value?.mesas?.whatsapp_number 
+    ? event.value.mesas.whatsapp_number.replace(/\D/g, '')
+    : '5493415492478'
+}
+
+const openWhatsAppWithMessage = (type) => {
+  const messages = {
+    hospedaje: '¡Hola Pura Vida! Me gustaría consultar las opciones de hospedaje para el evento.',
+    mesas: '¡Hola Pura Vida! Me interesa reservar una mesa VIP para el evento.',
+    traslados: '¡Hola Pura Vida! Me gustaría información sobre los servicios de traslado.'
+  }
+  
+  const message = messages[type] || 'Hola Pura Vida!'
+  const encodedMessage = encodeURIComponent(message)
+  
+  let whatsappNumber = '+5493415492478'
+  
+  if (type === 'hospedaje') {
+    whatsappNumber = getLodgingWhatsApp()
+  } else if (type === 'mesas') {
+    whatsappNumber = getMesasWhatsApp()
+  }
+  
+  window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank')
 }
 
 const handleTransportClick = (transport) => {
@@ -328,7 +361,8 @@ const handleTransportClick = (transport) => {
     const contact = transport.contacts?.[0] || '5491234567890'
     const number = typeof contact === 'string' ? contact : contact.contact
     const whatsapp = number.replace(/\D/g, '')
-    window.open(`https://wa.me/${whatsapp}`, '_blank')
+    const message = encodeURIComponent('¡Hola Pura Vida! Me gustaría información sobre los servicios de traslado.')
+    window.open(`https://wa.me/${whatsapp}?text=${message}`, '_blank')
   }
 }
 

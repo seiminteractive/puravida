@@ -210,7 +210,7 @@
                             v-model="transport.contacts[contactIndex].contact" 
                             type="text" 
                             class="form-input"
-                            placeholder="Ej: +54 9 11 2345 6789"
+                            placeholder="Ej: +54 9 341 5492478"
                           />
                         </div>
                         <button type="button" @click="removeTransportContact(index, contactIndex)" class="btn-remove">✕</button>
@@ -309,7 +309,7 @@
             ></textarea>
           </div> -->
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Número de WhatsApp para Contacto</label>
             <input 
               v-model="formData.mesas.whatsapp_number" 
@@ -317,7 +317,7 @@
               class="form-input"
               placeholder="Ej: +54 9 11 2345 6789"
             />
-          </div>
+          </div> -->
         </div>
       </fieldset>
 
@@ -609,7 +609,10 @@ watch(() => props.event?.id, () => {
         name: t.name || t.transport_name || '',
         image_url: t.image_url || null,
         description: t.description || '',
-        contacts: Array.isArray(t.contacts) ? t.contacts.filter(c => c).map(c => typeof c === 'string' ? c : c.contact || '') : [],
+        contacts: Array.isArray(t.contacts) ? t.contacts.filter(c => c).map(c => ({
+          name: typeof c === 'string' ? '' : (c.contact_name || c.name || ''),
+          contact: typeof c === 'string' ? c : (c.contact || '')
+        })) : [],
       }))
     }
     
