@@ -5,8 +5,6 @@
     <div class="bg-light-cyan-2"></div>
     <div class="bg-light-cyan-3"></div>
     
-    <!-- Navbar -->
-    <Navbar />
 
     <!-- Contenido scrolleable -->
     <div class="calendar-content">

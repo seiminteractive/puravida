@@ -67,17 +67,27 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Descripción del Evento</label>
-          <textarea 
-            v-model="formData.descripcion" 
-            class="form-textarea"
-            :class="{ 'form-input-error': errors.descripcion }"
-            placeholder="Describe el evento..."
-            maxlength="50"
-            required
-          ></textarea>
-          <span v-if="errors.descripcion" class="form-error-message">{{ errors.descripcion }}</span>
-        </div>
+  <label class="form-label">Descripción del Evento</label>
+
+  <textarea 
+    v-model="formData.descripcion" 
+    class="form-textarea"
+    :class="{ 'form-input-error': errors.descripcion }"
+    placeholder="Describe el evento..."
+    maxlength="250"
+    required
+  ></textarea>
+
+  <div class="char-counter-wrapper">
+    <span class="char-counter">
+      {{ formData.descripcion.length }}/250
+    </span>
+  </div>
+
+  <span v-if="errors.descripcion" class="form-error-message">
+    {{ errors.descripcion }}
+  </span>
+</div>
 
         <div class="form-group">
           <label class="form-label">Imagen/Video del Evento</label>
@@ -922,6 +932,19 @@ const submitForm = () => {
   font-weight: 700;
 }
 
+.char-counter-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.char-counter {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.75rem;
+  color: #51C1E1;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
 .form-hint {
   font-family: 'Standard', sans-serif;
   font-size: 0.8rem;
@@ -1466,5 +1489,23 @@ const submitForm = () => {
   .admin-btn-small {
     padding: 0.5rem 1rem;
   }
+}
+
+/* Character Counter Styles */
+.form-label-with-counter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.char-counter {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.75rem;
+  color: #51C1E1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 </style>
