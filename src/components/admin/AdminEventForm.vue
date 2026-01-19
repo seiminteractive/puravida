@@ -171,7 +171,7 @@
                 </div>
 
                 <div class="transport-content">
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label class="form-label">Nombre del Servicio</label>
                     <input 
                       v-model="transport.name" 
@@ -179,7 +179,7 @@
                       class="form-input"
                       placeholder="Ej: Transporte desde CABA"
                     />
-                  </div>
+                  </div> -->
 
                   <div class="form-group">
                     <label class="form-label">Imagen/Flyer</label>

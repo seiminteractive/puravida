@@ -608,14 +608,29 @@ const openImage = (type) => {
 
 .video-bottom-left {
   position: absolute;
-  bottom: 3.5rem;
-  left: 1.5rem;
+  bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  width: 100vw;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 @media (min-width: 1024px) {
   .video-bottom-left {
+    position: absolute;
     bottom: 5rem;
     left: 3rem;
+    right: auto;
+    width: auto;
+    text-align: left;
+    max-width: 650px;
+    display: block;
+    padding: 0;
   }
 }
 
@@ -640,14 +655,14 @@ const openImage = (type) => {
   color: #999;
   margin: 0;
   font-weight: 300;
-  max-width: 200px;
   line-height: 1.4;
+  max-width: 100%;
 }
 
 @media (min-width: 1024px) {
   .bottom-subtitle {
     font-size: 1rem;
-    max-width: 300px;
+    max-width: 100%;
   }
 }
 
