@@ -8,6 +8,10 @@
       :space-between="20"
       :initial-slide="props.events.length >= 3 ? 1 : 0"
       :preload-images="true"
+      :autoplay="{
+        delay: 1000,
+        disableOnInteraction: false
+      }"
       class="swiper-carousel"
       :breakpoints="{
         320: { slidesPerView: 1, spaceBetween: 10 },
@@ -74,7 +78,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Pagination, EffectCoverflow } from 'swiper/modules'
+import { Navigation, Pagination, EffectCoverflow, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
@@ -98,7 +102,7 @@ const props = defineProps({
 
 const emit = defineEmits(['cardClick', 'infoClick', 'ticketsClick'])
 
-const modules = [Navigation, Pagination, EffectCoverflow]
+const modules = [Navigation, Pagination, EffectCoverflow, Autoplay]
 
 // Preparar eventos duplicados según cantidad
 const displayEvents = computed(() => {

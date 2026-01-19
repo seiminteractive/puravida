@@ -375,8 +375,9 @@ onMounted(async () => {
   padding: 3rem 1.5rem;
 }
 
-.month-group {
-  margin-bottom: 3.5rem;
+.events-by-month-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .month-title {

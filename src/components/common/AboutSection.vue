@@ -1,5 +1,5 @@
 <template>
-  <section class="about-section">
+  <section id="experiencias" class="about-section">
     <div class="about-container">
       <!-- Header con línea divisoria -->
       <div class="about-header">

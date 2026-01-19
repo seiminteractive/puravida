@@ -52,7 +52,7 @@
             <div v-for="event in events" :key="event.id" class="event-card">
               <div class="event-card-media">
                 <img v-if="event.media_url && !event.media_url.includes('video')" :src="event.media_url" :alt="event.dj" class="event-card-image" />
-                <video v-else-if="event.media_url && event.media_url.includes('video')" :src="event.media_url" class="event-card-video" />
+                <video v-else-if="event.media_url && event.media_url.includes('video')" :src="event.media_url" class="event-card-video" autoplay muted loop playsinline />
                 <div v-else class="event-card-empty">Sin imagen</div>
               </div>
               <div class="event-card-header">

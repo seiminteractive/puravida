@@ -3,8 +3,16 @@ import Home from './views/Home.vue'
 import Calendar from './views/Calendar.vue'
 import EventDetail from './views/EventDetail.vue'
 import AdminPanel from './views/AdminPanel.vue'
+import LoginView from './views/LoginView.vue'
+import { setupRouterGuards } from './router/guards'
 
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { title: 'Login' }
+  },
   {
     path: '/',
     name: 'Home',
@@ -24,6 +32,7 @@ const routes = [
     path: '/admin',
     name: 'AdminPanel',
     component: AdminPanel,
+    meta: { requiresAuth: true }
   },
 ]
 
@@ -31,5 +40,8 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
+
+// Configurar guards de autenticación
+setupRouterGuards(router)
 
 export default router

@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="w-full">
     <!-- Video de fondo a pantalla completa (solo en Home) -->
-    <template v-if="$route.name === 'Home'">
+    <template v-if="isHome">
       <video
         class="fixed inset-0 w-full h-full object-cover -z-10"
         autoplay
@@ -31,7 +31,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Footer from './components/common/Footer.vue'
+
 const route = useRoute()
+
+const isHome = computed(() => {
+  return route && route.name === 'Home'
+})
 </script>

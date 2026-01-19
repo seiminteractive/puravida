@@ -1,5 +1,5 @@
 <template>
-  <section class="whatsapp-cta bg-transparent">
+  <section id="contacto" class="whatsapp-cta bg-transparent">
     <div class="cta-container">
       <div class="cta-content">
         <p class="cta-label">Conectá con nosotros</p>
@@ -136,6 +136,7 @@ useScrollFadeInElements('.whatsapp-btn')
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 2rem;
 }
 
 .whatsapp-btn:hover {

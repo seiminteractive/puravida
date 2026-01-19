@@ -315,14 +315,14 @@ const formatDate = (dia, mes) => {
 }
 
 const getWhatsAppNumber = (contacts) => {
-  if (!Array.isArray(contacts) || contacts.length === 0) return '5491234567890'
+  if (!Array.isArray(contacts) || contacts.length === 0) return '5493415492478'
   const contact = contacts[0]
   const num = typeof contact === 'string' ? contact : contact.contact
-  return num ? num.replace(/\D/g, '') : '5491234567890'
+  return num ? num.replace(/\D/g, '') : '5493415492478'
 }
 
 const getLodgingWhatsApp = () => {
-  if (!lodgingData.value?.whatsapp_number) return '5491234567890'
+  if (!lodgingData.value?.whatsapp_number) return '5493415492478'
   return lodgingData.value.whatsapp_number.replace(/\D/g, '')
 }
 
@@ -358,7 +358,7 @@ const handleTransportClick = (transport) => {
     selectedTransport.value = transport
     showTransportModal.value = true
   } else {
-    const contact = transport.contacts?.[0] || '5491234567890'
+    const contact = transport.contacts?.[0] || '5493415492478'
     const number = typeof contact === 'string' ? contact : contact.contact
     const whatsapp = number.replace(/\D/g, '')
     const message = encodeURIComponent('¡Hola Pura Vida! Me gustaría información sobre los servicios de traslado.')

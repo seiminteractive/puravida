@@ -18,23 +18,25 @@
 
     <!-- Logo (Center on Desktop, Left on Mobile) -->
     <div class="flex-shrink-0 md:pl-12 md:pr-12 absolute left-6 md:static">
-      <img
-        src="/assets/isotipoBlanco.png"
-        alt="Pura Vida"
-        class="w-10 h-10"
-      />
+      <a href="/">
+        <img
+          src="/assets/isotipoBlanco.png"
+          alt="Pura Vida"
+          class="w-10 h-10"
+        />
+      </a>
     </div>
 
     <!-- Navigation Links Right (Desktop) -->
     <div class="hidden md:flex items-center gap-12 pl-12 menu-right">
       <a
-        href="#experiencias"
+        href="/calendar"
         class="font-secondary text-sm uppercase tracking-widest text-white hover:text-yellow-400 transition-colors"
       >
         Experiencias
       </a>
       <a
-        href="#nosotros"
+        href="#contacto"
         class="font-secondary text-sm uppercase tracking-widest text-white hover:text-yellow-400 transition-colors"
       >
         Nosotros
@@ -94,7 +96,7 @@
             Contacto
           </a>
           <a
-            href="#experiencias"
+            href="/calendar"
             @click="closeMenu"
             class="flex items-center gap-4 font-primary text-4xl text-white hover:text-yellow-400 transition-colors group"
           >
@@ -106,7 +108,7 @@
             Experiencias
           </a>
           <a
-            href="#nosotros"
+            href="#contacto"
             @click="closeMenu"
             class="flex items-center gap-4 font-primary text-4xl text-white hover:text-yellow-400 transition-colors group"
           >
