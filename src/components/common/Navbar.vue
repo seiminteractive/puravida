@@ -36,7 +36,7 @@
         Experiencias
       </a>
       <a
-        href="#contacto"
+        href="#experiencias"
         class="font-secondary text-sm uppercase tracking-widest text-white hover:text-yellow-400 transition-colors"
       >
         Nosotros
@@ -108,7 +108,7 @@
             Experiencias
           </a>
           <a
-            href="#contacto"
+            href="#experiencias"
             @click="closeMenu"
             class="flex items-center gap-4 font-primary text-4xl text-white hover:text-yellow-400 transition-colors group"
           >
