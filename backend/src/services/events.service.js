@@ -170,14 +170,15 @@ export const createEvent = async (eventData) => {
     // 4. Insertar mesas (opcional)
     if (eventData.mesas) {
       await connection.query(
-        `INSERT INTO event_mesas (event_id, enabled, image_url, description, whatsapp_number)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO event_mesas (event_id, enabled, image_url, description, whatsapp_number, contact_label)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           eventId,
           eventData.mesas.enabled !== false,
           eventData.mesas.image_url || null,
           eventData.mesas.description || null,
-          eventData.mesas.whatsapp_number || null
+          eventData.mesas.whatsapp_number || null,
+          eventData.mesas.contact_label || 'Consultar por mesas'
         ]
       )
     }
@@ -298,14 +299,15 @@ export const updateEvent = async (id, eventData) => {
     if (eventData.mesas) {
       await connection.query('DELETE FROM event_mesas WHERE event_id = ?', [id])
       await connection.query(
-        `INSERT INTO event_mesas (event_id, enabled, image_url, description, whatsapp_number)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO event_mesas (event_id, enabled, image_url, description, whatsapp_number, contact_label)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           id,
           eventData.mesas.enabled !== false,
           eventData.mesas.image_url || null,
           eventData.mesas.description || null,
-          eventData.mesas.whatsapp_number || null
+          eventData.mesas.whatsapp_number || null,
+          eventData.mesas.contact_label || 'Consultar por mesas'
         ]
       )
     }

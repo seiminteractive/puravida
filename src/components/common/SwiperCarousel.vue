@@ -9,7 +9,7 @@
       :initial-slide="props.events.length >= 3 ? 1 : 0"
       :preload-images="true"
       :autoplay="{
-        delay: 1000,
+        delay: 1500,
         disableOnInteraction: false
       }"
       class="swiper-carousel"
@@ -57,6 +57,9 @@
             <!-- Info en la parte inferior -->
             <div class="event-info">
               <h3 class="event-title">{{ event.title }}</h3>
+              
+              <!-- Descripción (solo si no hideDetails y existe) -->
+              <p v-if="!hideDetails && event.descripcion" class="event-description">{{ event.descripcion }}</p>
 
               <!-- Botones (solo si no hideDetails) -->
               <div v-if="!hideDetails" class="event-actions">
@@ -228,7 +231,7 @@ const handleTicketsClick = (event) => {
   position: relative;
   transition: all 0.4s ease;
   cursor: pointer;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 .event-card:hover {
@@ -236,7 +239,7 @@ const handleTicketsClick = (event) => {
 }
 
 .swiper-slide-active .event-card {
-  box-shadow: 0 20px 20px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 25px rgba(255, 255, 255, 0.1);
 }
 
 .event-image-container {
@@ -338,6 +341,20 @@ const handleTicketsClick = (event) => {
   margin: 0;
   font-weight: 600;
   line-height: 1.3;
+}
+
+.event-description {
+  font-family: 'Standard', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-actions {

@@ -103,88 +103,76 @@
         </div>
       </section>
 
-      <!-- Mesas Section -->
-      <section class="mesas-section" v-if="event?.mesas?.enabled">
-        <div class="mesas-container">
-          <!-- Columna izquierda - Contenido -->
-          <div class="mesas-content">
-            <div class="mesas-text-group">
-              <h2 class="mesas-title">Mesas VIP & Backstage</h2>
-              <p class="mesas-subtitle">Viví la experiencia más exclusiva de Pura Vida</p>
-              <p class="mesas-description">{{ event.mesas.description || 'Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento' }}</p>
-            </div>
-            <a
-              href="https://wa.me/5493415492478?text=%C2%A1Hola%20Pura%20Vida!%20Me%20interesa%20reservar%20una%20mesa%20VIP%20para%20el%20evento."
-              target="_blank"
-              rel="noopener"
-              class="mesas-btn"
-            >
-              <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="btn-rotating-icon" />
-              <span>Consultar mesas VIP</span>
-            </a>
-          </div>
-
-          <!-- Columna derecha - Imagen -->
-          <div class="mesas-image-wrapper">
-                <img :src="event.mesas.image_url" alt="Mesas" class="mesas-image" @click="openImage('mesas')">
-          </div>
-        </div>
-      </section>
-
-      <!-- Experiencia Completa Section -->
-      <section v-if="lodgingData?.enabled || transportsData.length > 0" class="experiencia-section">
+      <!-- Experiencia Completa Section - Rediseño intercalado -->
+      <section v-if="lodgingData?.enabled || transportsData.length > 0 || event?.mesas?.enabled" class="experiencia-section">
         <div class="experiencia-container">
           <!-- Header -->
-          <div class="experiencia-header text-left sm:text-center">
+          <div class="experiencia-header">
             <h2 class="experiencia-title">Experiencia Completa</h2>
             <p class="experiencia-subtitle">Disfrutá Pura Vida sin preocuparte por nada</p>
           </div>
 
-          <!-- Grid de bloques -->
-          <div class="experiencia-blocks" :class="activeBlocksCount === 1 ? 'single-block' : ''">
-            <!-- Hospedaje Block -->
-            <div v-if="lodgingData && lodgingData.enabled" class="experiencia-block">
-              <!-- Title -->
-              <h3 class="block-title-top">Hospedaje</h3>
-              <!-- Media Card -->
-              <div class="block-media">
-                <video v-if="lodgingData.image_url?.includes('mp4')" autoplay muted loop playsinline class="block-video" @click="openImage('hospedaje')">
+          <!-- Secciones intercaladas -->
+          <div class="experiencia-rows">
+            
+            <!-- 1. Hospedaje - Imagen izquierda, texto derecha -->
+            <div v-if="lodgingData && lodgingData.enabled" class="experiencia-row">
+              <div class="row-media">
+                <video v-if="lodgingData.image_url?.includes('mp4')" autoplay muted loop playsinline class="row-video" @click="openImage('hospedaje')">
                   <source :src="lodgingData.image_url" type="video/mp4">
                 </video>
-                <img v-else :src="lodgingData.image_url" alt="Hospedaje" class="block-image" @click="openImage('hospedaje')">
+                <img v-else :src="lodgingData.image_url" alt="Hospedaje" class="row-image" @click="openImage('hospedaje')">
               </div>
-              <!-- Description & Button -->
-              <div class="block-content">
-                <p class="block-description">{{ lodgingData.description || 'Opciones de hospedaje cercanas y seguras para tu descanso' }}</p>
+              <div class="row-content">
+                <h3 class="row-title">Hospedaje</h3>
+                <p class="row-description">{{ lodgingData.description || 'Opciones de hospedaje cercanas y seguras para tu descanso' }}</p>
                 <a
-              href="https://wa.me/5493415492478?text=%C2%A1Hola%20Pura%20Vida!%20Me%20gustar%C3%ADa%20consultar%20las%20opciones%20de%20hospedaje%20para%20el%20evento."
-              target="_blank"
-              rel="noopener"
-              class="block-btn"
-            >
-                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon">
-                  <span class="block-btn-text">Consultar hospedaje</span>
+                  href="https://wa.me/5493415492478?text=%C2%A1Hola%20Pura%20Vida!%20Me%20gustar%C3%ADa%20consultar%20las%20opciones%20de%20hospedaje%20para%20el%20evento."
+                  target="_blank"
+                  rel="noopener"
+                  class="row-btn"
+                >
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="row-btn-icon">
+                  <span>Consultar hospedaje</span>
                 </a>
               </div>
             </div>
 
-            <!-- Traslado Block -->
-            <div v-for="transport in transportsData" :key="transport.id" class="experiencia-block">
-              <!-- Title -->
-              <h3 class="block-title-top">Traslados</h3>
-              <!-- Media Card -->
-              <div class="block-media">
-                <img :src="transport.image_url" :alt="transport.transport_name" class="block-image" @click="openImage('traslados')">
+            <!-- 2. Transporte - Texto izquierda, imagen derecha (invertido) -->
+            <div v-for="(transport, index) in transportsData" :key="transport.id" class="experiencia-row row-reversed">
+              <div class="row-media">
+                <img :src="transport.image_url" :alt="transport.transport_name" class="row-image" @click="openImage('traslados')">
               </div>
-              <!-- Description & Button -->
-              <div class="block-content">
-                <p class="block-description">{{ transport.description || 'Transporte cómodo y coordinado de ida y vuelta.' }}</p>
-                <button @click="handleTransportClick(transport)" class="block-btn">
-                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="block-btn-icon">
-                  <span class="block-btn-text">Consultar traslados</span>
+              <div class="row-content">
+                <h3 class="row-title">Traslados</h3>
+                <p class="row-description">{{ transport.description || 'Transporte cómodo y coordinado de ida y vuelta.' }}</p>
+                <button @click="handleTransportClick(transport)" class="row-btn">
+                  <img src="/assets/iconoEventos3.png" alt="Consultar" class="row-btn-icon">
+                  <span>Consultar traslados</span>
                 </button>
               </div>
             </div>
+
+            <!-- 3. Mesas VIP - Imagen izquierda, texto derecha -->
+            <div v-if="event?.mesas?.enabled" class="experiencia-row">
+              <div class="row-media">
+                <img :src="event.mesas.image_url" alt="Mesas VIP" class="row-image" @click="openImage('mesas')">
+              </div>
+              <div class="row-content">
+                <h3 class="row-title">Mesas VIP & Backstage</h3>
+                <p class="row-description">{{ event.mesas.description || 'Consultá por beneficios y disponibilidad para reservar tu espacio en la mejor zona del evento' }}</p>
+                <a
+                  :href="getMesasWhatsAppLink()"
+                  target="_blank"
+                  rel="noopener"
+                  class="row-btn"
+                >
+                  <img ref="mesasIcon" src="/assets/iconoEventos3.png" alt="Contactar" class="row-btn-icon" />
+                  <span>{{ event.mesas.contact_label || 'Consultar mesas VIP' }}</span>
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -330,6 +318,12 @@ const getMesasWhatsApp = () => {
   return event.value?.mesas?.whatsapp_number 
     ? event.value.mesas.whatsapp_number.replace(/\D/g, '')
     : '5493415492478'
+}
+
+const getMesasWhatsAppLink = () => {
+  const number = getMesasWhatsApp()
+  const message = encodeURIComponent('¡Hola Pura Vida! Me interesa reservar una mesa VIP para el evento.')
+  return `https://wa.me/${number}?text=${message}`
 }
 
 const openWhatsAppWithMessage = (type) => {
@@ -1133,130 +1127,7 @@ const openImage = (type) => {
   width: 100%;
 }
 
-/* Mesas Section */
-.mesas-section {
-  padding: 4rem 1.5rem;
-  background: #000;
-  position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.mesas-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  align-items: center;
-}
-
-@media (min-width: 1024px) {
-  .mesas-container {
-    grid-template-columns: 40% 60%;
-  }
-}
-
-.mesas-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.mesas-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.mesas-title {
-  font-family: 'Napzer Rounded', sans-serif;
-  font-size: 2.5rem;
-  color: #fff;
-  margin: 0;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.2;
-}
-
-@media (max-width: 768px) {
-  .mesas-title {
-    font-size: 1.75rem;
-  }
-}
-
-.mesas-subtitle {
-  font-family: 'Standard', sans-serif;
-  font-size: 1rem;
-  color: #51C1E1;
-  margin: 0;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-}
-
-.mesas-description {
-  font-family: 'Standard', sans-serif;
-  font-size: 0.95rem;
-  color: #bbb;
-  line-height: 1.6;
-  margin: 0;
-  font-weight: 300;
-}
-
-.mesas-image-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mesas-image {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  border-radius: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(81, 193, 225, 0.2);
-}
-
-.mesas-image:hover {
-  transform: scale(1.03);
-  box-shadow: 0 25px 60px rgba(81, 193, 225, 0.25);
-}
-
-.mesas-btn {
-  display: inline-flex;
-  background: transparent;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 1rem;
-  border: .5px solid #fff;
-  border-radius: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: #000;
-  font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  width: fit-content;
-  color: #fff;
-
-}
-
-.btn-rotating-icon {
-  width: 32px;
-  height: 32px;
-}
-
-/* Experiencia Completa Section */
+/* Experiencia Completa Section - Diseño intercalado */
 .experiencia-section {
   padding: 4rem 1.5rem;
   background: #000;
@@ -1265,30 +1136,30 @@ const openImage = (type) => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+@media (min-width: 1024px) {
+  .experiencia-section {
+    padding: 5rem 2rem;
+  }
+}
+
 .experiencia-container {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 4rem;
 }
 
 .experiencia-header {
-  text-align: center; /* mobile */
+  text-align: center;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-@media (min-width: 640px) {
-  .experiencia-header {
-    text-align: center;
-  }
-}
-
 .experiencia-title {
   font-family: 'Napzer Rounded', sans-serif;
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   color: #fff;
   margin: 0;
   font-weight: 600;
@@ -1297,9 +1168,9 @@ const openImage = (type) => {
   line-height: 1.2;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 1024px) {
   .experiencia-title {
-    font-size: 1.75rem;
+    font-size: 2.5rem;
   }
 }
 
@@ -1312,39 +1183,106 @@ const openImage = (type) => {
   letter-spacing: 0.02em;
 }
 
-.experiencia-blocks {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+/* Rows container */
+.experiencia-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
 }
 
-.experiencia-blocks.single-block {
-  max-width: 400px;
-  margin: 0 auto;
-  justify-items: center;
+@media (min-width: 1024px) {
+  .experiencia-rows {
+    gap: 5rem;
+  }
+}
+
+/* Individual row - imagen izquierda, texto derecha */
+.experiencia-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
 }
 
 @media (min-width: 768px) {
-  .experiencia-blocks {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .experiencia-blocks.single-block {
-    grid-template-columns: 1fr;
-    max-width: 500px;
+  .experiencia-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
   }
 }
 
-.experiencia-block {
+@media (min-width: 1024px) {
+  .experiencia-row {
+    gap: 4rem;
+  }
+}
+
+/* Row invertida - texto izquierda, imagen derecha */
+@media (min-width: 768px) {
+  .experiencia-row.row-reversed .row-media {
+    order: 2;
+  }
+  
+  .experiencia-row.row-reversed .row-content {
+    order: 1;
+    text-align: right;
+    align-items: right;
+  }
+}
+
+/* Media container */
+.row-media {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(81, 193, 225, 0.15);
+}
+
+@media (min-width: 768px) {
+  .row-media {
+    max-width: 100%;
+  }
+}
+
+.row-video,
+.row-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  display: block;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.row-media:hover .row-video,
+.row-media:hover .row-image {
+  transform: scale(1.03);
+}
+
+/* Content container */
+.row-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: all 0.3s ease;
-  align-items: center;
+  gap: 1.25rem;
   text-align: center;
+  align-items: center;
 }
 
-.block-title-top {
+@media (min-width: 768px) {
+  .row-content {
+    text-align: center;
+    align-items: left;
+  }
+}
+
+.row-title {
   font-family: 'Napzer Rounded', sans-serif;
   font-size: 1.5rem;
   color: #fff;
@@ -1352,133 +1290,68 @@ const openImage = (type) => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  order: 1;
+  line-height: 1.2;
 }
 
-@media (min-width: 768px) {
-  .block-title-top {
-    font-size: 1.8rem;
+@media (min-width: 1024px) {
+  .row-title {
+    font-size: 2rem;
   }
 }
 
-.experiencia-block:hover {
-  transform: translateY(-5px);
-}
-
-.block-media {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  aspect-ratio: 4 / 5;
-  order: 2;
-}
-
-.block-video,
-.block-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: block;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 0.875rem;
-}
-
-.block-media:hover .block-video,
-.block-media:hover .block-image {
-  transform: scale(1.03);
-}
-
-.block-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  text-align: center;
-  align-items: center;
-  width: 100%;
-  order: 3;
-}
-
-.block-description {
+.row-description {
   font-family: 'Standard', sans-serif;
   font-size: 0.95rem;
   color: #bbb;
-  line-height: 1.6;
+  line-height: 1.7;
   margin: 0;
   font-weight: 300;
   max-width: 400px;
 }
 
-.block-btn {
+@media (min-width: 1024px) {
+  .row-description {
+    font-size: 1rem;
+  }
+}
+
+.row-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.75rem;
   background: transparent;
-  border: 1px solid #51C1E1;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 2rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   font-family: 'Standard', sans-serif;
-  font-size: 0.85rem;
-  color: #51C1E1;
+  font-size: 0.8rem;
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;
+  margin-top: 0.5rem;
 }
 
-.block-btn:hover {
+.row-btn:hover {
   border-color: #51C1E1;
   color: #51C1E1;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(81, 193, 225, 0.15);
 }
 
-.block-btn-icon {
-  width: 20px;
-  height: 20px;
+.row-btn-icon {
+  width: 22px;
+  height: 22px;
   animation: spin 8s linear infinite;
-}
-
-.block-btn-text {
-  display: inline;
 }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-.experiencia-cta {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
-.experiencia-btn {
-  padding: 1rem 1rem;
-  background: transparent;
-  border: .5px solid #fff;
-  color: #fff;
-  font-family: 'Standard', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  white-space: nowrap;
-  text-decoration: none;
 }
 
 

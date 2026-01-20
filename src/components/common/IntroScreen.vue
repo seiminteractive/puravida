@@ -5,58 +5,84 @@
       <div class="intro-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" class="logo-img" />
       </div>
-
-      <!-- Slide negro con mensaje espiritual -->
-      <div ref="finalSlideRef" class="final-overlay">
-        <div class="final-content">
-          <img src="/assets/logoCompletoNegro.png" alt="Pura Vida" class="final-logo" />
-          <p class="final-message">VIVIR CONECTADO, VIVIR DESPIERTO</p>
-        </div>
-      </div>
     </div>
 
     <!-- Container de color -->
     <div class="intro-container"></div>
+
+    <!-- Slide final con mensaje espiritual (fuera del header para z-index correcto) -->
+    <div ref="finalSlideRef" class="final-overlay">
+      <div class="final-content">
+        <img src="/assets/logoCompletoNegro.png" alt="Pura Vida" class="final-logo" />
+        <p class="final-message">VIVIR CONECTADO, VIVIR DESPIERTO</p>
+      </div>
+    </div>
 
     <!-- Text wrapper con logos -->
     <div class="intro-text-wrapper" ref="textWrapper">
       <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-      </div>
-      <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-      </div>
-      <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-      </div>
-      <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-      </div>
-      <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+      </div>
+      <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+      </div>
+      <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+      </div>
+      <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+      </div>
+      <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
@@ -178,6 +204,13 @@ const triggerIntro = () => {
   background: white;
 }
 
+/* Desktop: z-index mayor para tapar la navbar durante la animación */
+@media (min-width: 1024px) {
+  .intro-wrapper {
+    z-index: 99999;
+  }
+}
+
 .intro-logo {
   position: absolute;
   top: 50%;
@@ -246,6 +279,13 @@ const triggerIntro = () => {
   height: 14vw;
   width: auto;
   flex-shrink: 0;
+}
+
+/* Desktop: logos más pequeños */
+@media (min-width: 1024px) {
+  .intro-text-logo img {
+    height: 6vw;
+  }
 }
 
 .intro-text-logo img:nth-child(1),

@@ -23,6 +23,15 @@
       <img src="/assets/iconoComunidad3.png" alt="" class="icon icon-8" />
     </div>
 
+    <!-- Decorative ambient lights -->
+    <div class="home-ambient-lights" aria-hidden="true">
+      <div class="light light-2"></div>
+      <div class="light light-3"></div>
+      <div class="light light-4"></div>
+      <div class="light light-5"></div>
+      <div class="light light-7"></div>
+    </div>
+
     <!-- Subtle black overlay to reduce icon opacity -->
     <div class="home-bg-dim" aria-hidden="true"></div>
 
@@ -188,6 +197,7 @@ const scrollToEvents = () => {
   right: -5rem;
   width: 56rem;
   height: 56rem;
+  opacity: 0;
 }
 
 .icon-3 {
@@ -195,6 +205,7 @@ const scrollToEvents = () => {
   left: 40rem;
   width: 54rem;
   height: 54rem;
+  opacity: 0;
 }
 
 .icon-4 {
@@ -202,6 +213,7 @@ const scrollToEvents = () => {
   right: 35rem;
   width: 66rem;
   height: 66rem;
+  opacity: 0;
 }
 
 .icon-5 {
@@ -209,6 +221,7 @@ const scrollToEvents = () => {
   right: -15rem;
   width: 48rem;
   height: 48rem;
+  opacity: 0;
 }
 
 .icon-6 {
@@ -224,6 +237,7 @@ const scrollToEvents = () => {
   right: 65rem;
   width: 54rem;
   height: 54rem;
+  opacity: 0;
 }
 
 .icon-8 {
@@ -231,6 +245,66 @@ const scrollToEvents = () => {
   right: -30rem;
   width: 60rem;
   height: 60rem;
+}
+
+/* Ambient lights container */
+.home-ambient-lights {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.light {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+}
+
+/* Amarillo/Oro - en posición de icon-2 */
+.light-2 {
+  top: 48%;
+  right: -5rem;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, rgba(255, 210, 92, 0.35) 0%, rgba(255, 210, 92, 0.1) 40%, transparent 90%);
+}
+
+/* Verde - en posición de icon-3 */
+.light-3 {
+  bottom: 35rem;
+  left: 50rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, rgba(112, 188, 126, 0.35) 30%, rgba(112, 188, 126, 0.1) 40%, transparent 90%);
+}
+
+/* Púrpura - en posición de icon-4 */
+.light-4 {
+  top: 155rem;
+  right: 55rem;
+  width: 35rem;
+  height: 35rem;
+  background: radial-gradient(circle, rgba(182, 113, 160, 0.30) 50%, rgba(182, 113, 160, 0.1) 40%, transparent 90%);
+}
+
+/* Cian - en posición de icon-5 */
+.light-5 {
+  bottom: 0rem;
+  right: -5rem;
+  width: 35rem;
+  height: 35rem;
+  background: radial-gradient(circle, rgba(81, 193, 225, 0.35) 50%, rgba(81, 193, 225, 0.1) 40%, transparent 90%);
+}
+
+/* Coral - en posición de icon-7 */
+.light-7 {
+  bottom: 5rem;
+  right: 65rem;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, rgba(255, 210, 92, 0.30) 0%, rgba(255, 210, 92, 0.1) 40%, transparent 90%);
 }
 
 /* Mobile Media Query - Reducir tamaño de iconos */
@@ -248,7 +322,7 @@ const scrollToEvents = () => {
     height: 28rem;
     top: 65rem;
     right: 10rem;
-    opacity: .4;
+    opacity: 0;
   }
 
   .icon-3 {
@@ -256,7 +330,7 @@ const scrollToEvents = () => {
     height: 20rem;
     bottom: 23rem;
     left: 5rem;
-    opacity: .4;
+    opacity: 0;
   }
 
   .icon-4 {
@@ -264,7 +338,7 @@ const scrollToEvents = () => {
     height: 30rem;
     top: 110rem;
     right: 8rem;
-    opacity: .4;
+    opacity: 0;
   }
 
   .icon-5 {
@@ -272,14 +346,14 @@ const scrollToEvents = () => {
     height: 24rem;
     bottom: 5rem;
     right: 10rem;
-    opacity: .4;
+    opacity: 0;
   }
 
   .icon-6 {
     width: 28rem;
     height: 28rem;
-    top: 55%;
-    left: 10rem;
+    top: 30%;
+    left: -10rem;
     opacity: .4;
   }
 
@@ -288,7 +362,7 @@ const scrollToEvents = () => {
     height: 20rem;
     bottom: -5rem;
     right: -5rem;
-    opacity: .4;
+    opacity: 0;
   }
 
   .icon-8 {
@@ -297,6 +371,46 @@ const scrollToEvents = () => {
     top: 90rem;
     right: -10rem;
     opacity: .4;
+  }
+
+  /* Mobile lights */
+  .light {
+    filter: blur(50px);
+  }
+
+  .light-2 {
+    width: 29rem;
+    height: 25rem;
+    top: 115rem;
+    right: -10rem;
+  }
+
+  .light-3 {
+    width: 29rem;
+    height: 25rem;
+    bottom: 55rem;
+    left: -5rem;
+  }
+
+  .light-4 {
+    width: 29rem;
+    height: 25rem;
+    bottom: 31rem;
+    right: -5rem;
+  }
+
+  .light-5 {
+    width: 29rem;
+    height: 25rem;
+    bottom: 25rem;
+    right: -5rem;
+  }
+
+  .light-7 {
+    width: 29rem;
+    height: 25rem;
+    bottom: -5rem;
+    right: -5rem;
   }
 }
 </style>

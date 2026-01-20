@@ -310,16 +310,7 @@
             </div>
           </div>
 
-          <!-- <div class="form-group">
-            <label class="form-label">Descripción</label>
-            <textarea 
-              v-model="formData.mesas.description" 
-              class="form-textarea"
-              placeholder="Descripción de las mesas VIP..."
-            ></textarea>
-          </div> -->
-
-          <!-- <div class="form-group">
+          <div class="form-group">
             <label class="form-label">Número de WhatsApp para Contacto</label>
             <input 
               v-model="formData.mesas.whatsapp_number" 
@@ -327,7 +318,17 @@
               class="form-input"
               placeholder="Ej: +54 9 11 2345 6789"
             />
-          </div> -->
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Texto del Botón de Contacto</label>
+            <input 
+              v-model="formData.mesas.contact_label" 
+              type="text" 
+              class="form-input"
+              placeholder="Ej: Consultar por mesas"
+            />
+          </div>
         </div>
       </fieldset>
 
@@ -418,6 +419,7 @@ const getDefaultFormData = () => ({
     image_url: null,
     description: '',
     whatsapp_number: '',
+    contact_label: '',
   },
   ticketLinks: [],
 })
@@ -667,6 +669,7 @@ watch(() => props.event?.id, () => {
         image_url: newEvent.mesas?.image_url || null,
         description: newEvent.mesas?.description || '',
         whatsapp_number: newEvent.mesas?.whatsapp_number || '',
+        contact_label: newEvent.mesas?.contact_label || '',
       },
       ticketLinks: ticketLinks,
     }
@@ -844,7 +847,7 @@ const submitForm = () => {
       image_url: formData.value.mesas.image_url,
       description: formData.value.mesas.description,
       whatsapp_number: formData.value.mesas.whatsapp_number,
-      contacts: [],
+      contact_label: formData.value.mesas.contact_label,
     },
     ticketLinks: validTicketLinks,
   })

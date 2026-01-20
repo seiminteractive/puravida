@@ -17,7 +17,7 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'puravida_admin',
   password: process.env.DB_PASSWORD || 'puravida_password_123',
-  database: process.env.DB_NAME || 'puravida',
+  database: process.env.DB_NAME || 'puravida_events',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
