@@ -35,10 +35,10 @@
         <div class="video-content-overlay">
           
           <!-- Top right logo/info -->
-          <div class="video-top-right">
+          <router-link to="/" class="video-top-right">
             <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="video-logo">
             <p class="video-weekend"></p>
-          </div>
+          </router-link>
 
           <!-- Main content center -->
           <div class="event-hero-info">

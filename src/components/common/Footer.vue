@@ -26,9 +26,9 @@
           <a href="https://www.tiktok.com/@somospuravida_" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok">
             <i class="bi bi-tiktok"></i>
           </a>
-          <!-- <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">
+          <a href="https://www.youtube.com/@PuraVida-2026" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">
             <i class="bi bi-youtube"></i>
-          </a> -->
+          </a>
         </div>
       </div>
 
@@ -63,7 +63,7 @@
           <nav class="footer-social-nav">
             <a href="https://www.instagram.com/somospuravida._/" target="_blank" rel="noopener noreferrer" class="footer-social-link">Instagram</a>
             <a href="https://www.tiktok.com/@somospuravida_" target="_blank" rel="noopener noreferrer" class="footer-social-link">TikTok</a>
-            <!-- <a href="https://youtube.com/@puravida" target="_blank" rel="noopener noreferrer" class="footer-social-link">YouTube</a> -->
+            <a href="https://www.youtube.com/@PuraVida-2026" target="_blank" rel="noopener noreferrer" class="footer-social-link">YouTube</a>
             <a href="https://www.facebook.com/somospuravidaa?mibextid=wwXIfr&rdid=FeUY12fd7HXpWfZV&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ghv8vVzma%2F%3Fmibextid%3DwwXIfr#" target="_blank" rel="noopener noreferrer" class="footer-social-link">Facebook</a>
           </nav>
         </div>

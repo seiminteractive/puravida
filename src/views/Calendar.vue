@@ -15,6 +15,9 @@
           <img ref="headerIcon" src="/assets/iconoEventos3.png" alt="Eventos" class="header-icon" />
           <h1 class="page-title">Upcoming events</h1>
         </div>
+        <router-link to="/" class="back-btn">
+          <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="header-icon">
+        </router-link>
       </div>
 
       <!-- Sección de carrousel destacado (Carousel de Swiper) -->
