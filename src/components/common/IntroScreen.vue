@@ -343,7 +343,7 @@ const triggerIntro = () => {
 
 .final-message {
   font-family: 'Standard', sans-serif;
-  font-size: 1.3rem;
+  font-size: .8rem;
   color: #000;
   max-width: 90%;
   line-height: 1.8;
