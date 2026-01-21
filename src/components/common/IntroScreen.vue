@@ -156,7 +156,7 @@ const triggerIntro = () => {
 
   gsap.to('.intro-text-wrapper', 2.3, {
     y: -300,
-    scale: 4.5,
+    scale: 3.5,
     rotate: -90,
     ease: 'expo.inOut',
     delay: .4,
