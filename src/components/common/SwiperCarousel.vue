@@ -10,8 +10,6 @@
       :preload-images="true"
       :autoplay="props.enableAutoplay ? { delay: 1500, disableOnInteraction: false } : false"
       class="swiper-carousel"
-      @swiper="handleSwiper"
-      @slideChange="handleSlideChange"
       :breakpoints="{
         320: { slidesPerView: 1, spaceBetween: 10 },
         768: { slidesPerView: 3, spaceBetween: 20 }
@@ -19,14 +17,14 @@
     >
       <swiper-slide 
         v-for="(event, idx) in displayEvents" 
-        :key="`${event.id}-${event.title}-${idx}`"
+        :key="`${event.id}-${idx}-${event.title}`"
         class="swiper-slide-custom"
       >
         <div class="event-card" @click="handleCardClick(event)">
           <!-- Imagen del evento -->
           <div class="event-image-container">
             <video
-              v-if="event.media_url?.includes('.mp4') && idx === activeIndex"
+              v-if="isVideoUrl(event.media_url)"
               autoplay
               muted
               loop
@@ -36,11 +34,6 @@
             >
               <source :src="event.media_url" type="video/mp4" />
             </video>
-            <div
-              v-else-if="event.media_url?.includes('.mp4')"
-              class="event-media event-media-placeholder"
-              aria-hidden="true"
-            ></div>
             <img v-else :src="event.media_url" :alt="event.title" class="event-media" />
           </div>
 
@@ -84,7 +77,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, EffectCoverflow, Autoplay } from 'swiper/modules'
 import 'swiper/css'
@@ -116,9 +109,7 @@ const emit = defineEmits(['cardClick', 'infoClick', 'ticketsClick'])
 
 const modules = [Navigation, Pagination, EffectCoverflow, Autoplay]
 
-const activeIndex = ref(0)
-
-// Preparar eventos duplicados según cantidad
+// Preparar eventos duplicados según cantidad (para que el loop funcione bien)
 const displayEvents = computed(() => {
   if (props.events.length === 0) return []
   
@@ -130,13 +121,19 @@ const displayEvents = computed(() => {
     return [props.events[0], props.events[1], props.events[0], props.events[1], props.events[0]]
   }
   
-  // Para 3 o más items: prepend última card para que initialSlide=1 muestre (última, primera, segunda)
+  // Para 3 o más items: prepend última card para que initialSlide=1 muestre correctamente
   if (props.events.length >= 3) {
     return [props.events[props.events.length - 1], ...props.events, props.events[0], props.events[1]]
   }
   
   return [...props.events, props.events[0], props.events[1]]
 })
+
+const isVideoUrl = (url) => {
+  if (!url) return false
+  const clean = String(url).toLowerCase()
+  return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.includes('video')
+}
 
 const getDay = (dateString) => {
   if (!dateString) return 'DD'
@@ -182,14 +179,6 @@ const handleTicketsClick = (event) => {
     emit('ticketsClick', event)
   }
 }
-
-const handleSwiper = (swiper) => {
-  activeIndex.value = swiper?.activeIndex ?? 0
-}
-
-const handleSlideChange = (swiper) => {
-  activeIndex.value = swiper?.activeIndex ?? 0
-}
 </script>
 
 <style scoped>
@@ -211,14 +200,6 @@ const handleSlideChange = (swiper) => {
   height: auto;
   padding: 2rem 3rem;
   max-width: 1400px;
-}
-
-.event-media-placeholder {
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at 30% 20%, rgba(81, 193, 225, 0.18) 0%, rgba(0, 0, 0, 0) 55%),
-    radial-gradient(circle at 70% 80%, rgba(255, 210, 92, 0.12) 0%, rgba(0,  0, 0, 0) 60%),
-    rgba(0, 0, 0, 0.35);
 }
 
 .swiper-slide-custom {
