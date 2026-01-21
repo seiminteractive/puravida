@@ -331,7 +331,7 @@ const triggerIntro = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 0.5rem;
   text-align: center;
 }
 
@@ -343,7 +343,7 @@ const triggerIntro = () => {
 
 .final-message {
   font-family: 'Standard', sans-serif;
-  font-size: .8rem;
+  font-size: 1rem;
   color: #000;
   line-height: 1.8;
   font-weight: 200;
