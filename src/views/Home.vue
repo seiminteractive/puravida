@@ -3,7 +3,7 @@
     <!-- Fixed hero video layer -->
     <div class="home-hero-video-layer" aria-hidden="true">
       <video class="home-hero-video" autoplay muted loop playsinline preload="auto" fetchpriority="high">
-        <source src="/assets/fondoMobile.mp4" type="video/mp4" />
+        <source src="/assets/VideoComprimidoPuravida.mp4" type="video/mp4" />
       </video>
       <div class="home-hero-video-dim"></div>
     </div>
