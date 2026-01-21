@@ -256,9 +256,7 @@ onMounted(async () => {
   min-height: 100vh;
   background: #000;
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
 }
 
 .bg-light-cyan-2 {
@@ -570,11 +568,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 640px) {
-  .calendar-view {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
   .calendar-header {
     padding: 1.5rem;
   }
