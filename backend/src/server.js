@@ -24,7 +24,9 @@ const corsOptions = {
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:3000',
-      process.env.CORS_ORIGIN
+      process.env.CORS_ORIGIN,
+      'https://wearepuravida.com',
+      'https://www.wearepuravida.com'
     ].filter(Boolean)
     
     if (!origin || whitelist.includes(origin)) {
@@ -57,6 +59,35 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'Pura Vida API'
   })
+})
+
+// Debug endpoint para verificar DB
+app.get('/debug/db', async (req, res) => {
+  try {
+    const pool = (await import('./config/database.js')).default
+    const [rows] = await pool.query('SELECT 1 as test')
+    res.json({
+      status: 'DB Connected',
+      config: {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT
+      },
+      test: rows
+    })
+  } catch (error) {
+    res.status(500).json({
+      status: 'DB Error',
+      error: error.message,
+      code: error.code,
+      config: {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: process.env.DB_NAME
+      }
+    })
+  }
 })
 
 // Routes

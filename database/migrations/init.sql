@@ -4,13 +4,6 @@
 -- ============================================
 
 -- ============================================
--- CREAR USUARIO Y PERMISOS
--- ============================================
-CREATE USER IF NOT EXISTS 'puravida_admin'@'%' IDENTIFIED BY 'puravida_password_123';
-GRANT ALL PRIVILEGES ON puravida_events.* TO 'puravida_admin'@'%';
-FLUSH PRIVILEGES;
-
--- ============================================
 -- TABLA PRINCIPAL: EVENTOS
 -- ============================================
 CREATE TABLE IF NOT EXISTS events (
