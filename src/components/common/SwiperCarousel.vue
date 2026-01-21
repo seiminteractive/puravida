@@ -9,6 +9,11 @@
       :initial-slide="props.events.length >= 3 ? 1 : 0"
       :preload-images="true"
       :autoplay="props.enableAutoplay ? { delay: 1500, disableOnInteraction: false } : false"
+      direction="horizontal"
+      :touchReleaseOnEdges="true"
+      :touchStartPreventDefault="false"
+      :passiveListeners="true"
+      :touchMoveStopPropagation="false"
       class="swiper-carousel"
       :breakpoints="{
         320: { slidesPerView: 1, spaceBetween: 10 },
