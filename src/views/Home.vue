@@ -125,16 +125,16 @@ const scrollToEvents = () => {
 
 // Precargar media de eventos cuando la página carga
 onMounted(async () => {
-  const heroVideoUrl = '/assets/fondoMobile.mp4'
+  const heroVideoUrl = '/assets/VideoComprimidoPuravida.mp4'
   
-  // ✅ Precargar video del hero PRIMERO (crítico)
-  await preloadMediaArray([heroVideoUrl])
+  // ✅ Precargar metadata del video del hero (crítico)
+  preloadMediaArray([heroVideoUrl], { priorityUrl: heroVideoUrl, includeVideos: true, batchSize: 1 })
   
   // ✅ Precargar eventos con prioridad al hero (si estuviera en la lista)
   if (events.value && events.value.length > 0) {
     const mediaUrls = extractMediaUrls(events.value)
-    // Pasar heroVideoUrl como prioridad (aunque no esté en la lista, no causa problemas)
-    await preloadMediaArray(mediaUrls, heroVideoUrl)
+    // Default: solo imágenes (evita saturar red con MP4s)
+    preloadMediaArray(mediaUrls, { priorityUrl: heroVideoUrl })
   }
 })
 </script>

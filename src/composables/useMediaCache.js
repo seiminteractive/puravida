@@ -6,6 +6,21 @@ const loadingQueue = new Set()
 const loadedQueue = new Set()
 
 export const useMediaCache = () => {
+  const isVideoUrl = (url) => {
+    if (!url) return false
+    const clean = String(url).toLowerCase()
+    return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.includes('video')
+  }
+
+  const shouldPreloadVideo = (isPriority = false) => {
+    try {
+      const conn = navigator?.connection
+      if (conn?.saveData) return false
+      if (conn?.effectiveType && ['slow-2g', '2g'].includes(conn.effectiveType)) return false
+    } catch (_) {}
+    return isPriority
+  }
+
   // Precargar un media (imagen o video)
   const preloadMedia = async (url, type = 'image') => {
     if (!url) return false
@@ -30,7 +45,7 @@ export const useMediaCache = () => {
     loadingQueue.add(url)
     
     try {
-      if (type === 'video' || url.includes('.mp4')) {
+      if (type === 'video' || isVideoUrl(url)) {
         await preloadVideo(url)
       } else {
         await preloadImage(url)
@@ -71,6 +86,10 @@ export const useMediaCache = () => {
       video.style.position = 'absolute'
       video.style.left = '-9999px'
       
+      video.preload = 'metadata'
+      video.muted = true
+      video.playsInline = true
+
       video.onloadedmetadata = () => {
         // Limpiar después de cargar
         if (video.parentNode) {
@@ -94,18 +113,29 @@ export const useMediaCache = () => {
   }
   
   // Precargar múltiples media (para eventos, etc)
-  const preloadMediaArray = async (urls, priorityUrl = null) => {
+  const preloadMediaArray = async (urls, priorityUrlOrOptions = null) => {
     if (!Array.isArray(urls)) return
+
+    const options = typeof priorityUrlOrOptions === 'string'
+      ? { priorityUrl: priorityUrlOrOptions }
+      : (priorityUrlOrOptions || {})
+
+    const priorityUrl = options.priorityUrl || null
+    const includeVideos = options.includeVideos === true
+    const batchSize = Number(options.batchSize || 8)
     
-    // ✅ Priorizar media crítica si existe (hero video/imagen)
+    // Default: no precargar videos (son pesados y empeoran el rendimiento)
+    urls = includeVideos ? urls : urls.filter((url) => !isVideoUrl(url))
+
+    // ✅ Priorizar media crítica si existe
     if (priorityUrl && urls.includes(priorityUrl)) {
-      await preloadMedia(priorityUrl)
-      // Remover para no cargar dos veces
+      const isPriorityVideo = isVideoUrl(priorityUrl)
+      if (!isPriorityVideo || shouldPreloadVideo(true)) {
+        await preloadMedia(priorityUrl, isPriorityVideo ? 'video' : 'image')
+      }
       urls = urls.filter(url => url !== priorityUrl)
     }
     
-    // ✅ Aumentar a 8 descargas paralelas (2.6x más rápido que antes)
-    const batchSize = 8
     for (let i = 0; i < urls.length; i += batchSize) {
       const batch = urls.slice(i, i + batchSize)
       await Promise.all(batch.map(url => preloadMedia(url)))

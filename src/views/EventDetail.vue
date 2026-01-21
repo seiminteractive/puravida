@@ -420,7 +420,8 @@ onMounted(async () => {
     // ✅ Precargar TODO en paralelo (hasta 8 a la vez) con prioridad a media principal
     if (allMediaUrls.length > 0) {
       const priorityUrl = eventData.media_url || null
-      await preloadMediaArray(allMediaUrls, priorityUrl)
+      // No bloquear render: precargar en background (y por default NO precarga videos)
+      preloadMediaArray(allMediaUrls, { priorityUrl }).catch(() => {})
     }
   } catch (err) {
     console.error('Error cargando evento:', err)

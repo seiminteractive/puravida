@@ -10,29 +10,37 @@
       :preload-images="true"
       :autoplay="props.enableAutoplay ? { delay: 1500, disableOnInteraction: false } : false"
       class="swiper-carousel"
+      @swiper="handleSwiper"
+      @slideChange="handleSlideChange"
       :breakpoints="{
         320: { slidesPerView: 1, spaceBetween: 10 },
         768: { slidesPerView: 3, spaceBetween: 20 }
       }"
     >
       <swiper-slide 
-        v-for="event in displayEvents" 
-        :key="`${event.id}-${event.title}`"
+        v-for="(event, idx) in displayEvents" 
+        :key="`${event.id}-${event.title}-${idx}`"
         class="swiper-slide-custom"
       >
         <div class="event-card" @click="handleCardClick(event)">
           <!-- Imagen del evento -->
           <div class="event-image-container">
             <video
-              v-if="event.media_url?.includes('.mp4')"
+              v-if="event.media_url?.includes('.mp4') && idx === activeIndex"
               autoplay
               muted
               loop
               playsinline
+              preload="metadata"
               class="event-media"
             >
               <source :src="event.media_url" type="video/mp4" />
             </video>
+            <div
+              v-else-if="event.media_url?.includes('.mp4')"
+              class="event-media event-media-placeholder"
+              aria-hidden="true"
+            ></div>
             <img v-else :src="event.media_url" :alt="event.title" class="event-media" />
           </div>
 
@@ -76,7 +84,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, EffectCoverflow, Autoplay } from 'swiper/modules'
 import 'swiper/css'
@@ -107,6 +115,8 @@ const props = defineProps({
 const emit = defineEmits(['cardClick', 'infoClick', 'ticketsClick'])
 
 const modules = [Navigation, Pagination, EffectCoverflow, Autoplay]
+
+const activeIndex = ref(0)
 
 // Preparar eventos duplicados según cantidad
 const displayEvents = computed(() => {
@@ -172,6 +182,14 @@ const handleTicketsClick = (event) => {
     emit('ticketsClick', event)
   }
 }
+
+const handleSwiper = (swiper) => {
+  activeIndex.value = swiper?.activeIndex ?? 0
+}
+
+const handleSlideChange = (swiper) => {
+  activeIndex.value = swiper?.activeIndex ?? 0
+}
 </script>
 
 <style scoped>
@@ -193,6 +211,14 @@ const handleTicketsClick = (event) => {
   height: auto;
   padding: 2rem 3rem;
   max-width: 1400px;
+}
+
+.event-media-placeholder {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 20%, rgba(81, 193, 225, 0.18) 0%, rgba(0, 0, 0, 0) 55%),
+    radial-gradient(circle at 70% 80%, rgba(255, 210, 92, 0.12) 0%, rgba(0,  0, 0, 0) 60%),
+    rgba(0, 0, 0, 0.35);
 }
 
 .swiper-slide-custom {

@@ -61,9 +61,12 @@
               <div class="event-video-preview">
                 <video
                   v-if="event.imagen.includes('.mp4')"
-                  autoplay
                   muted
-                  loop
+                  playsinline
+                  webkit-playsinline
+                  disablePictureInPicture
+                  :controls="false"
+                  preload="none"
                   class="preview-video"
                 >
                   <source :src="event.imagen" type="video/mp4" />
@@ -486,6 +489,20 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+}
+
+/* Ocultar controles nativos del video */
+.preview-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.preview-video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.preview-video::-webkit-media-controls-panel {
+  display: none !important;
 }
 
 .preview-placeholder {
