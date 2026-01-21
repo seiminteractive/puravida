@@ -1,6 +1,14 @@
 -- ============================================
--- Pura Vida Events Database Migrations
+-- Pura Vida Events - Database Schema
+-- Version: 1.0.0 (Consolidated)
 -- ============================================
+
+-- ============================================
+-- CREAR USUARIO Y PERMISOS
+-- ============================================
+CREATE USER IF NOT EXISTS 'puravida_admin'@'%' IDENTIFIED BY 'puravida_password_123';
+GRANT ALL PRIVILEGES ON puravida_events.* TO 'puravida_admin'@'%';
+FLUSH PRIVILEGES;
 
 -- ============================================
 -- TABLA PRINCIPAL: EVENTOS
@@ -99,21 +107,9 @@ CREATE TABLE IF NOT EXISTS event_mesas (
   image_url VARCHAR(500),
   description LONGTEXT,
   whatsapp_number VARCHAR(20),
+  contact_label VARCHAR(100) DEFAULT 'Consultar por mesas',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
   INDEX idx_event (event_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================
--- DATOS DE EJEMPLO (OPCIONAL)
--- ============================================
--- INSERT INTO events (dj, fecha_dia, fecha_mes, lugar, descripcion, transports_enabled)
--- VALUES (
---   'Mariano Mellino',
---   '07',
---   '02',
---   'Hotel Termas de Victoria, Entre Rios',
---   'Una noche mágica donde la música y el agua se encuentran. Ritual de conexión bajo las estrellas.',
---   TRUE
--- );

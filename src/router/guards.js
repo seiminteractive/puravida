@@ -5,7 +5,6 @@ export const setupRouterGuards = (router) => {
 
   router.beforeEach((to, from, next) => {
     try {
-      // Proteger contra rutas nulas
       if (!to || !to.meta) {
         next()
         return
@@ -13,26 +12,39 @@ export const setupRouterGuards = (router) => {
 
       const authStore = useAuthStore()
       
-      // Si el usuario existe, marcar como inicializado
       if (authStore.user) {
         authInitialized = true
       }
       
-      // Si aún no se ha verificado la autenticación y es la navegación inicial, permitir pasar
       if (!authInitialized && (!from || from.name === null)) {
         next()
         return
       }
       
-      // Si la ruta requiere autenticación y no está autenticado
-      if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        next('/login')
+      // Si la ruta requiere autenticación
+      if (to.meta.requiresAuth) {
+        // Verificar que esté autenticado Y sea admin
+        if (!authStore.isAuthenticated) {
+          next('/login')
+        } else if (!authStore.isAdmin) {
+          // Está logueado pero no es admin
+          console.warn('Acceso denegado: usuario no es admin')
+          authStore.logoutUser()
+          next('/login')
+        } else {
+          next()
+        }
       } 
-      // Si está en login y ya está autenticado, redirige a admin
+      // Si está en login y ya está autenticado como admin
       else if (to.path === '/login' && authStore.isAuthenticated) {
-        next('/admin')
+        if (authStore.isAdmin) {
+          next('/admin')
+        } else {
+          // Logueado pero no es admin, hacer logout
+          authStore.logoutUser()
+          next()
+        }
       } 
-      // Si no, continúa normalmente
       else {
         next()
       }

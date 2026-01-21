@@ -38,8 +38,8 @@
             {{ authStore.isLoading ? 'Cargando...' : 'Ingresar' }}
           </button>
 
-          <p v-if="authStore.error" class="error-message">
-            ⚠️ {{ authStore.error }}
+          <p v-if="authStore.error || loginError" class="error-message">
+            ⚠️ {{ loginError || authStore.error }}
           </p>
         </form>
       </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
@@ -57,15 +57,27 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
+const loginError = ref('')
 
 const handleLogin = async () => {
   if (!email.value || !password.value) {
     return
   }
   
+  loginError.value = ''
   const success = await authStore.loginUser(email.value, password.value)
+  
   if (success) {
-    router.push('/admin')
+    // Esperar a que Vue actualice el estado
+    await nextTick()
+    
+    // Verificar si es admin
+    if (authStore.isAdmin) {
+      router.push('/admin')
+    } else {
+      loginError.value = 'No tienes permisos de administrador'
+      await authStore.logoutUser()
+    }
   }
 }
 </script>
