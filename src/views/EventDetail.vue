@@ -193,8 +193,7 @@
                 class="modal-contact-btn"
               >
                 <img src="/assets/iconoEventos3.png" alt="WhatsApp" class="modal-contact-icon">
-                <span v-if="typeof contact === 'string'">{{ contact }}</span>
-                <span v-else>{{ contact.name ? `${contact.name} - ${contact.contact}` : contact.contact }}</span>
+                <span>{{ contact.contact_name || contact.name || 'Contactar' }}</span>
               </a>
             </div>
           </div>
