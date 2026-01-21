@@ -61,12 +61,14 @@
               <div class="event-video-preview">
                 <video
                   v-if="event.imagen.includes('.mp4')"
+                  autoplay
                   muted
+                  loop
                   playsinline
                   webkit-playsinline
                   disablePictureInPicture
                   :controls="false"
-                  preload="none"
+                  preload="metadata"
                   class="preview-video"
                 >
                   <source :src="event.imagen" type="video/mp4" />
@@ -255,6 +257,8 @@ onMounted(async () => {
   background: #000;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bg-light-cyan-2 {
@@ -425,7 +429,8 @@ onMounted(async () => {
 .featured-carousel-section {
   background: #000;
   position: relative;
-  overflow-x: hidden;
+  overflow: visible;
+  touch-action: pan-y;
 }
 
 .section-divider {
@@ -565,6 +570,11 @@ onMounted(async () => {
 }
 
 @media (max-width: 640px) {
+  .calendar-view {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .calendar-header {
     padding: 1.5rem;
   }
@@ -584,6 +594,12 @@ onMounted(async () => {
 
   .featured-carousel-section {
     padding: 2rem 1.5rem;
+    touch-action: pan-y;
+  }
+  
+  /* Permitir scroll vertical en el carousel */
+  :deep(.swiper) {
+    touch-action: pan-y;
   }
 
   .events-by-month-section {
