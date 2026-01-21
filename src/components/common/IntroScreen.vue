@@ -149,7 +149,7 @@ const triggerIntro = () => {
   })
 
   gsap.to('.intro-text-wrapper > div', .5, {
-    x: '100',
+    x: '110',
     ease: 'expo.inOut',
     stagger: 0.1,
   })
@@ -163,7 +163,7 @@ const triggerIntro = () => {
   })
 
   gsap.to('.intro-text-wrapper > div', 2, {
-    x: '-1500',
+    x: '-1600',
     ease: 'expo.inOut',
     delay: 1.5,
     stagger: 0.05,
