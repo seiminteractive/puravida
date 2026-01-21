@@ -23,12 +23,14 @@ const corsOptions = {
       'http://localhost:5173',
       'http://localhost:3000',
       'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000'
-    ]
+      'http://127.0.0.1:3000',
+      process.env.CORS_ORIGIN
+    ].filter(Boolean)
     
     if (!origin || whitelist.includes(origin)) {
       callback(null, true)
     } else {
+      console.log('CORS blocked origin:', origin)
       callback(new Error('Not allowed by CORS'))
     }
   },

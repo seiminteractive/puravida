@@ -1,8 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
-// Debug: Log API URL
-console.log('API_URL configured:', API_URL)
-
 /**
  * Obtener todos los eventos de la DB
  */
@@ -11,9 +8,6 @@ export const fetchEvents = async () => {
     const response = await fetch(`${API_URL}/events`)
     if (!response.ok) throw new Error('Error fetching events')
     const json = await response.json()
-    console.log('Events response:', json)
-    // El backend retorna { success: true, data: [...] }
-    // Retornar la respuesta completa para que useEvents pueda extraer data
     return json
   } catch (error) {
     console.error('Error fetching events:', error)

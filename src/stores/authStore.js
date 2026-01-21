@@ -17,9 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Verificar si el usuario es admin comparando con el email del .env
   const isAdmin = computed(() => {
     const adminEmail = import.meta.env.VITE_ADMIN_EMAIL
-    const userEmail = user.value?.email
-    console.log('🔐 Admin check:', { adminEmail, userEmail, match: userEmail === adminEmail })
-    return isAuthenticated.value && userEmail === adminEmail
+    return isAuthenticated.value && user.value?.email === adminEmail
   })
 
   const loginUser = async (email, password) => {

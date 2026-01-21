@@ -2,7 +2,7 @@
   <div class="home-root">
     <!-- Fixed hero video layer -->
     <div class="home-hero-video-layer" aria-hidden="true">
-      <video class="home-hero-video" autoplay muted loop playsinline preload="auto">
+      <video class="home-hero-video" autoplay muted loop playsinline preload="auto" fetchpriority="high">
         <source src="/assets/fondoMobile.mp4" type="video/mp4" />
       </video>
       <div class="home-hero-video-dim"></div>
@@ -277,7 +277,7 @@ const scrollToEvents = () => {
   left: 50rem;
   width: 38rem;
   height: 38rem;
-  background: radial-gradient(circle, rgba(112, 188, 126, 0.35) 30%, rgba(112, 188, 126, 0.1) 40%, transparent 90%);
+  background: radial-gradient(circle, rgba(81, 193, 225, 0.35) 50%, rgba(81, 193, 225, 0.1) 40%, transparent 90%);
 }
 
 /* Púrpura - en posición de icon-4 */
@@ -295,7 +295,7 @@ const scrollToEvents = () => {
   right: -5rem;
   width: 35rem;
   height: 35rem;
-  background: radial-gradient(circle, rgba(81, 193, 225, 0.35) 50%, rgba(81, 193, 225, 0.1) 40%, transparent 90%);
+  background: radial-gradient(circle, rgba(255, 210, 92, 0.35) 0%, rgba(255, 210, 92, 0.1) 40%, transparent 90%);
 }
 
 /* Coral - en posición de icon-7 */
