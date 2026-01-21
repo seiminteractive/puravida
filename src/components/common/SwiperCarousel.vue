@@ -191,13 +191,12 @@ const handleTicketsClick = (event) => {
 .carousel-full-width {
   width: 100%;
   position: relative;
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 3rem 0;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .swiper-carousel {
@@ -430,7 +429,7 @@ const handleTicketsClick = (event) => {
   }
 
   :deep(.swiper) {
-    overflow: hidden;
+    overflow: visible;
   }
 
   :deep(.swiper-slide) {

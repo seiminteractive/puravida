@@ -288,6 +288,8 @@ onMounted(async () => {
   padding-bottom: 2rem;
   position: relative;
   z-index: 1;
+  overflow: visible;
+  height: auto;
 }
 
 .calendar-header {
