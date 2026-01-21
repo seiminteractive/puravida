@@ -103,6 +103,7 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import Navbar from '../components/common/Navbar.vue'
 import IntroScreen from '../components/common/IntroScreen.vue'
 import EventCarousel from '../components/common/EventCarousel.vue'
@@ -110,13 +111,32 @@ import PastEventsCarousel from '../components/common/PastEventsCarousel.vue'
 import AboutSection from '../components/common/AboutSection.vue'
 import WhatsAppCTA from '../components/common/WhatsAppCTA.vue'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
+import { useMediaCache } from '../composables/useMediaCache'
+import { useEvents } from '../composables/useEvents'
 
 const eventoIcon = useRotatingIcon(8)
+const { preloadMediaArray, extractMediaUrls } = useMediaCache()
+const { events } = useEvents()
 
 const scrollToEvents = () => {
   const el = document.getElementById('eventos')
   el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+// Precargar media de eventos cuando la página carga
+onMounted(async () => {
+  const heroVideoUrl = '/assets/fondoMobile.mp4'
+  
+  // ✅ Precargar video del hero PRIMERO (crítico)
+  await preloadMediaArray([heroVideoUrl])
+  
+  // ✅ Precargar eventos con prioridad al hero (si estuviera en la lista)
+  if (events.value && events.value.length > 0) {
+    const mediaUrls = extractMediaUrls(events.value)
+    // Pasar heroVideoUrl como prioridad (aunque no esté en la lista, no causa problemas)
+    await preloadMediaArray(mediaUrls, heroVideoUrl)
+  }
+})
 </script>
 
 <style scoped>

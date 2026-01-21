@@ -113,6 +113,11 @@ onMounted(() => {
   
   if (!hasSeenIntro) {
     sessionStorage.setItem('hasSeenIntro', 'true')
+    
+    // ✅ Bloquear scroll mientras la intro está activa
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    
     // Esperar a que el DOM esté listo y luego ejecutar la animación
     nextTick(() => {
       triggerIntro()
@@ -126,6 +131,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', onViewportResize)
   window.removeEventListener('orientationchange', onViewportResize)
+  
+  // ✅ Permitir scroll cuando el componente se desmonta
+  document.body.style.overflow = ''
+  document.documentElement.style.overflow = ''
 })
 
 const triggerIntro = () => {
@@ -186,6 +195,9 @@ const triggerIntro = () => {
     ease: 'expo.inOut',
     delay: 5,
     onComplete: () => {
+      // ✅ Permitir scroll cuando la intro termina
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
       showIntro.value = false
     },
   })

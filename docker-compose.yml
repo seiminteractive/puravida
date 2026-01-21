@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password_123
-      MYSQL_DATABASE: puravida
+      MYSQL_DATABASE: puravida_events
       MYSQL_USER: puravida_admin
       MYSQL_PASSWORD: puravida_password_123
       MYSQL_INITDB_SKIP_TZINFO: "yes"

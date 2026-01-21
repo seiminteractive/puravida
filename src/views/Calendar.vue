@@ -10,14 +10,17 @@
     <div class="calendar-content">
       <!-- Header -->
       <div class="calendar-header">
-        <router-link to="/" class="back-btn">← Volver</router-link>
+        <!-- Fila 1: Navegación izquierda y derecha (mobile) / fila única (desktop) -->
+        <router-link to="/" class="back-btn back-btn-left">← Volver</router-link>
+        <router-link to="/" class="back-btn back-btn-right">
+          <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="header-icon">
+        </router-link>
+        
+        <!-- Fila 2: Título centrado (mobile) / parte del flujo (desktop) -->
         <div class="header-title-group">
           <img ref="headerIcon" src="/assets/iconoEventos3.png" alt="Eventos" class="header-icon" />
           <h1 class="page-title">Upcoming events</h1>
         </div>
-        <router-link to="/" class="back-btn">
-          <img src="/assets/isotipoBlanco.png" alt="Pura Vida" class="header-icon">
-        </router-link>
       </div>
 
       <!-- Sección de carrousel destacado (Carousel de Swiper) -->
@@ -120,6 +123,7 @@ import { useRouter } from 'vue-router'
 import Navbar from '../components/common/Navbar.vue'
 import { fetchEvents } from '../services/apiService'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
+import { useMediaCache } from '../composables/useMediaCache'
 import SwiperCarousel from '../components/common/SwiperCarousel.vue'
 
 const router = useRouter()
@@ -135,6 +139,9 @@ const selectedEvent = ref(null)
 
 // Hacer que el icono gire
 const headerIcon = useRotatingIcon(8)
+
+// Media cache
+const { preloadMediaArray, extractMediaUrls } = useMediaCache()
 
 const goToEventDetail = (event) => {
   router.push(`/event/${event.id}`)
@@ -223,6 +230,12 @@ onMounted(async () => {
     
     events.value = (Array.isArray(dataArray) ? dataArray : []).map(transformEventData)
     loading.value = false
+    
+    // ✅ Precargar media de eventos con paralelismo optimizado
+    const mediaUrls = extractMediaUrls(events.value)
+    // Priorizar el primer evento si existe
+    const priorityUrl = mediaUrls[0] || null
+    await preloadMediaArray(mediaUrls, priorityUrl)
   } catch (err) {
     console.error('Error loading events:', err)
     error.value = 'Error cargando eventos'
@@ -238,6 +251,7 @@ onMounted(async () => {
   min-height: 100vh;
   background: #000;
   position: relative;
+  overflow-x: hidden;
 }
 
 .bg-light-cyan-2 {
@@ -265,7 +279,7 @@ onMounted(async () => {
 }
 
 .calendar-content {
-  padding-top: 80px;
+  padding-top: 20px;
   padding-bottom: 2rem;
   position: relative;
   z-index: 1;
@@ -274,14 +288,51 @@ onMounted(async () => {
 .calendar-header {
   padding: 2rem 1.5rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 @media (min-width: 1024px) {
   .calendar-header {
     padding: 2rem 4rem;
+    flex-direction: row;
+    align-items: center;
     gap: 2rem;
+  }
+}
+
+/* Fila de navegación (mobile) / flujo (desktop) */
+.calendar-header > .back-btn:first-of-type,
+.calendar-header > .back-btn:nth-of-type(2) {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  /* Mobile: primer back-btn a la izquierda, segundo a la derecha */
+  .calendar-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+  }
+  
+  .back-btn-left {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+  
+  .back-btn-right {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  
+  .header-title-group {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: left;
   }
 }
 
@@ -289,7 +340,12 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex: 1;
+}
+
+@media (min-width: 1024px) {
+  .header-title-group {
+    flex: 1;
+  }
 }
 
 .header-icon {
@@ -306,6 +362,10 @@ onMounted(async () => {
   transition: all 0.3s ease;
   padding: 0.5rem 1rem;
   white-space: nowrap;
+
+  /* 🔑 CLAVE */
+  display: grid;
+  place-items: center;
 }
 
 .back-btn:hover {
@@ -362,6 +422,7 @@ onMounted(async () => {
 .featured-carousel-section {
   background: #000;
   position: relative;
+  overflow-x: hidden;
 }
 
 .section-divider {
@@ -488,13 +549,7 @@ onMounted(async () => {
 
 @media (max-width: 640px) {
   .calendar-header {
-    flex-direction: column;
-    align-items: flex-start;
     padding: 1.5rem;
-  }
-
-  .header-title-group {
-    width: 100%;
   }
 
   .header-icon {

@@ -8,10 +8,7 @@
       :space-between="20"
       :initial-slide="props.events.length >= 3 ? 1 : 0"
       :preload-images="true"
-      :autoplay="{
-        delay: 1500,
-        disableOnInteraction: false
-      }"
+      :autoplay="props.enableAutoplay ? { delay: 1500, disableOnInteraction: false } : false"
       class="swiper-carousel"
       :breakpoints="{
         320: { slidesPerView: 1, spaceBetween: 10 },
@@ -100,6 +97,10 @@ const props = defineProps({
   showTitle: {
     type: Boolean,
     default: false
+  },
+  enableAutoplay: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -176,19 +177,15 @@ const handleTicketsClick = (event) => {
 <style scoped>
 /* CAROUSEL SECTION - 100vw full width */
 .carousel-full-width {
-  width: 100vw;
+  width: 100%;
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 3rem 0;
   z-index: 1;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .swiper-carousel {
@@ -421,7 +418,7 @@ const handleTicketsClick = (event) => {
   }
 
   :deep(.swiper) {
-    overflow: visible;
+    overflow: hidden;
   }
 
   :deep(.swiper-slide) {

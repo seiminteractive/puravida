@@ -5,16 +5,16 @@
     
     <!-- Contenedor principal -->
     <div class="events-container">
-      <!-- Título -->
+    <!-- Título -->
       <div class="events-header">
-        <div class="title-group">
-          <h2 class="events-title">Experiencias Pasadas</h2>
-        </div>
-        <button class="calendar-btn">
-          <img ref="archiveIcon" src="/assets/iconoExperiencia1.png" alt="Archivo" class="btn-icon" />
-          <span>ARCHIVO</span>
-        </button>  
+      <div class="title-group">
+        <h2 class="events-title">Experiencias Pasadas</h2>
       </div>
+      <button class="calendar-btn">
+        <img ref="archiveIcon" src="/assets/iconoExperiencia1.png" alt="Archivo" class="btn-icon" />
+        <span>ARCHIVO</span>
+      </button>  
+    </div>
 
       <!-- Carousel -->
       <div class="carousel-wrapper">
@@ -31,7 +31,7 @@
               :key="event.id" 
               class="past-event-slide basis-full"
             >
-              <PastEventCard :event="event" />
+        <PastEventCard :event="event" />
             </CarouselItem>
           </CarouselContent>
           <CarouselPrevious />

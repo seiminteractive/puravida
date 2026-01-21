@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename)
 
 // Cargar .env desde la carpeta backend (si no está ya cargado)
 if (!process.env.DB_HOST) {
-  dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 }
 
 console.log('🔍 .env loaded from:', path.resolve(__dirname, '../../.env'))

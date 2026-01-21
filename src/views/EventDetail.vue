@@ -98,6 +98,7 @@
           <SwiperCarousel 
             :events="djEventsForCarousel"
             :hideDetails="true"
+            :enableAutoplay="true"
             @cardClick="handleArtistClick"
           />
         </div>
@@ -233,6 +234,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRotatingIcon } from '../composables/useRotatingIcon'
+import { useMediaCache } from '../composables/useMediaCache'
 import { fetchEventById } from '../services/apiService'
 import SwiperCarousel from '../components/common/SwiperCarousel.vue'
 const route = useRoute()
@@ -286,6 +288,9 @@ const activeBlocksCount = computed(() => {
 // Icones rotativos
 const mesasIcon = useRotatingIcon(8)
 const experienciaIcon = useRotatingIcon(8)
+
+// Media cache
+const { preloadMediaArray, extractMediaUrls } = useMediaCache()
 
 // Modal de transporte
 const showTransportModal = ref(false)
@@ -391,6 +396,32 @@ onMounted(async () => {
     const response = await fetchEventById(eventId)
     const eventData = response.data || response
     event.value = eventData
+    
+    // ✅ Recopilar todas las URLs de media del evento
+    const allMediaUrls = []
+    
+    // Media del evento principal (PRIORITARIO)
+    if (eventData.media_url) allMediaUrls.push(eventData.media_url)
+    
+    // Media adicional
+    if (eventData.lodging?.image_url) allMediaUrls.push(eventData.lodging.image_url)
+    if (eventData.mesas?.image_url) allMediaUrls.push(eventData.mesas.image_url)
+    if (Array.isArray(eventData.transports)) {
+      eventData.transports.forEach(t => {
+        if (t.image_url) allMediaUrls.push(t.image_url)
+      })
+    }
+    if (Array.isArray(eventData.artists)) {
+      eventData.artists.forEach(a => {
+        if (a.image_url) allMediaUrls.push(a.image_url)
+      })
+    }
+    
+    // ✅ Precargar TODO en paralelo (hasta 8 a la vez) con prioridad a media principal
+    if (allMediaUrls.length > 0) {
+      const priorityUrl = eventData.media_url || null
+      await preloadMediaArray(allMediaUrls, priorityUrl)
+    }
   } catch (err) {
     console.error('Error cargando evento:', err)
     error.value = err.message
