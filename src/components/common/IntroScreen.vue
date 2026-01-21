@@ -25,11 +25,6 @@
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-      </div>
-      <div class="intro-text-logo">
-        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
-        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
@@ -37,8 +32,17 @@
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
       </div>
       <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
+      </div>
+      <div class="intro-text-logo">
+        <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
         <img src="/assets/logoTipograficoBlancoCortado.png" alt="Pura Vida" />
